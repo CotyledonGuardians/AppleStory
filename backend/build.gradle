@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.cotyledon'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+sourceCompatibility = '11'
 
 configurations {
 	compileOnly {
@@ -29,6 +29,10 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// Point type
+	implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '5.6.10.Final'
+
 }
 
 tasks.named('test') {

@@ -12,6 +12,14 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: https://www.googleapis.com/service_accounts/v1/jwk/securetoken%40system.gserviceaccount.com
+  jpa:
+    open-in-view: false
+    hibernate:
+#      dialect: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+      database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+      format_sql: true
+      ddl-auto: update
+      show-sql: true
 
 com:
   cotyledon.appletree:
