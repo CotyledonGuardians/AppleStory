@@ -1,9 +1,6 @@
 package com.cotyledon.appletree.domain.entity;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -12,11 +9,12 @@ import javax.persistence.Entity;
 import java.util.Date;
 
 @Entity
+@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Apple extends BaseEntity{
-    private boolean type;
+    private Boolean type;
     private String title;
     private String creator;
 
@@ -31,6 +29,5 @@ public class Apple extends BaseEntity{
     private String content;
     @Column(columnDefinition = "POINT")
     private Point location;
-    private boolean useSpace;
-
+    private Boolean useSpace;
 }
