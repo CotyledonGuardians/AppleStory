@@ -7,10 +7,7 @@ import com.cotyledon.appletree.web.service.SingleAppleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -24,10 +21,9 @@ public class SingleAppleController {
     private final FirebaseAuthService firebaseAuthService;
 
     @PostMapping
-    public ResponseEntity<?> addApple(Principal principal, AppleDTO appleDTO) {
+    public ResponseEntity<?> addApple(Principal principal, @RequestBody AppleDTO appleDTO) {
         try {
-            String uid = principal.getName();
-            singleAppleService.addApple(appleDTO, uid);
+            singleAppleService.addApple(principal, appleDTO);
         } catch (Exception e) {
             return BaseResponse.fail(e.getMessage());
         }

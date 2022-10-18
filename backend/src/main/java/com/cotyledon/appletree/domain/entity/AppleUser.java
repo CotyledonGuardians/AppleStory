@@ -23,6 +23,9 @@ public class AppleUser extends BaseEntity {
 
     @Column(nullable = false)
     private String userName;
+
+    @Column(columnDefinition = "Boolean default false")
     private Boolean isShow;
+    @Column(columnDefinition = "Boolean default false")
     private Boolean isOpen;
 }

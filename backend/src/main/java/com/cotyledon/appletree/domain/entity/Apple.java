@@ -1,6 +1,7 @@
 package com.cotyledon.appletree.domain.entity;
 
 import com.cotyledon.appletree.domain.dto.Creator;
+import com.cotyledon.appletree.domain.dto.CreatorConverter;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,11 +16,12 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Apple extends BaseEntity{
     private Boolean type;
     private String title;
 
-    @Convert(converter = )
+    @Convert(converter = CreatorConverter.class)
     private Creator creator;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")

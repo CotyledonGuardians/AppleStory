@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+
 public interface SingleAppleService {
-    public void addApple(AppleDTO appleDTO, String uid) throws Exception;
+    public void addApple(Principal principal, AppleDTO appleDTO) throws Exception;
 }
