@@ -7,26 +7,35 @@ import com.cotyledon.appletree.web.service.SingleAppleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
 @RequiredArgsConstructor
-@RequestMapping("/api/web/apple")
+@RequestMapping("/api/single-apple")
 @Slf4j
 public class SingleAppleController {
     private final SingleAppleService singleAppleService;
     private final FirebaseAuthService firebaseAuthService;
 
     @PostMapping
-    public ResponseEntity<?> addApple(Principal principal, AppleDTO appleDTO) {
+    public ResponseEntity<?> addApple(Principal principal, @RequestBody AppleDTO appleDTO) {
         try {
             singleAppleService.addApple(principal, appleDTO);
+        } catch (Exception e) {
+            return BaseResponse.fail(e.getMessage());
+        }
+        return BaseResponse.success();
+    }
+
+    @PutMapping
+    public ResponseEntity<?> receiveApple(Principal principal, @RequestBody Map<String, Long> request) {
+        try {
+            Long appleId = request.get("apple_id");
+            singleAppleService.receiveApple(principal, appleId);
         } catch (Exception e) {
             return BaseResponse.fail(e.getMessage());
         }

@@ -1,6 +1,7 @@
 package com.cotyledon.appletree.web.service;
 
 import com.cotyledon.appletree.domain.dto.AppleDTO;
+import com.cotyledon.appletree.domain.dto.Creator;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.Apple;
 import com.cotyledon.appletree.domain.entity.AppleUser;
@@ -13,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.LinkedList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,19 +24,39 @@ public class SingleAppleServiceImpl implements SingleAppleService {
     @Transactional
     public void addApple(Principal principal, AppleDTO appleDTO) throws Exception {
         Apple apple = appleDTO.toAppleEntity();
-        apple.getCreator().setMember(new LinkedList<Member>());
+        Creator creator = apple.getCreator();
+        creator.setHostUid(principal.getName());
+        String hostNickname = creator.getMember().get(0).getNickname();
 
         Member member = Member.builder()
                 .uid(principal.getName())
-                .nickname(apple.getCreator().getHostNickName())
+                .nickname(hostNickname)
                 .build();
-        apple.getCreator().getMember().add(member);
+
+        creator.setMember(new LinkedList<Member>());
+        creator.getMember().add(member);
         appleRepository.save(apple);
 
         AppleUser appleUser = AppleUser.builder()
                 .apple(apple)
-                .userName(member.getNickname())
                 .uid(member.getUid())
+                .isOpen(false)
+                .isShow(false)
+                .build();
+        appleUserRepository.save(appleUser);
+    }
+
+    @Transactional
+    public void receiveApple(Principal principal, Long appleId) throws Exception {
+        Apple apple = appleRepository.findById(appleId).orElseThrow(IllegalArgumentException::new);
+        if(principal.getName().equals(apple.getCreator().getHostUid())) {
+            throw new Exception("자기 자신에게는 선물할 수 없습니다.");
+        }
+        AppleUser appleUser = AppleUser.builder()
+                .apple(apple)
+                .uid(principal.getName())
+                .isOpen(false)
+                .isShow(false)
                 .build();
         appleUserRepository.save(appleUser);
     }
