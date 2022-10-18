@@ -26,8 +26,7 @@ public class SingleAppleController {
     @PostMapping
     public ResponseEntity<?> addApple(Principal principal, AppleDTO appleDTO) {
         try {
-            String uid = principal.getName();
-            singleAppleService.addApple(appleDTO, uid);
+            singleAppleService.addApple(principal, appleDTO);
         } catch (Exception e) {
             return BaseResponse.fail(e.getMessage());
         }

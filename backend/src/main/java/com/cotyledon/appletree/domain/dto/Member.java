@@ -1,12 +1,11 @@
 package com.cotyledon.appletree.domain.dto;
 
-import com.cotyledon.appletree.domain.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class MemberDTO {
+public class Member {
     private String nickname;
     private String uid;
 }
