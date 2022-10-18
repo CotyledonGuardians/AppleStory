@@ -10,7 +10,7 @@ import java.util.Date;
 public class AppleDTO {
     private Boolean type;
     private String title;
-    private String creator;
+    private Creator creator;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date createAt;
@@ -27,7 +27,7 @@ public class AppleDTO {
         return AppleDTO.builder()
                 .type(apple.getType())
                 .title(apple.getTitle())
-                .creator(apple.getCreator())
+//                .creator(apple.getCreator())
                 .createAt(apple.getCreateAt())
                 .unlockAt(apple.getUnlockAt())
                 .createScene(apple.getCreateScene())
@@ -41,7 +41,7 @@ public class AppleDTO {
         return Apple.builder()
                 .type(this.type)
                 .title(this.title)
-                .creator(this.creator)
+                .creator(this.creator.toString())
                 .createAt(this.createAt)
                 .unlockAt(this.unlockAt)
                 .createScene(this.createScene)

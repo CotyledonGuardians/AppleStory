@@ -12,20 +12,17 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppleUser implements Serializable {
+public class AppleUser extends BaseEntity {
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "apple_id")
     private Apple apple;
 
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name="user_id", nullable = false)
+    private String uid;
 
     @Column(nullable = false)
     private String userName;
-    private boolean isShow;
-    private boolean isOpen;
+    private Boolean isShow;
+    private Boolean isOpen;
 }
