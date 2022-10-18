@@ -1,23 +1,19 @@
 package com.cotyledon.appletree.web.service;
 
-import com.cotyledon.appletree.domain.entity.User;
+import com.cotyledon.appletree.domain.dto.UserDTO;
 import com.cotyledon.appletree.domain.repository.UserRepository;
-import com.cotyledon.appletree.web.request.UserRegisterRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
 
     @Override
-    @Transactional
-    public void register(UserRegisterRequest userRegisterRequest) {
-        User user = User.create(userRegisterRequest);
-        userRepository.save(user);
+    public void register(UserDTO userDTO) throws Exception{
+        userRepository.save(userDTO.toUserEntity());
     }
 }
