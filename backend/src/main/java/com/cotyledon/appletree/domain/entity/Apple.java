@@ -16,6 +16,7 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class Apple extends BaseEntity{
     private Boolean type;
     private String title;

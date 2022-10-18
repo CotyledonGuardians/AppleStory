@@ -1,6 +1,7 @@
 package com.cotyledon.appletree.web.service;
 
 import com.cotyledon.appletree.domain.dto.AppleDTO;
+import com.cotyledon.appletree.domain.dto.Creator;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.Apple;
 import com.cotyledon.appletree.domain.entity.AppleUser;
@@ -24,19 +25,22 @@ public class SingleAppleServiceImpl implements SingleAppleService {
     @Transactional
     public void addApple(Principal principal, AppleDTO appleDTO) throws Exception {
         Apple apple = appleDTO.toAppleEntity();
-        apple.getCreator().setMember(new LinkedList<Member>());
+        Creator creator = apple.getCreator();
+        creator.setMember(new LinkedList<Member>());
 
         Member member = Member.builder()
                 .uid(principal.getName())
-                .nickname(apple.getCreator().getHostNickName())
+                .nickname(apple.getCreator().getHostNickname())
                 .build();
-        apple.getCreator().getMember().add(member);
+        creator.getMember().add(member);
         appleRepository.save(apple);
 
         AppleUser appleUser = AppleUser.builder()
                 .apple(apple)
                 .userName(member.getNickname())
                 .uid(member.getUid())
+                .isOpen(false)
+                .isShow(false)
                 .build();
         appleUserRepository.save(appleUser);
     }
