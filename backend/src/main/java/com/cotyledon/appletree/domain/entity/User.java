@@ -1,6 +1,5 @@
 package com.cotyledon.appletree.domain.entity;
 
-import com.cotyledon.appletree.web.request.UserRegisterRequest;
 import lombok.*;
 
 import javax.persistence.Entity;
@@ -13,10 +12,4 @@ import javax.persistence.Entity;
 public class User extends BaseEntity{
     private String email;
     private String uid;
-
-    public static User create(UserRegisterRequest userRegisterRequest){
-        return User.builder()
-                .email(userRegisterRequest.getEmail())
-                .uid(userRegisterRequest.getUid()).build();
-    }
 }
