@@ -1,13 +1,9 @@
 package com.cotyledon.appletree.web.service;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
-import com.cotyledon.appletree.domain.entity.Apple;
-import com.querydsl.core.Tuple;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface AppleService {
-    List<AppleListDTO> getAppleList(String uid, int sort);
+    Page<AppleListDTO> getAppleList(String uid, int sort, Pageable pageable);
 }
