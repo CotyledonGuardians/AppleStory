@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.LinkedList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,19 +25,36 @@ public class SingleAppleServiceImpl implements SingleAppleService {
     public void addApple(Principal principal, AppleDTO appleDTO) throws Exception {
         Apple apple = appleDTO.toAppleEntity();
         Creator creator = apple.getCreator();
-        creator.setMember(new LinkedList<Member>());
+        creator.setHostUid(principal.getName());
+        String hostNickname = creator.getMember().get(0).getNickname();
 
         Member member = Member.builder()
                 .uid(principal.getName())
-                .nickname(apple.getCreator().getHostNickname())
+                .nickname(hostNickname)
                 .build();
+
+        creator.setMember(new LinkedList<Member>());
         creator.getMember().add(member);
         appleRepository.save(apple);
 
         AppleUser appleUser = AppleUser.builder()
                 .apple(apple)
-                .userName(member.getNickname())
                 .uid(member.getUid())
+                .isOpen(false)
+                .isShow(false)
+                .build();
+        appleUserRepository.save(appleUser);
+    }
+
+    @Transactional
+    public void receiveApple(Principal principal, Long appleId) throws Exception {
+        Apple apple = appleRepository.findById(appleId).orElseThrow(IllegalArgumentException::new);
+        if(principal.getName().equals(apple.getCreator().getHostUid())) {
+            throw new Exception("자기 자신에게는 선물할 수 없습니다.");
+        }
+        AppleUser appleUser = AppleUser.builder()
+                .apple(apple)
+                .uid(principal.getName())
                 .isOpen(false)
                 .isShow(false)
                 .build();
