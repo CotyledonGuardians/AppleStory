@@ -1,7 +1,7 @@
 package com.cotyledon.appletree.domain.entity;
 
 import com.cotyledon.appletree.domain.dto.Creator;
-import com.cotyledon.appletree.domain.dto.CreatorConverter;
+import com.cotyledon.appletree.domain.util.CreatorConverter;
 import lombok.*;
 import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
