@@ -11,7 +11,7 @@ import java.util.List;
 @ToString
 public class Creator {
     private String teamName;
-    private String hostNickname;
+    private String hostUid;
     private List<Member> member;
 }
 

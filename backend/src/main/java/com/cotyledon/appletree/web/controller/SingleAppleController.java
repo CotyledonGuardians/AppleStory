@@ -10,11 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
 @RequiredArgsConstructor
-@RequestMapping("/api/web/apple")
+@RequestMapping("/api/single-apple")
 @Slf4j
 public class SingleAppleController {
     private final SingleAppleService singleAppleService;
@@ -24,6 +25,16 @@ public class SingleAppleController {
     public ResponseEntity<?> addApple(Principal principal, @RequestBody AppleDTO appleDTO) {
         try {
             singleAppleService.addApple(principal, appleDTO);
+        } catch (Exception e) {
+            return BaseResponse.fail(e.getMessage());
+        }
+        return BaseResponse.success();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> receiveApple(Principal principal, @PathVariable Long appleId) {
+        try {
+            singleAppleService.receiveApple(principal, appleId);
         } catch (Exception e) {
             return BaseResponse.fail(e.getMessage());
         }

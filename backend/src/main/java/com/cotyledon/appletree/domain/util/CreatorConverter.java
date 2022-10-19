@@ -1,5 +1,6 @@
-package com.cotyledon.appletree.domain.dto;
+package com.cotyledon.appletree.domain.util;
 
+import com.cotyledon.appletree.domain.dto.Creator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
