@@ -31,10 +31,9 @@ public class SingleAppleController {
         return BaseResponse.success();
     }
 
-    @PutMapping
-    public ResponseEntity<?> receiveApple(Principal principal, @RequestBody Map<String, Long> request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> receiveApple(Principal principal, @PathVariable("id") long appleId) {
         try {
-            Long appleId = request.get("apple_id");
             singleAppleService.receiveApple(principal, appleId);
         } catch (Exception e) {
             return BaseResponse.fail(e.getMessage());
