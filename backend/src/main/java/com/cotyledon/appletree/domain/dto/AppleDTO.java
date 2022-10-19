@@ -21,7 +21,7 @@ public class AppleDTO {
 
     private String createScene;
 
-    private String content;
+    private Content content;
     private Point location;
     private Boolean useSpace;
 

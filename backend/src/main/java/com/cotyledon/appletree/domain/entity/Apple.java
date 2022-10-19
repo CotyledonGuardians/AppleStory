@@ -1,5 +1,7 @@
 package com.cotyledon.appletree.domain.entity;
 
+import com.cotyledon.appletree.domain.dto.Content;
+import com.cotyledon.appletree.domain.dto.ContentConverter;
 import com.cotyledon.appletree.domain.dto.Creator;
 import com.cotyledon.appletree.domain.dto.CreatorConverter;
 import lombok.*;
@@ -32,7 +34,8 @@ public class Apple extends BaseEntity{
     private String createScene;
 
     @Column(columnDefinition = "TEXT")
-    private String content;
+    @Convert(converter = ContentConverter.class)
+    private Content content;
     @Column(columnDefinition = "POINT")
     private Point location;
     private Boolean useSpace;
