@@ -5,5 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface AppleService {
-    Page<AppleListDTO> getAppleList(String uid, int sort, Pageable pageable);
+    Page<AppleListDTO> getOpenAppleList(String uid, int sort, Pageable pageable);
+    Page<AppleListDTO> getCloseAppleList(String uid, int sort, Pageable pageable);
 }

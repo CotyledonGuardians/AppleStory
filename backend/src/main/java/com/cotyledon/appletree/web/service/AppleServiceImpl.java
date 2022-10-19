@@ -16,7 +16,16 @@ public class AppleServiceImpl implements AppleService{
     private final AppleCustomRepository appleCustomRepository;
 
     @Override
-    public Page<AppleListDTO> getAppleList(String uid, int sort, Pageable pageable) {
-        return appleCustomRepository.findByUidWithPaging(uid, sort, pageable);
+    public Page<AppleListDTO> getOpenAppleList(String uid, int sort, Pageable pageable) {
+        return appleCustomRepository.findOpenByUidSort(uid, sort, pageable);
+    }
+
+    @Override
+    public Page<AppleListDTO> getCloseAppleList(String uid, int sort, Pageable pageable) {
+        if(sort == 0 || sort == 1){
+            return appleCustomRepository.findCloseByUidSort01(uid, sort, pageable);
+        } else {
+            return appleCustomRepository.findCloseByUidSort23(uid, sort, pageable);
+        }
     }
 }
