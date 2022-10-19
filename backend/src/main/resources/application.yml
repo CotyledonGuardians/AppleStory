@@ -24,8 +24,3 @@ spring:
 com:
   cotyledon.appletree:
       firebase_project_id: apple-tree-7f863
-
-logging:
-  level:
-    com.cotyledon.appletree: debug
-

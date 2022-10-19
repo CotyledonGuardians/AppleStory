@@ -2,12 +2,9 @@ package com.cotyledon.appletree.domain.dto;
 
 import com.cotyledon.appletree.domain.entity.Apple;
 import com.cotyledon.appletree.domain.entity.AppleUser;
-import lombok.Builder;
 import lombok.Data;
 import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.Column;
 import java.util.Date;
 
 @Data
