@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Map;
 
 @RestController
 @CrossOrigin("*")
@@ -32,7 +31,7 @@ public class SingleAppleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> receiveApple(Principal principal, @PathVariable Long appleId) {
+    public ResponseEntity<?> receiveApple(Principal principal, @PathVariable("id") long appleId) {
         try {
             singleAppleService.receiveApple(principal, appleId);
         } catch (Exception e) {
