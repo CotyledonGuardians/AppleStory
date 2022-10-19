@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 
 public interface SingleAppleService {
+
     void addApple(Principal principal, AppleDTO appleDTO) throws Exception;
-    Apple getAppleDetail(Principal principal, Long id) throws  Exception;
+    public void receiveApple(Principal principal, Long appleId) throws Exception;
+
 }

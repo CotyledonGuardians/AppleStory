@@ -1,17 +1,17 @@
 package com.cotyledon.appletree.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Creator {
     private String teamName;
-    private String hostNickname;
+    private String hostUid;
     private List<Member> member;
 }
 
