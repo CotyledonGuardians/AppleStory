@@ -49,8 +49,9 @@ public class SingleAppleServiceImpl implements SingleAppleService {
     @Transactional
     public void receiveApple(Principal principal, Long appleId) throws Exception {
         Apple apple = appleRepository.findById(appleId).orElseThrow(IllegalArgumentException::new);
-        if(principal.getName().equals(apple.getCreator().getHostUid())) {
-            throw new Exception("자기 자신에게는 선물할 수 없습니다.");
+        boolean isPresent = appleUserRepository.findTopByAppleAndUid(apple, principal.getName()).isPresent();
+        if(isPresent) {
+            throw new Exception("완료된 요청입니다.");
         }
         AppleUser appleUser = AppleUser.builder()
                 .apple(apple)
