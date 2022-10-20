@@ -1,6 +1,8 @@
 package com.cotyledon.appletree.web.service;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
+import com.cotyledon.appletree.domain.dto.LockAppleDTO;
+import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.Apple;
 import com.cotyledon.appletree.domain.repository.AppleCustomRepository;
 import com.cotyledon.appletree.domain.repository.AppleRepository;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +40,34 @@ public class AppleServiceImpl implements AppleService{
     public void showApple(Principal principal, Long appleId) throws Exception {
         Apple apple = appleRepository.findById(appleId).orElseThrow(IllegalArgumentException::new);
         appleUserRepository.updateIsShowByAppleAndUid(apple, principal.getName());
+    }
+
+    @Override
+    @Transactional
+    public void openApple(Principal principal, Long appleId) throws Exception {
+        Apple apple = appleRepository.findOpenableAppleById(appleId).orElseThrow(IllegalArgumentException::new);
+        appleUserRepository.updateIsOpenByAppleAndUid(apple, principal.getName());
+    }
+
+    public Object getAppleDetail(Principal principal, Long id) throws Exception {
+        Apple apple = appleRepository.findById(id).orElseThrow();
+        if(!apple.getIsCatch()){
+            return null;
+        }
+
+        Date date = java.sql.Timestamp.valueOf(LocalDateTime.now());
+        if (apple.getUnlockAt().after(date)) {
+            String name = null;
+            for(Member member : apple.getCreator().getMember()){
+                if(member.getUid().equals(principal.getName())){
+                    name = member.getNickname();
+                    break;
+                }
+            }
+            LockAppleDTO a = LockAppleDTO.of(apple);
+            a.setNickName(name);
+            return a;
+        }
+        return appleRepository.findById(id).orElseThrow();
     }
 }
