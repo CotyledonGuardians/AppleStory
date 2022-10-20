@@ -45,6 +45,9 @@ dependencies {
 	// Point type
 	implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '5.6.10.Final'
 
+	// swagger
+	implementation "io.springfox:springfox-boot-starter:3.0.0"
+	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 }
 
 tasks.named('test') {
