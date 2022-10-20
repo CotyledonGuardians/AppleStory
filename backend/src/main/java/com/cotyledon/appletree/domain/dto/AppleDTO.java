@@ -21,7 +21,7 @@ public class AppleDTO {
 
     private String createScene;
 
-    private String content;
+    private Content content;
     private Point location;
     private Boolean useSpace;
 
@@ -50,6 +50,22 @@ public class AppleDTO {
                 .content(this.content)
                 .location(this.location)
                 .useSpace(this.useSpace)
+                .isCatch(false)
+                .build();
+    }
+
+    public Apple toSingleAppleEntity() {
+        return Apple.builder()
+                .type(this.type)
+                .title(this.title)
+                .creator(this.creator)
+                .createAt(this.createAt)
+                .unlockAt(this.unlockAt)
+                .createScene(this.createScene)
+                .content(this.content)
+                .location(this.location)
+                .useSpace(this.useSpace)
+                .isCatch(true)
                 .build();
     }
 }
