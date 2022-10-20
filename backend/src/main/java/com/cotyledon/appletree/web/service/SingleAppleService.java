@@ -12,6 +12,6 @@ import java.security.Principal;
 public interface SingleAppleService {
 
     void addApple(Principal principal, AppleDTO appleDTO) throws Exception;
-    public void receiveApple(Principal principal, Long appleId) throws Exception;
+    void receiveApple(Principal principal, Long appleId) throws Exception;
 
 }

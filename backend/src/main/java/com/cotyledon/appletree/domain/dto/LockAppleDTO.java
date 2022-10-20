@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,26 +18,42 @@ import java.util.List;
 public class LockAppleDTO {
     private Boolean type;
     private String title;
-    // 여러명이라면 만료 시간, 제목, 팀이름, 인원 명, 기록된 데이터 모음, 생성일
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date createAt;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date unlockAt;
-    private List<String> content;
+
     private String teamName;
     private String nickName;
     private int number;
+    private List<String> content;
 
     public static LockAppleDTO of(Apple apple){
+        List<String> list = contentType(apple.getContent(), apple.getUseSpace());
         return LockAppleDTO.builder()
                 .type(apple.getType())
                 .title(apple.getTitle())
                 .createAt(apple.getCreateAt())
                 .unlockAt(apple.getUnlockAt())
                 .teamName(apple.getCreator().getTeamName())
-//                .nickName(null) // join후 바꿔야..
                 .number(apple.getCreator().getMember().size())
-//                .content(null)
+                .content(list)
                 .build();
+    }
+
+    private static List<String> contentType(Content content, boolean useSpace){
+        List<String> list = new ArrayList<>();
+        if(content.getAudio().size()!=0)
+            list.add("audio");
+        if(content.getPhoto().size()!=0)
+            list.add("photo");
+        if(content.getText().size()!=0)
+            list.add("text");
+        if(content.getVideo().size()!=0)
+            list.add("video");
+        if(useSpace)
+            list.add("space");
+        return list;
     }
 }

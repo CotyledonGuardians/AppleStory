@@ -23,6 +23,7 @@ public class CreatorConverter implements AttributeConverter<Creator, String> {
     @Override
     public Creator convertToEntityAttribute(String jsonCreator) {
         try {
+            System.out.println("json creator" + jsonCreator);
             return objectMapper.readValue(jsonCreator, Creator.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

@@ -50,6 +50,7 @@ public class AppleDTO {
                 .content(this.content)
                 .location(this.location)
                 .useSpace(this.useSpace)
+                .isCatch(false)
                 .build();
     }
 }

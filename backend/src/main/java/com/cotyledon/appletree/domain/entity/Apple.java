@@ -39,4 +39,6 @@ public class Apple extends BaseEntity{
     @Column(columnDefinition = "POINT")
     private Point location;
     private Boolean useSpace;
+
+    private Boolean isCatch = false;
 }

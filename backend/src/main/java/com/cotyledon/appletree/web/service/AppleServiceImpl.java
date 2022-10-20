@@ -1,11 +1,16 @@
 package com.cotyledon.appletree.web.service;
 
+import com.cotyledon.appletree.domain.dto.AppleListDTO;
 import com.cotyledon.appletree.domain.dto.LockAppleDTO;
+import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.Apple;
+import com.cotyledon.appletree.domain.repository.AppleCustomRepository;
 import com.cotyledon.appletree.domain.repository.AppleRepository;
 import com.cotyledon.appletree.domain.repository.AppleUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +25,21 @@ public class AppleServiceImpl implements AppleService{
 
     private final AppleRepository appleRepository;
     private final AppleUserRepository appleUserRepository;
+    private final AppleCustomRepository appleCustomRepository;
     @Override
+    public Page<AppleListDTO> getOpenAppleList(String uid, int sort, Pageable pageable) {
+        return appleCustomRepository.findOpenByUidSort(uid, sort, pageable);
+    }
+
+    @Override
+    public Page<AppleListDTO> getCloseAppleList(String uid, int sort, Pageable pageable) {
+        if (sort == 0 || sort == 1) {
+            return appleCustomRepository.findCloseByUidSort01(uid, sort, pageable);
+        } else {
+            return appleCustomRepository.findCloseByUidSort23(uid, sort, pageable);
+        }
+    }
+
     @Transactional
     public void showApple(Principal principal, Long appleId) throws Exception {
         Apple apple = appleRepository.findById(appleId).orElseThrow(IllegalArgumentException::new);
@@ -28,23 +47,24 @@ public class AppleServiceImpl implements AppleService{
     }
 
     @Override
-    public Apple getAppleDetail(Principal principal, Long id) throws Exception {
-        // 그냥 데이터 막 보내면 됨
-        // 하지만 시간이 되지 않았다면
-        // 만약 한 명이라면 만료 시간, 제목, 닉네임, 기록된 데이터 모음, 생성일
-        // 만약 여러명이라면 만료 시간, 제목, 팀이름, 인원 명, 기록된 데이터 모음, 생성일
-        // createAt, unlockAt, title, creator에 이름, [텍스트, 보이스, 이미지, 비디오, 로케이션]
-        // 사과를 클릭했을 때 열리지 않은 사과라면 사과를 때려야 함 다 때렸다면 is show를 바꾼뒤에 Detail로 보내야
-        // 그럼 나는 그냥 상세 정보만 보여주면 되는데,
-        //
-        System.out.println(appleRepository.findById(id));
+    public Object getAppleDetail(Principal principal, Long id) throws Exception {
         Apple apple = appleRepository.findById(id).orElseThrow();
+        if(!apple.getIsCatch()){
+            return null;
+        }
 
         Date date = java.sql.Timestamp.valueOf(LocalDateTime.now());
         if (apple.getUnlockAt().after(date)) {
-            System.out.println("dmdmdm");
-//            LockAppleDTO a = LockAppleDTO.of(apple);
-//            System.out.println(a);
+            String name = null;
+            for(Member member : apple.getCreator().getMember()){
+                if(member.getUid().equals(principal.getName())){
+                    name = member.getNickname();
+                    break;
+                }
+            }
+            LockAppleDTO a = LockAppleDTO.of(apple);
+            a.setNickName(name);
+            return a;
         }
         return appleRepository.findById(id).orElseThrow();
     }
