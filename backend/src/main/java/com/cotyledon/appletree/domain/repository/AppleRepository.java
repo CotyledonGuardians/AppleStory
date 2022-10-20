@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface AppleRepository extends JpaRepository<Apple, Long> {
     @Query("SELECT a\n" +
             "FROM Apple a\n" +
-            "WHERE a.unlockAt < current_time AND a.id=:appleId")
+            "WHERE a.unlockAt < current_time AND a.id=:appleId AND a.isCatch=true")
     Optional<Apple> findOpenableAppleById(@Param("appleId") Long appleId);
 }
