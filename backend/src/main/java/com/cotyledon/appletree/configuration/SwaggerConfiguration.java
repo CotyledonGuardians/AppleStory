@@ -27,20 +27,13 @@ public class SwaggerConfiguration {
     @Bean
     public Docket api(){
         return new Docket(DocumentationType.SWAGGER_2)
-//                .useDefaultResponseMessages(false)
-//                .apiInfo(this.apiInfo())
-//                .select()
-//                .apis(RequestHandlerSelectors.basePackage("com.cotyledon.appletree.web.controller"))
-//                .paths(PathSelectors.any())
-//                .build();
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()))
                 .apiInfo(this.apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.cotyledon.appletree.web.controller"))
                 .paths(PathSelectors.any())
-                .build()
-                ;
+                .build();
     }
 
     private SecurityContext securityContext() {
