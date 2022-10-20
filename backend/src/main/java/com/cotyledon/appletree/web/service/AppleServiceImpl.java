@@ -18,10 +18,10 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @Slf4j
 public class AppleServiceImpl implements AppleService{
-
     private final AppleRepository appleRepository;
     private final AppleUserRepository appleUserRepository;
     private final AppleCustomRepository appleCustomRepository;
+
     @Override
     public Page<AppleListDTO> getOpenAppleList(String uid, int sort, Pageable pageable) {
         return appleCustomRepository.findOpenByUidSort(uid, sort, pageable);
@@ -29,11 +29,7 @@ public class AppleServiceImpl implements AppleService{
 
     @Override
     public Page<AppleListDTO> getCloseAppleList(String uid, int sort, Pageable pageable) {
-        if (sort == 0 || sort == 1) {
-            return appleCustomRepository.findCloseByUidSort01(uid, sort, pageable);
-        } else {
-            return appleCustomRepository.findCloseByUidSort23(uid, sort, pageable);
-        }
+        return appleCustomRepository.findCloseByUidSort(uid, sort, pageable);
     }
 
     @Transactional

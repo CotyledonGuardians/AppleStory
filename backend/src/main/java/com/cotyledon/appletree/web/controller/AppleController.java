@@ -26,7 +26,6 @@ public class AppleController {
      @GetMapping("/close")
      public ResponseEntity<?> getCloseAppleList(Principal principal, @RequestParam(value="sort") int sort, @RequestParam(value="page") int page, @RequestParam(value="size") int size) {
           Pageable pageable = PageRequest.of(page, size);
-          log.debug("page:{},{}", page, size);
           Page<AppleListDTO> list;
           try{
                list = appleService.getCloseAppleList(principal.getName(), sort, pageable);
@@ -40,7 +39,6 @@ public class AppleController {
      @GetMapping("/open")
      public ResponseEntity<?> getOpenAppleList(Principal principal, @RequestParam(value="sort") int sort, @RequestParam(value="page") int page, @RequestParam(value="size") int size) {
           Pageable pageable = PageRequest.of(page, size);
-          log.debug("page:{},{}", page, size);
           Page<AppleListDTO> list;
           try {
                list = appleService.getOpenAppleList(principal.getName(), sort, pageable);
