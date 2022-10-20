@@ -1,7 +1,7 @@
 package com.cotyledon.appletree.domain.entity;
 
 import com.cotyledon.appletree.domain.dto.Content;
-import com.cotyledon.appletree.domain.dto.ContentConverter;
+import com.cotyledon.appletree.domain.util.ContentConverter;
 import com.cotyledon.appletree.domain.dto.Creator;
 import com.cotyledon.appletree.domain.util.CreatorConverter;
 import lombok.*;

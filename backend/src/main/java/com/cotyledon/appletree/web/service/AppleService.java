@@ -12,4 +12,5 @@ public interface AppleService {
     void showApple(Principal principal, Long appleId) throws Exception;
     void openApple(Principal principal, Long appleId) throws Exception;
     Object getAppleDetail(Principal principal, Long id) throws  Exception;
+    int getMyAppleCount(Principal principal) throws Exception;
 }
