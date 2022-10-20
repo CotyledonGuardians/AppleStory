@@ -13,6 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
+import java.sql.SQLOutput;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.LinkedList;
 
 @Service
@@ -23,7 +28,7 @@ public class SingleAppleServiceImpl implements SingleAppleService {
     private final AppleUserRepository appleUserRepository;
     @Transactional
     public void addApple(Principal principal, AppleDTO appleDTO) throws Exception {
-        Apple apple = appleDTO.toAppleEntity();
+        Apple apple = appleDTO.toSingleAppleEntity();
         Creator creator = apple.getCreator();
         creator.setHostUid(principal.getName());
         String hostNickname = creator.getMember().get(0).getNickname();
