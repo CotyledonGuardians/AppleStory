@@ -54,8 +54,22 @@ public class AppleController {
 
      @ApiOperation(value = "사과 상세보기")
      @GetMapping("/{id}")
-     public ResponseEntity<?> getAppleDetail(Principal principal, @PathVariable(value = "id") Long id) throws Exception {
-          return BaseResponse.success(appleService.getAppleDetail(principal, id));
+     public ResponseEntity<?> getAppleDetail(Principal principal, @PathVariable(value = "id") Long id){
+          try {
+               return BaseResponse.success(appleService.getAppleDetail(principal, id));
+          } catch (Exception e) {
+               return BaseResponse.fail(e.getMessage());
+          }
+     }
+
+     @ApiOperation(value = "로그인 유저의 총 사과 개수")
+     @GetMapping("/count")
+     public ResponseEntity<?> getMyAppleCount(Principal principal){
+          try {
+               return BaseResponse.success(appleService.getMyAppleCount(principal));
+          } catch (Exception e) {
+               return BaseResponse.fail(e.getMessage());
+          }
      }
 
      @ApiOperation(value = "사과 보기 수정 (사용 x)")
