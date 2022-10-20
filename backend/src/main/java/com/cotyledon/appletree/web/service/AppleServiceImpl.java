@@ -47,6 +47,12 @@ public class AppleServiceImpl implements AppleService{
     }
 
     @Override
+    @Transactional
+    public void openApple(Principal principal, Long appleId) throws Exception {
+        Apple apple = appleRepository.findOpenableAppleById(appleId).orElseThrow(IllegalArgumentException::new);
+        appleUserRepository.updateIsOpenByAppleAndUid(apple, principal.getName());
+    }
+
     public Object getAppleDetail(Principal principal, Long id) throws Exception {
         Apple apple = appleRepository.findById(id).orElseThrow();
         if(!apple.getIsCatch()){
