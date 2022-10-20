@@ -28,7 +28,7 @@ public class SingleAppleServiceImpl implements SingleAppleService {
     private final AppleUserRepository appleUserRepository;
     @Transactional
     public void addApple(Principal principal, AppleDTO appleDTO) throws Exception {
-        Apple apple = appleDTO.toAppleEntity();
+        Apple apple = appleDTO.toSingleAppleEntity();
         Creator creator = apple.getCreator();
         creator.setHostUid(principal.getName());
         String hostNickname = creator.getMember().get(0).getNickname();
