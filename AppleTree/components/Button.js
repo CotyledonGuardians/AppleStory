@@ -1,15 +1,22 @@
 import React from 'react';
-import {TouchableOpacity, Text, StyleSheet} from 'react-native';
+import {Pressable, Text, StyleSheet} from 'react-native';
 
 // 1. button 생성
 const Button = ({onPress, text}) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.buttonShape}>
+    <Pressable onPress={onPress} style={styles.buttonShape}>
       <Text style={styles.buttonText}>{text}</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
+const SmallButton = ({onPress, text}) => {
+  return (
+    <Pressable onPress={onPress} style={styles.smallButtonShape}>
+      <Text style={styles.buttonText}>{text}</Text>
+    </Pressable>
+  );
+};
 // 2. style 적용
 const styles = StyleSheet.create({
   buttonShape: {
@@ -21,11 +28,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  smallButtonShape: {
+    width: 135,
+    height: 60,
+    borderRadius: 25,
+    paddingHorizontal: 10,
+    margin: 5,
+    elevation: 2,
+    backgroundColor: '#373043',
+    flex: 0.4,
+    justifyContent: 'center',
+  },
   buttonText: {
+    textAlign: 'center',
     color: '#FFFFFF',
     fontSize: 15,
     fontFamily: 'UhBee Se_hyun Bold',
   },
 });
 
-export default Button;
+export {Button, SmallButton};
