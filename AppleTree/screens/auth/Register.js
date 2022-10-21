@@ -1,7 +1,7 @@
 import React from 'react';
 import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Text, TextInput, Image} from 'react-native';
-import {TouchableOpacity} from 'react-native';
+import {Pressable} from 'react-native';
 
 // import joinImg from '../../assets/pictures/aegomjoin.png';
 import {Button} from '../../components/Button';
@@ -11,6 +11,10 @@ const Register = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Image
+        source={require('AppleTree/assets/pictures/title.png')}
+        style={styles.imageTitle}
+      />
       <Image
         source={require('AppleTree/assets/pictures/aegomjoin.png')}
         style={styles.image}
@@ -37,7 +41,7 @@ const Register = () => {
         <Button onPress={onCertify} text="인증 요청" />
       </View>
       <View style={styles.marginTopBottom}>
-        <TouchableOpacity onPress={onBack}>
+        <Pressable onPress={onBack}>
           <Text
             style={{
               color: '#ABABAB',
@@ -46,7 +50,7 @@ const Register = () => {
             }}>
             뒤로 가기
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -88,12 +92,17 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     color: '#4C4036',
     fontSize: 15,
-    // keyboardType: 'email-address',
   },
   image: {
     resizeMode: 'contain',
     marginBottom: 10,
-    height: '50%',
+    height: 260,
+  },
+  imageTitle: {
+    resizeMode: 'contain',
+    marginBottom: 10,
+    width: 140,
+    height: 80,
   },
   button: {
     width: 300,
