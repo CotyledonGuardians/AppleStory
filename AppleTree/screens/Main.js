@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {
-  SafeAreaView,
+  Image,
   Alert,
   Modal,
   StyleSheet,
@@ -8,7 +8,7 @@ import {
   Pressable,
   View,
 } from 'react-native';
-
+import {SmallButton} from '../components/Button';
 const Main = () => {
   // 모달 state
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,17 +26,15 @@ const Main = () => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>사과를 아직 열 수 없어요!</Text>
-            <View Style={styles.buttonView}>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>닫기</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>자세히 보기</Text>
-              </Pressable>
+            <Image source={require('../assets/pictures/aegomkey.png')} />
+            <Text style={styles.timeText}>334일 2시 32분</Text>
+            <View style={{flexDirection: 'row'}}>
+              <SmallButton
+                onPress={() => setModalVisible(!modalVisible)}
+                text="닫기"></SmallButton>
+              <SmallButton
+                onPress={() => setModalVisible(!modalVisible)}
+                text="자세히 보기"></SmallButton>
             </View>
           </View>
         </View>
@@ -60,11 +58,10 @@ const styles = StyleSheet.create({
     marginTop: 22,
   },
   buttonView: {
-    flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start',
   },
   modalView: {
+    fontFamily: 'UhBee Se_hyun Bold',
     margin: 20,
     backgroundColor: '#ECE5E0',
     borderRadius: 20,
@@ -79,28 +76,35 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  //나중에 삭제
   button: {
     borderRadius: 20,
     padding: 10,
+    margin: 5,
     elevation: 2,
   },
   buttonOpen: {
     backgroundColor: 'red',
   },
-  buttonClose: {
-    backgroundColor: '#373043',
-  },
+  //나중에 삭제 end
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   modalText: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: 15,
     color: '#373043',
-    fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
     flexDirection: 'column',
+  },
+  timeText: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: 30,
+    color: '#4c4036',
+    textAlign: 'center',
   },
   //모달 스타일 end
 });
