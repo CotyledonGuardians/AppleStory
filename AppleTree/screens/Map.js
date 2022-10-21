@@ -1,36 +1,66 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 
-// interface ILocation {
-//   latitude: number;
-//   longitude: number;
-// }
+async function requestPermission() {
+  try {
+    if (Platform.OS === 'ios') {
+      return await Geolocation.requestAuthorization('always');
+    }
+    // 안드로이드 위치 정보 수집 권한 요청
+    if (Platform.OS === 'android') {
+      return await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 const Map = () => {
   const [location, setLocation] = useState({
-    latitude: 36.355588,
-    longitude: 127.372095,
+    latitude: 0,
+    longitude: 0,
   });
-  console.log('FEFEF');
+
   useEffect(() => {
-    Geolocation.getCurrentPosition(
-      position => {
-        const {latitude, longitude} = position.coords;
-        setLocation({
-          latitude,
-          longitude,
-        });
-        console.log('뜨냐?');
-      },
-      error => {
-        console.log(1);
-        console.log(error.code, error.message);
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
+    requestPermission().then(result => {
+      console.log({result});
+      if (result === 'granted') {
+        Geolocation.getCurrentPosition(
+          position => {
+            const {latitude, longitude} = position.coords;
+            console.log(latitude, longitude);
+            setLocation({
+              latitude,
+              longitude,
+            });
+          },
+          error => {
+            console.log(error.code, error.message);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }
+    });
   }, []);
+
+  if (!location) {
+    return (
+      <View>
+        <Text>Splash Screen</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,7 +75,10 @@ const Map = () => {
             longitudeDelta: 0.0421,
           }}>
           <Marker
-            coordinate={{latitude: 36.355588, longitude: 127.372095}}
+            coordinate={{
+              latitude: location.latitude,
+              longitude: location.longitude,
+            }}
             title="this is a marker"
             description="this is a marker example"
           />
@@ -58,7 +91,7 @@ const Map = () => {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    height: 700,
+    height: 655,
     width: 400,
     justifyContent: 'flex-end',
     alignItems: 'center',

@@ -4,7 +4,7 @@ import {SafeAreaView, StyleSheet, Text} from 'react-native';
 const AppleList = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Main</Text>
+      <Text>AppleList</Text>
     </SafeAreaView>
   );
 };
