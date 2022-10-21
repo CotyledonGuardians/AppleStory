@@ -4,7 +4,7 @@ import {SafeAreaView, StyleSheet, Text} from 'react-native';
 const MyPage = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Main</Text>
+      <Text>MyPage</Text>
     </SafeAreaView>
   );
 };
