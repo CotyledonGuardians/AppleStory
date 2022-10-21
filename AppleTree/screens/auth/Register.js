@@ -4,7 +4,7 @@ import {Text, TextInput, Image} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 
 // import joinImg from '../../assets/pictures/aegomjoin.png';
-import Button from '../../components/Button';
+import {Button} from '../../components/Button';
 
 const Register = () => {
   const [email] = React.useState(null);
