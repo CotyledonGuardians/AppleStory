@@ -6,6 +6,7 @@ import Main from './screens/Main';
 import AppleList from './screens/AppleList';
 import MyPage from './screens/auth/MyPage';
 import Map from './screens/Map';
+import MakeRoomForm from './screens/MakeRoomForm';
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
@@ -41,8 +42,8 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Create"
-        component={Main}
+        name="MakeRoom"
+        component={MakeRoomForm}
         options={{
           tabBarIcon: () => (
             <Image
