@@ -1,21 +1,14 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  Dimensions,
-  ImageBackground,
-  Image,
-} from 'react-native';
-
+import {SafeAreaView, StyleSheet, ImageBackground, Image} from 'react-native';
+// import {useQuery} from 'react-query';
+// import {width, height} from '../config/globalStyles';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 
-const WINDOW_WIDTH = Dimensions.get('window').width;
-const WINDOW_HEIGHT = Dimensions.get('window').height;
-
-const Apple = ({index}) => {
+const Apple = ({index, apple}) => {
   const appleStyle = [
     styles.apple1,
     styles.apple2,
@@ -25,6 +18,7 @@ const Apple = ({index}) => {
     styles.apple6,
   ];
 
+  // 남은 시간에 따라 사과 사진 변경
   let imgUrl = [
     require('../assets/pictures/apple1.png'),
     require('../assets/pictures/apple2.png'),
@@ -36,6 +30,13 @@ const Apple = ({index}) => {
 };
 
 const Main = () => {
+  // const {data: appleList} = useQuery('getCloseAppleList', () =>
+  //   getCloseAppleList({sort: 1, page: 0, size: 6}),
+  // );
+  // const {data: openApples} = useQuery('getOpenAppleList', () =>
+  //   getOpenAppleList({sort: 1, page: 0, size: 1}),
+  // );
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -45,6 +46,48 @@ const Main = () => {
           style={styles.hanging}
           source={require('../assets/gifs/hanging.gif')}
         />
+        {/* {appleList.length > 0 ? (
+          <Apple index={0} apple={appleList[0]} />
+        ) : (
+          <></>
+        )}
+        {appleList.length > 1 ? (
+          <Apple index={1} apple={appleList[1]} />
+        ) : (
+          <></>
+        )}
+        {appleList.length > 2 ? (
+          <Apple index={2} apple={appleList[2]} />
+        ) : (
+          <></>
+        )}
+        {appleList.length > 3 ? (
+          <Apple index={3} apple={appleList[3]} />
+        ) : (
+          <></>
+        )}
+        {appleList.length > 4 ? (
+          <Apple index={4} apple={appleList[4]} />
+        ) : (
+          <></>
+        )}
+        {appleList.length > 5 ? (
+          <Apple index={5} apple={appleList[5]} />
+        ) : (
+          <></>
+        )}
+        {openApples.length > 0 ? (
+          <Image
+            style={styles.basket}
+            source={require('../assets/pictures/basketfull.png')}
+          />
+        ) : (
+          <Image
+            style={styles.basket}
+            source={require('../assets/pictures/basket.png')}
+          />
+        )} */}
+
         <Apple index={0} />
         <Apple index={1} />
         <Apple index={2} />
@@ -53,7 +96,7 @@ const Main = () => {
         <Apple index={5} />
         <Image
           style={styles.basket}
-          source={require('../assets/pictures/basket.png')}
+          source={require('../assets/pictures/basketfull.png')}
         />
         <Image
           style={styles.bear}
@@ -70,66 +113,66 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   hanging: {
-    width: '20%',
-    height: '30%',
+    width: wp('20%'),
+    height: hp('30%'),
     top: 0,
-    left: '90%',
+    left: wp('90%'),
   },
   apple1: {
-    width: '16%',
-    height: '10%',
+    width: wp('17%'),
+    height: hp('10%'),
     position: 'absolute',
-    top: '17%',
-    left: '37%',
+    top: hp('15%'),
+    left: wp('37%'),
   },
   apple2: {
-    width: '16%',
-    height: '10%',
+    width: wp('17%'),
+    height: hp('10%'),
     position: 'absolute',
-    top: '28%',
-    left: '17%',
+    top: hp('25%'),
+    left: wp('17%'),
   },
   apple3: {
-    width: '16%',
-    height: '10%',
+    width: wp('17%'),
+    height: hp('10%'),
     position: 'absolute',
-    top: '25%',
-    left: '62%',
+    top: hp('20%'),
+    left: wp('62%'),
   },
   apple4: {
-    width: '16%',
-    height: '10%',
+    width: wp('17%'),
+    height: hp('10%'),
     position: 'absolute',
-    top: '35%',
-    left: '42%',
+    top: hp('32%'),
+    left: wp('42%'),
   },
   apple5: {
-    width: '16%',
-    height: '10%',
+    width: wp('17%'),
+    height: hp('10%'),
     position: 'absolute',
-    top: '43%',
-    left: '67%',
+    top: hp('38%'),
+    left: wp('67%'),
   },
   apple6: {
-    width: '16%',
-    height: '10%',
+    width: wp('17%'),
+    height: hp('10%'),
     position: 'absolute',
-    top: '45%',
-    left: '12%',
+    top: hp('40%'),
+    left: wp('12%'),
   },
   bear: {
-    width: '60%',
-    height: '40%',
+    width: wp('65%'),
+    height: hp('40%'),
     position: 'absolute',
-    top: '55%',
-    left: '50%',
+    top: hp('50%'),
+    left: wp('50%'),
   },
   basket: {
-    width: '30%',
-    height: '20%',
+    width: wp('28%'),
+    height: wp('29%'),
     position: 'absolute',
-    top: '70%',
-    left: '17%',
+    top: hp('65%'),
+    left: wp('10%'),
   },
 });
 
