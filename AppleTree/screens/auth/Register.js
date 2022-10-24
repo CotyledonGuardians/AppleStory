@@ -6,7 +6,7 @@ import {Pressable} from 'react-native';
 // import joinImg from '../../assets/pictures/aegomjoin.png';
 import {Button} from '../../components/Button';
 
-const Register = () => {
+const Register = ({navigation}) => {
   const [email] = React.useState(null);
 
   return (
@@ -41,7 +41,7 @@ const Register = () => {
         <Button onPress={onCertify} text="인증 요청" />
       </View>
       <View style={styles.marginTopBottom}>
-        <Pressable onPress={onBack}>
+        <Pressable onPress={() => navigation.goBack()}>
           <Text
             style={{
               color: '#ABABAB',
@@ -58,10 +58,6 @@ const Register = () => {
 
 const onCertify = () => {
   alert('이멜인증보내기함수');
-};
-
-const onBack = () => {
-  alert('뒤로가기함수넣기');
 };
 
 const styles = StyleSheet.create({
