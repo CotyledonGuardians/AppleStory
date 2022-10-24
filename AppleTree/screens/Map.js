@@ -6,6 +6,7 @@ import {
   View,
   Platform,
   PermissionsAndroid,
+  Image,
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
@@ -80,8 +81,13 @@ const Map = () => {
               longitude: location.longitude,
             }}
             title="this is a marker"
-            description="this is a marker example"
-          />
+            description="this is a marker example">
+            <Image
+              source={require('../assets/pictures/apple4.png')}
+              style={{width: 26, height: 28}}
+              resizeMode="contain"
+            />
+          </Marker>
         </MapView>
       </View>
     </SafeAreaView>
