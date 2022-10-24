@@ -30,4 +30,9 @@ public class TestController {
     public ResponseEntity<?> email(Principal principal) throws FirebaseAuthException {
         return ResponseEntity.ok(firebaseAuthService.getEmailByUid(principal.getName()));
     }
+
+    @GetMapping("/deploy")
+    public ResponseEntity<?> deploy() {
+        return ResponseEntity.ok(true);
+    }
 }
