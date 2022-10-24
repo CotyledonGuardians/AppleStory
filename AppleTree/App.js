@@ -10,6 +10,7 @@ import MyPage from './screens/auth/MyPage';
 import Map from './screens/Map';
 import Login from './screens/auth/Login';
 import Register from './screens/auth/Register';
+import {IntroFirst, IntroSecond} from './screens/Intro';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -94,9 +95,8 @@ function MyStack() {
         headerShown: false,
       }}>
       {/* 인트로 3개 */}
-      {/* <Stack.Screen name="Intro1" component={Home} />
-      <Stack.Screen name="Intro2" component={Notifications} />
-      <Stack.Screen name="Intro3" component={Profile} /> */}
+      <Stack.Screen name="IntroFirst" component={IntroFirst} />
+      <Stack.Screen name="IntroSecond" component={IntroSecond} />
       {/* 로그인 페이지 */}
       <Stack.Screen name="Login" component={Login} />
       {/* 회원가입 페이지 */}
@@ -105,7 +105,7 @@ function MyStack() {
   );
 }
 
-const isLogin = false;
+const isLogin = true;
 
 export default function App() {
   return (
