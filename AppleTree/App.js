@@ -11,6 +11,7 @@ import Map from './screens/Map';
 import Login from './screens/auth/Login';
 import Register from './screens/auth/Register';
 import {IntroFirst, IntroSecond} from './screens/Intro';
+import MakeRoomForm from './screens/MakeRoomForm';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -49,8 +50,8 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Create"
-        component={Main}
+        name="MakeRoom"
+        component={MakeRoomForm}
         options={{
           tabBarIcon: () => (
             <Image
