@@ -25,4 +25,6 @@ public interface AppleUserRepository extends JpaRepository<AppleUser, Long> {
             "SET au.isOpen=true \n" +
             "WHERE au.uid=:uid AND au.apple=:targetApple")
     int updateIsOpenByAppleAndUid(@Param("targetApple") Apple apple, @Param("uid") String name);
+
+    int countByUid(String uid);
 }
