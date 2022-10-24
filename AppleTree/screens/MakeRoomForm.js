@@ -34,6 +34,10 @@ const MakeRoomForm = ({navigation}) => {
     hideDatePicker();
   };
   let today = new Date();
+  const makeRoom = () => {
+    alert('방만들기 함수 호출');
+    navigation.navigate('GroupCreate', {screen: 'GroupCreate'});
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -117,9 +121,7 @@ const MakeRoomForm = ({navigation}) => {
     </SafeAreaView>
   );
 };
-const makeRoom = () => {
-  alert('방만들기 함수 호출');
-};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

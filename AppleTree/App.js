@@ -12,9 +12,11 @@ import Login from './screens/auth/Login';
 import Register from './screens/auth/Register';
 import {IntroFirst, IntroSecond} from './screens/Intro';
 import MakeRoomForm from './screens/MakeRoomForm';
+import GroupCreate from './sessions/GroupCreate';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+const CreateStack = createStackNavigator();
 
 function MyTabs() {
   return (
@@ -51,7 +53,6 @@ function MyTabs() {
       />
       <Tab.Screen
         name="MakeRoom"
-        component={MakeRoomForm}
         options={{
           tabBarIcon: () => (
             <Image
@@ -59,8 +60,14 @@ function MyTabs() {
               style={{width: 20, height: 20}}
             />
           ),
-        }}
-      />
+        }}>
+        {() => (
+          <CreateStack.Navigator>
+            <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
+            <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
+          </CreateStack.Navigator>
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="AppleList"
         component={AppleList}
