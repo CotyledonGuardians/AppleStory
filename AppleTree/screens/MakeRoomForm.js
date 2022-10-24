@@ -6,6 +6,7 @@ import {
   View,
   TextInput,
   Pressable,
+  Image,
 } from 'react-native';
 import moment from 'moment';
 import 'moment/locale/ko';
@@ -35,6 +36,9 @@ const MakeRoomForm = ({navigation}) => {
   let today = new Date();
   return (
     <SafeAreaView style={styles.container}>
+      <Image
+        source={require('../assets/pictures/listgroup1.png')}
+        style={{width: 170, height: 170}}></Image>
       <View style={styles.marginTopBottom}>
         <Text
           style={{
