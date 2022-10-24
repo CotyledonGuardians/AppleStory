@@ -70,4 +70,9 @@ public class AppleServiceImpl implements AppleService{
         }
         return appleRepository.findById(id).orElseThrow();
     }
+
+    @Override
+    public int getMyAppleCount(Principal principal) throws Exception {
+        return appleUserRepository.countByUid(principal.getName());
+    }
 }

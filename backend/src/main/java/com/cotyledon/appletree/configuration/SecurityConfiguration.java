@@ -21,7 +21,19 @@ public class SecurityConfiguration {
     private final String ROLE_USER = "ROLE_USER";
     private final Collection<GrantedAuthority> USER_AUTHORITY = Set.of(new SimpleGrantedAuthority(ROLE_USER));
     private final Collection<GrantedAuthority> NO_AUTHORITY = Collections.emptySet();
-
+    private static final String[] PERMIT_URL_ARRAY = {
+            /* swagger v2 */
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            /* swagger v3 */
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+    };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -29,6 +41,7 @@ public class SecurityConfiguration {
                 .csrf().disable()
 
                 .authorizeRequests(authorizeRequests -> authorizeRequests
+                        .antMatchers(PERMIT_URL_ARRAY).permitAll()
                         .antMatchers(HttpMethod.GET, "/api/pass").permitAll()
 //                        .antMatchers("/**/*").permitAll()
                         .anyRequest().hasAuthority(ROLE_USER))
