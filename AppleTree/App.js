@@ -12,6 +12,7 @@ function MyTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
+        headerShown: false,
         tabBarShowLabel: false,
         tabBarInactiveBackgroundColor: '#ECE5E0',
         tabBarActiveBackgroundColor: '#c3b8ae',
