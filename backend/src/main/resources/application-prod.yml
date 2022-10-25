@@ -1,0 +1,4 @@
+spring:
+  redis:
+    host: redis
+    password: #xu9QY5ZPSACBW38
