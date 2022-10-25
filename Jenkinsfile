@@ -94,7 +94,7 @@ pipeline {
         stage('docker_build') {
           steps {
             catchError {
-              sh "docker compose up --build"
+              sh "docker compose up --env_file ${COMPOSE_PRODUCTION} --build"
             }
           }
         }
