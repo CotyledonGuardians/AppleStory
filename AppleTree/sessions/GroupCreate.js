@@ -4,7 +4,7 @@ import {Text, TextInput, Image} from 'react-native';
 import {Pressable} from 'react-native';
 import {Button} from '../components/Button';
 
-const GroupCreate = () => {
+const GroupCreate = ({navigation}) => {
   const [nickname] = React.useState(null);
   const [content] = React.useState(null);
 
@@ -44,7 +44,11 @@ const GroupCreate = () => {
           />
           <Text style={styles.button}>추가하기</Text>
         </Pressable>
-        <Pressable style={styles.add}>
+        <Pressable
+          style={styles.add}
+          onPress={() =>
+            navigation.navigate('RecordVoice', {screen: 'RecordVoice'})
+          }>
           <Image
             source={require('AppleTree/assets/icons/mic.png')}
             style={styles.icon}
