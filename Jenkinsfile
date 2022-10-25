@@ -12,24 +12,11 @@ pipeline {
     BACKEND_CONTAINER = 'api'
 
     // MM 플러그인, Blue Ocean 플러그인 관련
-    MMACCOUNT = '@dss02094' // @아이디 사용 (언급시 알림)
-    MSGSUFFIX = "\nBuild <${RUN_DISPLAY_URL}|#${BUILD_NUMBER}>" // 메시지에 일괄적으로 달릴 링크
+    // MMACCOUNT = '@dss02094' // @아이디 사용 (언급시 알림)
+    // MSGSUFFIX = "\nBuild <${RUN_DISPLAY_URL}|#${BUILD_NUMBER}>" // 메시지에 일괄적으로 달릴 링크
   }
 
   stages {
-    // 작업 개시 알림
-    // stage('mattermost_send_start') {
-    //   steps {
-    //     catchError {
-    //       mattermostSend(
-    //         color: '#FFF33C',
-    //         text: MMACCOUNT,
-    //         message: "Job start${MSGSUFFIX}"
-    //       )
-    //     }
-    //   }
-    // }
-
     // 빌드 전 정리 작업
     stage('pre_deploy') {
       // 병렬 처리 (파일 작업과 도커 작업)
@@ -102,18 +89,5 @@ pipeline {
         }
       }
     }
-
-    // 작업 종료 알림
-    // stage('mattermost_send_end') {
-    //   steps {
-    //     catchError {
-    //       mattermostSend(
-    //         color: '#3399FF',
-    //         text: MMACCOUNT,
-    //         message: "Job end${MSGSUFFIX}\n\nhttps://j7b201.p.ssafy.io/"
-    //       )
-    //     }
-    //   }
-    // }
   }
 }
