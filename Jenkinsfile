@@ -46,9 +46,7 @@ pipeline {
             // 파일 세팅
             stage('set_files') {
               steps {
-                sh '\
-                  cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml
-                '
+                sh 'cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml'
               }
             }
           }
