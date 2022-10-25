@@ -17,6 +17,14 @@ const SmallButton = ({onPress, text}) => {
     </Pressable>
   );
 };
+
+const SmallWhiteButton = ({onPress, text}) => {
+  return (
+    <Pressable onPress={onPress} style={styles.smallWhiteButtonShape}>
+      <Text style={styles.whilteButtonText}>{text}</Text>
+    </Pressable>
+  );
+};
 // 2. style 적용
 const styles = StyleSheet.create({
   buttonShape: {
@@ -39,12 +47,30 @@ const styles = StyleSheet.create({
     flex: 0.4,
     justifyContent: 'center',
   },
+  smallWhiteButtonShape: {
+    width: 135,
+    height: 60,
+    borderColor: 'black',
+    borderRadius: 25,
+    paddingHorizontal: 10,
+    margin: 5,
+    elevation: 2,
+    backgroundColor: '#FBF8F6',
+    flex: 0.4,
+    justifyContent: 'center',
+  },
   buttonText: {
     textAlign: 'center',
     color: '#FFFFFF',
     fontSize: 15,
     fontFamily: 'UhBee Se_hyun Bold',
   },
+  whilteButtonText: {
+    textAlign: 'center',
+    color: '#373043',
+    fontSize: 15,
+    fontFamily: 'UhBee Se_hyun Bold',
+  },
 });
 
-export {Button, SmallButton};
+export {Button, SmallButton, SmallWhiteButton};
