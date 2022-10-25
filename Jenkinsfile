@@ -80,8 +80,10 @@ pipeline {
 
     stage('build') {
       steps {
-        sh "chmod +x backend/gradlew"
-        sh "./backend/gradlew clean build"
+        dir('backend') {
+          sh "chmod +x gradlew"
+          sh "./gradlew clean build"
+        }
       }
     }
 
