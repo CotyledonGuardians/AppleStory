@@ -1,112 +1,125 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import * as React from 'react';
+import {Text, View, Image} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import Main from './screens/Main';
+import AppleList from './screens/AppleList';
+import MyPage from './screens/auth/MyPage';
+import Map from './screens/Map';
+import Login from './screens/auth/Login';
+import Register from './screens/auth/Register';
+import {IntroFirst, IntroSecond} from './screens/Intro';
+import MakeRoomForm from './screens/MakeRoomForm';
+import GroupCreate from './sessions/GroupCreate';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+const CreateStack = createStackNavigator();
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+function MyTabs() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarShowLabel: false,
+        tabBarInactiveBackgroundColor: '#ECE5E0',
+        tabBarActiveBackgroundColor: '#c3b8ae',
+      }}>
+      <Tab.Screen
+        name="Home"
+        component={Main}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/home.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Map"
+        component={Map}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/map.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="MakeRoom"
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/create.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}>
+        {() => (
+          <CreateStack.Navigator>
+            <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
+            <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
+          </CreateStack.Navigator>
+        )}
+      </Tab.Screen>
+      <Tab.Screen
+        name="AppleList"
+        component={AppleList}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/list.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="MyPage"
+        component={MyPage}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/mypage.png')}
+              style={{width: 20, height: 20}}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
-};
+}
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+function MyStack() {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      {/* 인트로 3개 */}
+      <Stack.Screen name="IntroFirst" component={IntroFirst} />
+      <Stack.Screen name="IntroSecond" component={IntroSecond} />
+      {/* 로그인 페이지 */}
+      <Stack.Screen name="Login" component={Login} />
+      {/* 회원가입 페이지 */}
+      <Stack.Screen name="Register" component={Register} />
+    </Stack.Navigator>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const isLogin = true;
 
-export default App;
+export default function App() {
+  return (
+    <NavigationContainer>
+      {/* <MyTabs /> */}
+      {isLogin ? <MyTabs /> : <MyStack />}
+    </NavigationContainer>
+  );
+}
