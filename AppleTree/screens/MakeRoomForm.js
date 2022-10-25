@@ -21,6 +21,11 @@ const MakeRoomForm = ({navigation}) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [text, onChangeText] = useState('');
   const placeholder = '클릭';
+  //input Valid check
+  const [titleValid, setTitleValid] = useState(false);
+  const [teamNameValid, setTeamNameValid] = useState(false);
+  const [dateValid, setDateValid] = useState(false);
+  //date picker start
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -28,16 +33,37 @@ const MakeRoomForm = ({navigation}) => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = date => {
-    console.warn('A date has been picked: ', date);
+    // console.warn('A date has been picked: ', date);
     setUnlockDate(date);
     onChangeText(moment(date).format('YYYY-MM-DD'));
+    setDateValid(true);
     hideDatePicker();
   };
+  //date picker end
   let today = new Date();
   const makeRoom = () => {
     alert('방만들기 함수 호출');
     navigation.navigate('GroupCreate', {screen: 'GroupCreate'});
   };
+  // input valid handler start
+  const titleChangeHandler = text => {
+    if (text.trim().length === 0) {
+      setTitleValid(false);
+    } else {
+      setTitleValid(true);
+    }
+    setTitle(text);
+  };
+  const teamNameChangeHandler = text => {
+    if (text.trim().length === 0) {
+      setTeamNameValid(false);
+    } else {
+      setTeamNameValid(true);
+    }
+    setTeamName(text);
+  };
+  // inpust valid handler end
+  console.warn('valid: ' + titleValid + teamNameValid + dateValid + '끝');
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -59,6 +85,7 @@ const MakeRoomForm = ({navigation}) => {
             autoCapitalize={'none'}
             style={styles.input}
             placeholder="자율프로젝트를 기념하며"
+            onChangeText={text => titleChangeHandler(text)}
           />
         </View>
         <Text
@@ -76,6 +103,7 @@ const MakeRoomForm = ({navigation}) => {
             autoCapitalize={'none'}
             style={styles.input}
             placeholder="떡잎방범대"
+            onChangeText={text => teamNameChangeHandler(text)}
           />
         </View>
         <Text
@@ -114,8 +142,16 @@ const MakeRoomForm = ({navigation}) => {
           onCancel={hideDatePicker}
         />
         <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-          <SmallButton onPress={() => makeRoom()} text="방 만들기" />
-          <SmallButton onPress={() => navigation.goBack()} text="홈으로" />
+          <SmallButton
+            onPress={() => makeRoom()}
+            text="방 만들기"
+            disabled={!titleValid || !teamNameValid || !dateValid}
+          />
+          <SmallButton
+            onPress={() => navigation.goBack()}
+            text="홈으로"
+            disabled={false}
+          />
         </View>
       </View>
     </SafeAreaView>
