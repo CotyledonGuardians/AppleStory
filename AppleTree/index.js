@@ -11,4 +11,4 @@ import MyPage from './screens/auth/MyPage';
 import RecordVoice from './screens/RecordVoice';
 import {name as appName} from './app.json';
 
-AppRegistry.registerComponent(appName, () => RecordVoice);
+AppRegistry.registerComponent(appName, () => App);
