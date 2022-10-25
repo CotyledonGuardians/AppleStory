@@ -1,0 +1,5 @@
+FROM rabbitmq:3.11.1-management-alpine
+COPY 10-defaults.conf /etc/rabbitmq/conf.d/10-defaults.conf
+RUN rabbitmq-plugins enable rabbitmq_stomp
+# CMD ["/bin/sh", "-c", "rabbitmq-server"]
+EXPOSE 5672 15671 15672 61613
