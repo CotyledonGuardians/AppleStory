@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Text, View, Image} from 'react-native';
+import {Image, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -13,6 +13,7 @@ import Register from './screens/auth/Register';
 import {IntroFirst, IntroSecond} from './screens/Intro';
 import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,6 +24,9 @@ function MyTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarStyle: {
+          height: heightPercentageToDP('9%'),
+        },
         tabBarShowLabel: false,
         tabBarInactiveBackgroundColor: '#ECE5E0',
         tabBarActiveBackgroundColor: '#c3b8ae',
@@ -34,7 +38,7 @@ function MyTabs() {
           tabBarIcon: () => (
             <Image
               source={require('./assets/icons/home.png')}
-              style={{width: 20, height: 20}}
+              style={styles.navIcon}
             />
           ),
         }}
@@ -46,7 +50,7 @@ function MyTabs() {
           tabBarIcon: () => (
             <Image
               source={require('./assets/icons/map.png')}
-              style={{width: 20, height: 20}}
+              style={styles.navIcon}
             />
           ),
         }}
@@ -57,7 +61,7 @@ function MyTabs() {
           tabBarIcon: () => (
             <Image
               source={require('./assets/icons/create.png')}
-              style={{width: 20, height: 20}}
+              style={styles.navIcon}
             />
           ),
         }}>
@@ -75,7 +79,7 @@ function MyTabs() {
           tabBarIcon: () => (
             <Image
               source={require('./assets/icons/list.png')}
-              style={{width: 20, height: 20}}
+              style={styles.navIcon}
             />
           ),
         }}
@@ -87,7 +91,7 @@ function MyTabs() {
           tabBarIcon: () => (
             <Image
               source={require('./assets/icons/mypage.png')}
-              style={{width: 20, height: 20}}
+              style={styles.navIcon}
             />
           ),
         }}
@@ -114,6 +118,13 @@ function MyStack() {
 }
 
 const isLogin = true;
+
+const styles = StyleSheet.create({
+  navIcon: {
+    width: heightPercentageToDP('3.5%'),
+    height: heightPercentageToDP('3.5%'),
+  },
+});
 
 export default function App() {
   return (
