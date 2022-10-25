@@ -3,6 +3,7 @@ import {Text, View, Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import Main from './screens/Main';
 import AppleList from './screens/AppleList';
@@ -14,6 +15,7 @@ import {IntroFirst, IntroSecond} from './screens/Intro';
 import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
 import GroupSession from './sessions/GroupSession';
+import AppleLockGIF from './screens/lock/AppleLockGIF';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,6 +25,9 @@ function MyTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
+        tabBarStyle: {
+          height: hp('9%'),
+        },
         headerShown: false,
         tabBarShowLabel: false,
         tabBarInactiveBackgroundColor: '#ECE5E0',
@@ -67,6 +72,11 @@ function MyTabs() {
             <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
             <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
             <CreateStack.Screen name="GroupSession" component={GroupSession} />
+            <CreateStack.Screen
+              options={{headerShown: false}}
+              name="AppleLockGIF"
+              component={AppleLockGIF}
+            />
           </CreateStack.Navigator>
         )}
       </Tab.Screen>

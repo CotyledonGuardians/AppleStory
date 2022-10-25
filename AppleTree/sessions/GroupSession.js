@@ -11,7 +11,10 @@ import {
 import Clipboard from '@react-native-clipboard/clipboard';
 import {SmallButton, Button} from '../components/Button';
 const GroupSession = ({navigation}) => {
+  // set copy text
   const [copiedText, setCopiedText] = useState('');
+  // unlockGIF loading
+  const [ready, setReady] = useState(true);
   // 방장인지체크 추후 변경
   let isOwner = false;
   // 복사할 앱 링크 추후 변경
@@ -23,7 +26,8 @@ const GroupSession = ({navigation}) => {
   };
   // 사과매달기 함수 추후 변경
   const hangApple = () => {
-    alert('사과 매달기');
+    alert('사과 매달기 API');
+    navigation.navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
   };
   return (
     <SafeAreaView style={styles.container}>
