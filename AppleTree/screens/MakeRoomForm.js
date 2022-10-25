@@ -43,7 +43,7 @@ const MakeRoomForm = ({navigation}) => {
   let today = new Date();
   const makeRoom = () => {
     alert('방만들기 함수 호출');
-    navigation.navigate('GroupCreate', {screen: 'GroupCreate'});
+    navigation.navigate('GroupSession', {screen: 'GroupSession'});
   };
   // input valid handler start
   const titleChangeHandler = text => {
@@ -63,7 +63,7 @@ const MakeRoomForm = ({navigation}) => {
     setTeamName(text);
   };
   // inpust valid handler end
-  console.warn('valid: ' + titleValid + teamNameValid + dateValid + '끝');
+  // console.warn('valid: ' + titleValid + teamNameValid + dateValid + '끝');
   return (
     <SafeAreaView style={styles.container}>
       <Image
