@@ -135,10 +135,12 @@ const Main = () => {
                 <SmallButton
                   onPress={() => setModalVisible(!modalVisible)}
                   text="닫기"
+                  disabled={false}
                 />
                 <SmallButton
                   onPress={() => setModalVisible(!modalVisible)}
                   text="자세히 보기"
+                  disabled={false}
                 />
               </View>
             </View>
