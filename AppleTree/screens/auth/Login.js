@@ -7,7 +7,7 @@ import {Pressable} from 'react-native';
 import {Button} from '../../components/Button';
 // import Register from './Register';
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [email] = React.useState(null);
 
   return (
@@ -42,7 +42,7 @@ const Login = () => {
         <Button onPress={onLogin} text="로그인" />
       </View>
       <View style={styles.marginTopBottom}>
-        <Pressable onPress={onRegister}>
+        <Pressable onPress={() => navigation.navigate('Register')}>
           <Text
             style={{
               color: '#ABABAB',
@@ -59,10 +59,6 @@ const Login = () => {
 
 const onLogin = () => {
   alert('로긘');
-};
-
-const onRegister = () => {
-  alert('회원가입폼으루가');
 };
 
 const styles = StyleSheet.create({

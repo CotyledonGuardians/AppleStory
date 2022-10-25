@@ -10,9 +10,12 @@ const Button = ({onPress, text}) => {
   );
 };
 
-const SmallButton = ({onPress, text}) => {
+const SmallButton = ({onPress, text, disabled}) => {
   return (
-    <Pressable onPress={onPress} style={styles.smallButtonShape}>
+    <Pressable
+      onPress={onPress}
+      style={styles.smallButtonShape}
+      disabled={disabled}>
       <Text style={styles.buttonText}>{text}</Text>
     </Pressable>
   );
