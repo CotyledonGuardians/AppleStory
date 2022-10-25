@@ -3,6 +3,7 @@ import {Text, View, Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 import Main from './screens/Main';
 import AppleList from './screens/AppleList';
@@ -24,6 +25,9 @@ function MyTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
+        tabBarStyle: {
+          height: hp('9%'),
+        },
         headerShown: false,
         tabBarShowLabel: false,
         tabBarInactiveBackgroundColor: '#ECE5E0',
