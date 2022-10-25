@@ -23,10 +23,6 @@ services:
       RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
-    volumes:
-      - ${RABBIT_ETC}:/etc/rabbitmq/
-      - ${RABBIT_DATA}:/var/lib/rabbitmq/
-      - ${RABBIT_LOG}:/var/log/rabbitmq/
 
   redis:
     container_name: redis
