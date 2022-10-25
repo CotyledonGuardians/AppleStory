@@ -33,7 +33,7 @@ services:
     image: redis/redis-stack:latest
     restart: always
     environment:
-      REDIS_ARG=${REDIS_ARG}
+      REDIS_ARG: ${REDIS_ARG}
 
   api:
     container_name: api

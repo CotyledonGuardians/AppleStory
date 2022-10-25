@@ -1,6 +1,7 @@
 package com.cotyledon.appletree.web.controller;
 
 import com.cotyledon.appletree.common.service.FirebaseAuthService;
+import com.cotyledon.appletree.domain.repository.AppleRepository;
 import com.google.firebase.auth.FirebaseAuthException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.security.Principal;
 public class TestController {
 
     private final FirebaseAuthService firebaseAuthService;
+    private final AppleRepository appleRepository;
 
     @GetMapping("/auth")
     public ResponseEntity<?> authTest(Principal principal) {
@@ -33,6 +35,6 @@ public class TestController {
 
     @GetMapping("/deploy")
     public ResponseEntity<?> deploy() {
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(appleRepository.findById(0L).isEmpty());
     }
 }
