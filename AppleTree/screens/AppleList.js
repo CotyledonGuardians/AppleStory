@@ -269,9 +269,9 @@ function HomeScreen() {
         {data.map((item, index) => {
           //   console.log(index);
           return (
-            <View style={{width: '50%', flexDirection: 'row'}}>
+            <View style={{width: '50%', flexDirection: 'row'}} key={index}>
               <Card
-                key={index}
+                key="{index}"
                 title={item.title}
                 type={item.type}
                 unlockAt={item.unlockAt}
@@ -305,7 +305,7 @@ function SettingsScreen() {
         {data.map((item, index) => {
           //   console.log(index);
           return (
-            <View style={{width: '50%', flexDirection: 'row'}}>
+            <View style={{width: '50%', flexDirection: 'row'}} key={index}>
               <Card
                 key={index}
                 title={item.title}
@@ -368,7 +368,8 @@ const styles = StyleSheet.create({
   dropdown2BtnTxtStyle: {
     color: '#4C4036',
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontSize: 16,
+    // fontWeight: 'bold',
     fontFamily: 'UhBee Se_hyun',
   },
   dropdown2DropdownStyle: {
@@ -380,7 +381,8 @@ const styles = StyleSheet.create({
   dropdown2RowTxtStyle: {
     color: '#4C4036',
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontSize: 16,
+    // fontWeight: 'bold',
     fontFamily: 'UhBee Se_hyun',
   },
   boxContainer: {

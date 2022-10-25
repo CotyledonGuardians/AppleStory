@@ -135,10 +135,12 @@ const Main = () => {
                 <SmallButton
                   onPress={() => setModalVisible(!modalVisible)}
                   text="닫기"
+                  disabled={false}
                 />
                 <SmallButton
                   onPress={() => setModalVisible(!modalVisible)}
                   text="자세히 보기"
+                  disabled={false}
                 />
               </View>
             </View>
@@ -169,49 +171,49 @@ const styles = StyleSheet.create({
   },
   apple1: {
     width: wp('17%'),
-    height: hp('10%'),
+    height: wp('15%'),
     position: 'absolute',
     top: hp('15%'),
     left: wp('37%'),
   },
   apple2: {
     width: wp('17%'),
-    height: hp('10%'),
+    height: wp('15%'),
     position: 'absolute',
     top: hp('25%'),
     left: wp('17%'),
   },
   apple3: {
     width: wp('17%'),
-    height: hp('10%'),
+    height: wp('15%'),
     position: 'absolute',
     top: hp('20%'),
     left: wp('62%'),
   },
   apple4: {
     width: wp('17%'),
-    height: hp('10%'),
+    height: wp('15%'),
     position: 'absolute',
     top: hp('32%'),
     left: wp('42%'),
   },
   apple5: {
     width: wp('17%'),
-    height: hp('10%'),
+    height: wp('15%'),
     position: 'absolute',
     top: hp('38%'),
     left: wp('67%'),
   },
   apple6: {
     width: wp('17%'),
-    height: hp('10%'),
+    height: wp('15%'),
     position: 'absolute',
     top: hp('40%'),
     left: wp('12%'),
   },
   bear: {
-    width: wp('65%'),
-    height: hp('40%'),
+    width: wp('70%'),
+    height: wp('67%'),
     position: 'absolute',
     top: hp('50%'),
     left: wp('50%'),
