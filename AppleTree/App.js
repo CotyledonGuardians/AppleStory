@@ -13,6 +13,7 @@ import Register from './screens/auth/Register';
 import {IntroFirst, IntroSecond} from './screens/Intro';
 import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
+import GroupSession from './sessions/GroupSession';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -65,6 +66,7 @@ function MyTabs() {
           <CreateStack.Navigator>
             <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
             <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
+            <CreateStack.Screen name="GroupSession" component={GroupSession} />
           </CreateStack.Navigator>
         )}
       </Tab.Screen>
