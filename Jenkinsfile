@@ -7,6 +7,7 @@ pipeline {
     // 그렇게 하기 위해서 Manage Jenkins > Manage Credentials 에서 크리덴셜 등록 (Kind: Secret file)
     COMPOSE_PRODUCTION = credentials('compose_production')
     BACKEND_PRODUCTION = credentials('backend_production')
+    FIREBASE_PRODUCTION = credentials('firebase_production')
     
     BACKEND_CONTAINER = 'api'
 
@@ -47,6 +48,7 @@ pipeline {
             stage('set_files') {
               steps {
                 sh 'cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml'
+                sh 'cp $FIREBASE_PRODUCTION backend/src/main/resources/'
               }
             }
           }
@@ -94,7 +96,7 @@ pipeline {
         stage('docker_build') {
           steps {
             catchError {
-              sh "docker compose up --env_file ${COMPOSE_PRODUCTION} --build"
+              sh "docker compose up --env-file ${COMPOSE_PRODUCTION} --build"
             }
           }
         }
