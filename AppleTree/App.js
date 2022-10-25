@@ -16,6 +16,7 @@ import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
 import GroupSession from './sessions/GroupSession';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
+import RecordVoice from './screens/RecordVoice';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -72,6 +73,7 @@ function MyTabs() {
             <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
             <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
             <CreateStack.Screen name="GroupSession" component={GroupSession} />
+            <CreateStack.Screen name="RecordVoice" component={RecordVoice} />
             <CreateStack.Screen
               options={{headerShown: false}}
               name="AppleLockGIF"
