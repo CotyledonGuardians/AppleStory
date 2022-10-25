@@ -5,7 +5,7 @@ services:
     image: mysql:latest
     container_name: db
     restart: always
-    enviroment:
+    environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
@@ -38,9 +38,8 @@ services:
       dockerfile: backend-dockerfile
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
-      SPRINT_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
-      PROFILE: prod
     depends_on:
       - db
       - rabbitmq
