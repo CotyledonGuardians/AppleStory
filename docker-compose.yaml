@@ -27,7 +27,7 @@ services:
       - ${RABBIT_ETC}:/etc/rabbitmq/
       - ${RABBIT_DATA}:/var/lib/rabbitmq/
       - ${RABBIT_LOG}:/var/log/rabbitmq/
-      
+
   redis:
     container_name: redis
     image: redis/redis-stack:latest
@@ -37,7 +37,8 @@ services:
 
   api:
     container_name: api
-    build: ./backend
+    build:
+      context: ./backend
       dockerfile: backend-dockerfile
     environment:
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
