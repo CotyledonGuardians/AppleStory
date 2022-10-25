@@ -13,7 +13,7 @@ import 'moment/locale/ko';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
 const MakeRoomForm = ({navigation}) => {
-  //제목, 팀이름, 해제 날짜
+  //inputs
   const [title, setTitle] = useState(null);
   const [teamName, setTeamName] = useState(null);
   const [unlockDate, setUnlockDate] = useState(null);
@@ -33,7 +33,6 @@ const MakeRoomForm = ({navigation}) => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = date => {
-    // console.warn('A date has been picked: ', date);
     setUnlockDate(date);
     onChangeText(moment(date).format('YYYY-MM-DD'));
     setDateValid(true);
@@ -41,8 +40,8 @@ const MakeRoomForm = ({navigation}) => {
   };
   //date picker end
   let today = new Date();
+  //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
-    alert('방만들기 함수 호출');
     navigation.navigate('GroupSession', {screen: 'GroupSession'});
   };
   // input valid handler start
@@ -63,7 +62,6 @@ const MakeRoomForm = ({navigation}) => {
     setTeamName(text);
   };
   // inpust valid handler end
-  // console.warn('valid: ' + titleValid + teamNameValid + dateValid + '끝');
   return (
     <SafeAreaView style={styles.container}>
       <Image
