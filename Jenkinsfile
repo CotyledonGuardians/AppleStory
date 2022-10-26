@@ -8,6 +8,7 @@ pipeline {
     COMPOSE_PRODUCTION = credentials('compose_production')
     BACKEND_PRODUCTION = credentials('backend_production')
     FIREBASE_PRODUCTION = credentials('firebase_production')
+    RABBIT_PRODUCTION = credentials('rabbit_production')
     
     BACKEND_CONTAINER = 'api'
 
@@ -36,6 +37,7 @@ pipeline {
               steps {
                 sh 'cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml'
                 sh 'cp $FIREBASE_PRODUCTION backend/src/main/resources/'
+                sh 'cat $RABBIT_PRODUCTION >> backend/10-defaults.conf'
               }
             }
           }
