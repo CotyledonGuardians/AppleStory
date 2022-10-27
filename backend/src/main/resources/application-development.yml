@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/apple_tree?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+    username: ssafy
+    password: ssafy
+  output:
+    ansi:
+      enabled: always
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ssafy
+    password: ssafy
+  redis:
+    host: localhost
+    port: 6379
+    password: adpass
+
+logging:
+  level:
+    com.cotyledon.appletree: debug
+    org.springframework.web: debug
+
+com.cotyledon.appletree:
+  rabbitmq:
+    stomp-port: 61613

@@ -1,6 +1,6 @@
 package com.cotyledon.appletree.web.controller;
 
-import com.cotyledon.appletree.common.service.FirebaseAuthService;
+import com.cotyledon.appletree.service.FirebaseAuthService;
 import com.cotyledon.appletree.domain.repository.AppleRepository;
 import com.google.firebase.auth.FirebaseAuthException;
 import lombok.RequiredArgsConstructor;

@@ -32,7 +32,9 @@ public class SecurityConfiguration {
             "/webjars/**",
             /* swagger v3 */
             "/v3/api-docs/**",
-            "/swagger-ui/**"
+            "/swagger-ui/**",
+            /* websocket */
+            "/api/websocket/**/*"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,10 +43,15 @@ public class SecurityConfiguration {
                 .csrf().disable()
 
                 .authorizeRequests(authorizeRequests -> authorizeRequests
+                        // 화이트리스트에서 블랙리스트로 바꿨음
+                        // OPTIONS 허용하지 않을 시 preflight 거부되어 아무것도 못함
+                        // .antMatchers("/**/*").permitAll()
                         .antMatchers(PERMIT_URL_ARRAY).permitAll()
-                        .antMatchers(HttpMethod.GET, "/api/pass").permitAll()
-//                        .antMatchers("/**/*").permitAll()
-                        .anyRequest().hasAuthority(ROLE_USER))
+                        .antMatchers(HttpMethod.GET).hasAuthority(ROLE_USER)
+                        .antMatchers(HttpMethod.POST).hasAuthority(ROLE_USER)
+                        .antMatchers(HttpMethod.PUT).hasAuthority(ROLE_USER)
+                        .antMatchers(HttpMethod.DELETE).hasAuthority(ROLE_USER)
+                        .anyRequest().permitAll())
 
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(converter())))

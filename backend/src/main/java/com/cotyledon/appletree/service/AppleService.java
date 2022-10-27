@@ -1,4 +1,4 @@
-package com.cotyledon.appletree.web.service;
+package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
 import org.springframework.data.domain.Page;

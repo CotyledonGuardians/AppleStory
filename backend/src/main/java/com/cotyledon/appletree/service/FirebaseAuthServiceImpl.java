@@ -1,4 +1,4 @@
-package com.cotyledon.appletree.common.service;
+package com.cotyledon.appletree.service;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -13,7 +13,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FirebaseAuthService {
+public class FirebaseAuthServiceImpl implements FirebaseAuthService {
 
     private final FirebaseAuth firebaseAuth;
 
