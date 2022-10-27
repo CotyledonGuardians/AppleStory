@@ -5,7 +5,7 @@ import {
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import {Pressable, StyleSheet, Text} from 'react-native';
+import {Pressable, StyleSheet, Image} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GoogleLogin = props => {
@@ -41,7 +41,9 @@ const GoogleLogin = props => {
           onGoogleButtonPress().then(() => props.propFunction(true))
         }
         style={styles.container}>
-        <Text style={styles.SocialText}>구글계정으로 시작하기</Text>
+        <Image
+          style={styles.icon}
+          source={require('../../assets/icons/google.png')}></Image>
       </Pressable>
     </>
   );
@@ -56,8 +58,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  SocialText: {
-    fontSize: 23,
+  icon: {
+    height: 50,
+    width: 50,
   },
 });
 export default GoogleLogin;
