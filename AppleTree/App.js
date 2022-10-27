@@ -64,6 +64,7 @@ function MyTabs() {
       <Tab.Screen
         name="MakeRoom"
         options={{
+          headerShown: false,
           tabBarIcon: () => (
             <Image
               source={require('./assets/icons/create.png')}
@@ -72,16 +73,12 @@ function MyTabs() {
           ),
         }}>
         {() => (
-          <CreateStack.Navigator>
+          <CreateStack.Navigator screenOptions={{headerShown: false}}>
             <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
             <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
             <CreateStack.Screen name="GroupSession" component={GroupSession} />
             <CreateStack.Screen name="RecordVoice" component={RecordVoice} />
-            <CreateStack.Screen
-              options={{headerShown: false}}
-              name="AppleLockGIF"
-              component={AppleLockGIF}
-            />
+            <CreateStack.Screen name="AppleLockGIF" component={AppleLockGIF} />
           </CreateStack.Navigator>
         )}
       </Tab.Screen>
