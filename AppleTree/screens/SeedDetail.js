@@ -288,7 +288,7 @@ class SeedDetail extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={styles.textFontBold}>{nickname}님의 기록</Text>
           <View style={styles.textBox}>
             <Text style={styles.textFont}>{text}</Text>

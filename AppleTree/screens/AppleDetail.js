@@ -245,7 +245,7 @@ const AppleDetail = ({navigation}) => {
     return (
       <View style={{padding: 20}}>
         <Text style={styles.textFontBold}>기록된 사진</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {/* <Image
             style={{width: 50, height: 50}}
             source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
@@ -271,7 +271,7 @@ const AppleDetail = ({navigation}) => {
     return (
       <View style={{padding: 20}}>
         <Text style={styles.textFontBold}>기록된 영상</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {data.content.video.map((item, index) => {
             return (
               <Video
@@ -295,7 +295,7 @@ const AppleDetail = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Header />
         <ContentSeed />
         <Photo />

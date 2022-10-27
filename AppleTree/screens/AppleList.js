@@ -275,6 +275,7 @@ const AppleList = ({navigation}) => {
           <DropdownSelect />
         </View>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: 'row',
             flexWrap: 'wrap',
@@ -311,6 +312,7 @@ const AppleList = ({navigation}) => {
           <DropdownSelect />
         </View>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: 'row',
             flexWrap: 'wrap',
