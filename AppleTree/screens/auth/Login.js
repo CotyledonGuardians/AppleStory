@@ -1,15 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {SafeAreaView, View, StyleSheet} from 'react-native';
-import {Text, TextInput, Image} from 'react-native';
-import {Pressable} from 'react-native';
-
-// import joinImg from '../../assets/pictures/aegomjoin.png';
+import {Text, TextInput, Image, Pressable} from 'react-native';
 import {Button} from '../../components/Button';
-// import Register from './Register';
+import GoogleLogin from '../../components/firebase/GoogleLogin';
 
 const Login = ({navigation}) => {
-  const [email] = React.useState(null);
-
+  const [email] = useState(null);
+  //하위컴포넌트(GoogleLogin)=>상위컴포넌트(Login)으로 props 전달하기 위한 함수
+  const getLoginState = isLogin => {
+    // console.log('Login:isLogin: ', isLogin);
+    if (isLogin) {
+      navigation.navigate('Home', {screen: 'Main'});
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -22,16 +25,7 @@ const Login = ({navigation}) => {
       />
       <View style={styles.marginTopBottom}>
         <View style={styles.email}>
-          <Text
-            style={{
-              flex: 0.3,
-              textAlign: 'center',
-              fontSize: 15,
-              fontFamily: 'UhBee Se_hyun Bold',
-              color: '#4C4036',
-            }}>
-            이메일
-          </Text>
+          <Text style={styles.txt}>이메일</Text>
           <TextInput
             value={email}
             autoCapitalize={'none'}
@@ -42,16 +36,8 @@ const Login = ({navigation}) => {
         <Button onPress={onLogin} text="로그인" />
       </View>
       <View style={styles.marginTopBottom}>
-        <Pressable onPress={() => navigation.navigate('Register')}>
-          <Text
-            style={{
-              color: '#ABABAB',
-              textDecorationLine: 'underline',
-              fontFamily: 'UhBee Se_hyun',
-            }}>
-            이메일로 회원가입 하기
-          </Text>
-        </Pressable>
+        <Pressable onPress={() => navigation.navigate('Register')}></Pressable>
+        <GoogleLogin propFunction={getLoginState}></GoogleLogin>
       </View>
     </SafeAreaView>
   );
@@ -110,6 +96,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  txt: {
+    flex: 0.3,
+    textAlign: 'center',
+    fontSize: 15,
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
   },
 });
 
