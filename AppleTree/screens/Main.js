@@ -17,7 +17,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
+// import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 
 const Apple = ({index, apple}) => {
   const appleStyle = [
