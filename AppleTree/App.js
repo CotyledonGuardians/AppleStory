@@ -14,11 +14,12 @@ import {IntroFirst, IntroSecond} from './screens/Intro';
 import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
 import GroupSession from './sessions/GroupSession';
+import AppleDetail from './screens/AppleDetail';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const CreateStack = createStackNavigator();
-
+const Stack2 = createStackNavigator();
 function MyTabs() {
   return (
     <Tab.Navigator
@@ -72,7 +73,7 @@ function MyTabs() {
       </Tab.Screen>
       <Tab.Screen
         name="AppleList"
-        component={AppleList}
+        // component={AppleList}
         options={{
           tabBarIcon: () => (
             <Image
@@ -80,8 +81,17 @@ function MyTabs() {
               style={{width: 20, height: 20}}
             />
           ),
-        }}
-      />
+        }}>
+        {() => (
+          <Stack2.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack2.Screen name="AppleList" component={AppleList} />
+            <Stack2.Screen name="AppleDetail" component={AppleDetail} />
+          </Stack2.Navigator>
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="MyPage"
         component={MyPage}
