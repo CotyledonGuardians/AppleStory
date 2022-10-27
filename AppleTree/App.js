@@ -1,9 +1,11 @@
 import * as React from 'react';
+import {useEffect} from 'react';
 import {Text, View, Image} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import SplashScreen from 'react-native-splash-screen';
 
 import Main from './screens/Main';
 import AppleList from './screens/AppleList';
@@ -130,6 +132,17 @@ function MyStack() {
 const isLogin = true;
 
 export default function App() {
+  useEffect(() => {
+    try {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 500); /** 스플래시 시간 조절 (0.5초) **/
+    } catch (e) {
+      console.warn('에러발생');
+      console.warn(e);
+    }
+  });
+
   return (
     <NavigationContainer>
       {/* <MyTabs /> */}
