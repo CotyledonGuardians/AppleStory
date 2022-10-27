@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {Image} from 'react-native';
+import {Text, View, Image, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -15,7 +15,9 @@ import Login from './screens/auth/Login';
 import {IntroFirst, IntroSecond} from './screens/Intro';
 import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
 import GroupSession from './sessions/GroupSession';
+import AppleDetail from './screens/AppleDetail';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,44 +25,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Tab = createBottomTabNavigator();
 const CreateStack = createStackNavigator();
 const HomeStack = createStackNavigator();
+const Stack2 = createStackNavigator();
+
+const styles = StyleSheet.create({
+  navIcon: {
+    width: heightPercentageToDP('3.5%'),
+    height: heightPercentageToDP('3.5%'),
+  },
+});
 
 export default function App() {
   const [token, setToken] = useState(null);
-
-  // AsyncStorage의 idToken 가져오기
-  const getToken = async () => {
-    try {
-      const savedToken = await AsyncStorage.getItem('idToken');
-      setToken(savedToken);
-      const currentToken = savedToken;
-      console.log('currentToken:', currentToken);
-    } catch (error) {
-      console.log('getToken error' + error);
-    }
-  };
-
-  //componentDidMount할때 해줘야되는거
-  GoogleSignin.configure({});
-  //구글 로그인 연동 환경세팅
-  const googleSigninConfigure = () => {
-    GoogleSignin.configure({
-      webClientId:
-        '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
-    });
-  };
-
-  useEffect(() => {
-    try {
-      setTimeout(() => {
-        SplashScreen.hide();
-      }, 500); /** 스플래시 시간 조절 (0.5초) **/
-      googleSigninConfigure();
-    } catch (e) {
-      console.warn('에러발생');
-      console.warn(e);
-    }
-    getToken();
-  }, []);
   function MyTabs() {
     return (
       <Tab.Navigator
@@ -126,7 +101,7 @@ export default function App() {
             ),
           }}>
           {() => (
-            <CreateStack.Navigator>
+            <CreateStack.Navigator screenOptions={{headerShown: false}}>
               <CreateStack.Screen
                 name="MakeRoomForm"
                 component={MakeRoomForm}
@@ -172,6 +147,40 @@ export default function App() {
       </Tab.Navigator>
     );
   }
+  // AsyncStorage의 idToken 가져오기
+  const getToken = async () => {
+    try {
+      const savedToken = await AsyncStorage.getItem('idToken');
+      setToken(savedToken);
+      const currentToken = savedToken;
+      console.log('currentToken:', currentToken);
+    } catch (error) {
+      console.log('getToken error' + error);
+    }
+  };
+
+  //componentDidMount할때 해줘야되는거
+  GoogleSignin.configure({});
+  //구글 로그인 연동 환경세팅
+  const googleSigninConfigure = () => {
+    GoogleSignin.configure({
+      webClientId:
+        '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
+    });
+  };
+
+  useEffect(() => {
+    try {
+      setTimeout(() => {
+        SplashScreen.hide();
+      }, 500); /** 스플래시 시간 조절 (0.5초) **/
+      googleSigninConfigure();
+    } catch (e) {
+      console.warn('에러발생');
+      console.warn(e);
+    }
+    getToken();
+  }, []);
   return (
     <NavigationContainer>
       <MyTabs />

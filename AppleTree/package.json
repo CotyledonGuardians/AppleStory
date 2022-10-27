@@ -48,6 +48,7 @@
     "react-native-simple-modal": "^9.0.1",
     "react-native-splash-screen": "^3.3.0",
     "react-native-tab-view": "^3.3.0",
+    "react-native-video": "^5.2.1",
     "react-query": "^3.39.2"
   },
   "devDependencies": {
