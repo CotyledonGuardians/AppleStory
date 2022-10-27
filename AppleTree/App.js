@@ -21,6 +21,7 @@ import GroupSession from './sessions/GroupSession';
 import AppleDetail from './screens/AppleDetail';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
+import SeedDetail from './screens/SeedDetail';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -101,6 +102,7 @@ function MyTabs() {
             }}>
             <Stack2.Screen name="AppleList" component={AppleList} />
             <Stack2.Screen name="AppleDetail" component={AppleDetail} />
+            <Stack2.Screen name="SeedDetail" component={SeedDetail} />
           </Stack2.Navigator>
         )}
       </Tab.Screen>
