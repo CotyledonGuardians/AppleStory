@@ -11,12 +11,13 @@ import {
   ImageBackground,
 } from 'react-native';
 import {SmallButton} from '../components/Button';
-// import {useQuery} from 'react-query';
+import {useQuery} from 'react-query';
 // import {width, height} from '../config/globalStyles';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {getCloseAppleList} from '../api/AppleAPI';
 // import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 
 const Apple = ({index, apple}) => {
@@ -41,9 +42,9 @@ const Apple = ({index, apple}) => {
 };
 
 const Main = () => {
-  // const {data: appleList} = useQuery('getCloseAppleList', () =>
-  //   getCloseAppleList({sort: 1, page: 0, size: 6}),
-  // );
+  const {isLoading, data: appleList} = useQuery('getCloseAppleList', () =>
+    getCloseAppleList({sort: 1, page: 0, size: 6}),
+  );
   // const {data: openApples} = useQuery('getOpenAppleList', () =>
   //   getOpenAppleList({sort: 1, page: 0, size: 1}),
   // );
@@ -52,6 +53,9 @@ const Main = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {!isLoading
+        ? console.log('appleList', appleList)
+        : console.log('loading')}
       <ImageBackground
         style={styles.backgroundImg}
         source={require('../assets/pictures/main.png')}>
