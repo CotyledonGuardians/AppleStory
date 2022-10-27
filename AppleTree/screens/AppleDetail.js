@@ -262,7 +262,6 @@ const AppleDetail = () => {
         <Text style={styles.textFontBold}>기록된 영상</Text>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
           {data.content.video.map((item, index) => {
-            console.log(item);
             return (
               <Video
                 key={index}
