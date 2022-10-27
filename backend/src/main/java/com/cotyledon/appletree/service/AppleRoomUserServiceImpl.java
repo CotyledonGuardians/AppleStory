@@ -47,17 +47,17 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
 
         Set<String> group = groupOptional.get();
 
-        // 멤버에서 유저를 지움
+        // 그롭에서 유저를 지움
         group.remove(uid);
 
         if (!group.isEmpty()) {
-            // 멤버가 비어 있지 않다면 멤버를 업데이트
+            // 그룹이 비어 있지 않다면 그룹을 업데이트
             appleRoomGroupRepository.putGroup(roomId, group);
 
             return false;
         }
 
-        // 멤버가 비었으니 멤버도 지우고 룸도 지움
+        // 그룹이 비었으니 그룹도 지우고 룸도 지움
         appleRoomGroupRepository.deleteGroupByRoomId(roomId);
         lockAppleRoomRepository.deleteById(roomId);
 
