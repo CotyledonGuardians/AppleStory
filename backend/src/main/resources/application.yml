@@ -1,11 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: https://www.googleapis.com/service_accounts/v1/jwk/securetoken%40system.gserviceaccount.com
+    username: ssafy
   jpa:
     open-in-view: false
     hibernate:
@@ -17,7 +13,19 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  rabbitmq:
+    port: 5672
+    username: ssafy
+  redis:
+    port: 6379
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://www.googleapis.com/service_accounts/v1/jwk/securetoken%40system.gserviceaccount.com
 
 com:
   cotyledon.appletree:
-      firebase_project_id: apple-tree-7f863
+    firebase_project_id: apple-tree-7f863
+    rabbitmq:
+      stomp-port: 61613
