@@ -10,14 +10,14 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class StompInterceptor implements ChannelInterceptor {
 
-    private final HashMap<StompCommand, StompCommandHandler> stompCommandHandlerMap;
+    private final Map<StompCommand, StompCommandHandler> stompCommandHandlerMap;
     private final StompCommandHandler defaultHandler = header -> {};
 
     @Override

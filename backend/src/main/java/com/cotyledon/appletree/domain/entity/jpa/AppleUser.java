@@ -1,10 +1,8 @@
-package com.cotyledon.appletree.domain.entity;
+package com.cotyledon.appletree.domain.entity.jpa;
 
 import lombok.*;
 
-import javax.annotation.Nullable;
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Getter

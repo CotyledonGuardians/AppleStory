@@ -1,6 +1,6 @@
 package com.cotyledon.appletree.domain.dto;
 
-import com.cotyledon.appletree.domain.entity.Apple;
+import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import lombok.Builder;
 import lombok.ToString;
 import org.locationtech.jts.geom.Point;

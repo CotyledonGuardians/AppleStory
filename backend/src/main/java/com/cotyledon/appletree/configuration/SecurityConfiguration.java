@@ -3,7 +3,6 @@ package com.cotyledon.appletree.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +10,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.*;
+
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 public class SecurityConfiguration {
@@ -34,7 +35,7 @@ public class SecurityConfiguration {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             /* websocket */
-            "/api/websocket/**/*"
+            WebSocketConfiguration.ENDPOINT_PATH + "/**/*"
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,11 +47,14 @@ public class SecurityConfiguration {
                         // 화이트리스트에서 블랙리스트로 바꿨음
                         // OPTIONS 허용하지 않을 시 preflight 거부되어 아무것도 못함
                         // .antMatchers("/**/*").permitAll()
-                        .antMatchers(PERMIT_URL_ARRAY).permitAll()
-                        .antMatchers(HttpMethod.GET).hasAuthority(ROLE_USER)
-                        .antMatchers(HttpMethod.POST).hasAuthority(ROLE_USER)
-                        .antMatchers(HttpMethod.PUT).hasAuthority(ROLE_USER)
-                        .antMatchers(HttpMethod.DELETE).hasAuthority(ROLE_USER)
+                        .antMatchers(GET, PERMIT_URL_ARRAY).permitAll()
+                        .antMatchers(POST, PERMIT_URL_ARRAY).permitAll()
+                        .antMatchers(PUT, PERMIT_URL_ARRAY).permitAll()
+                        .antMatchers(DELETE, PERMIT_URL_ARRAY).permitAll()
+                        .antMatchers(GET).hasAuthority(ROLE_USER)
+                        .antMatchers(POST).hasAuthority(ROLE_USER)
+                        .antMatchers(PUT).hasAuthority(ROLE_USER)
+                        .antMatchers(DELETE).hasAuthority(ROLE_USER)
                         .anyRequest().permitAll())
 
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer

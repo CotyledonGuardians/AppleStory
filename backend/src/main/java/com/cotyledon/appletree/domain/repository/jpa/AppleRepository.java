@@ -1,16 +1,10 @@
-package com.cotyledon.appletree.domain.repository;
+package com.cotyledon.appletree.domain.repository.jpa;
 
-import com.cotyledon.appletree.domain.dto.AppleListDTO;
-import com.cotyledon.appletree.domain.entity.Apple;
-import com.cotyledon.appletree.domain.entity.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface AppleRepository extends JpaRepository<Apple, Long> {

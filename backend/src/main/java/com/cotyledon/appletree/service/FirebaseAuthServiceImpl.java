@@ -17,15 +17,27 @@ public class FirebaseAuthServiceImpl implements FirebaseAuthService {
 
     private final FirebaseAuth firebaseAuth;
 
+    @Override
     public void setClaimToAppleId(String uid, Long appleId) throws FirebaseAuthException {
         Map<String, Object> claims = new HashMap<>();
         claims.put("appleId", appleId);
         firebaseAuth.setCustomUserClaims(uid, claims);
     }
 
+    @Override
     public String getEmailByUid(String uid) throws FirebaseAuthException {
         UserRecord user = firebaseAuth.getUser(uid);
         log.info("email: {}", user.getEmail());
         return user.getEmail();
+    }
+
+    @Override
+    public void auth(String idToken) throws FirebaseAuthException {
+        firebaseAuth.verifyIdToken(idToken);
+    }
+
+    @Override
+    public String getUidFromIdToken(String idToken) throws FirebaseAuthException {
+        return firebaseAuth.verifyIdToken(idToken).getUid();
     }
 }

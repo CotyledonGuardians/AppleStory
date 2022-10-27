@@ -1,9 +1,9 @@
-package com.cotyledon.appletree.domain.repository;
+package com.cotyledon.appletree.domain.repository.jpa;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
-import com.cotyledon.appletree.domain.entity.Apple;
-import com.cotyledon.appletree.domain.entity.QApple;
-import com.cotyledon.appletree.domain.entity.QAppleUser;
+import com.cotyledon.appletree.domain.entity.jpa.Apple;
+import com.cotyledon.appletree.domain.entity.jpa.QApple;
+import com.cotyledon.appletree.domain.entity.jpa.QAppleUser;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;

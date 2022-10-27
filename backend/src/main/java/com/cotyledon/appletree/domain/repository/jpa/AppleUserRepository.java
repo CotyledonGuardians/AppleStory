@@ -1,7 +1,7 @@
-package com.cotyledon.appletree.domain.repository;
+package com.cotyledon.appletree.domain.repository.jpa;
 
-import com.cotyledon.appletree.domain.entity.Apple;
-import com.cotyledon.appletree.domain.entity.AppleUser;
+import com.cotyledon.appletree.domain.entity.jpa.Apple;
+import com.cotyledon.appletree.domain.entity.jpa.AppleUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

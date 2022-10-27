@@ -1,4 +1,4 @@
-package com.cotyledon.appletree.domain.entity;
+package com.cotyledon.appletree.domain.entity.jpa;
 
 import lombok.*;
 
