@@ -5,6 +5,7 @@ import com.cotyledon.appletree.domain.event.AppleRoomLeaveEvent;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomGroupRepository;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomUserRepository;
 import com.cotyledon.appletree.domain.repository.redis.LockAppleRoomRepository;
+import com.cotyledon.appletree.domain.repository.redis.RoomAppleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -19,6 +20,7 @@ import java.util.Set;
 public class AppleRoomUserServiceImpl implements AppleRoomUserService {
 
     private final LockAppleRoomRepository lockAppleRoomRepository;
+    private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomGroupRepository appleRoomGroupRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -67,10 +69,15 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
             return false;
         }
 
-        // 그룹이 비었으니 그룹도 지우고 룸도 지움
-        appleRoomGroupRepository.deleteGroupByRoomId(roomId);
-        lockAppleRoomRepository.deleteById(roomId);
+        // 그룹이 비었으니 다 지움
+        deleteAll(roomId);
 
         return true;
+    }
+
+    private void deleteAll(String roomId) {
+        appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+        roomAppleRepository.deleteAppleByRoomId(roomId);
+        lockAppleRoomRepository.deleteById(roomId);
     }
 }

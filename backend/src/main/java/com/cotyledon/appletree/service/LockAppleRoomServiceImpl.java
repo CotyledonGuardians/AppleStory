@@ -1,6 +1,6 @@
 package com.cotyledon.appletree.service;
 
-import com.cotyledon.appletree.domain.dto.RoomDTO;
+import com.cotyledon.appletree.domain.dto.*;
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
 import com.cotyledon.appletree.domain.event.AppleRoomJoinEvent;
@@ -8,14 +8,13 @@ import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomGroupRepository;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomUserRepository;
 import com.cotyledon.appletree.domain.repository.redis.LockAppleRoomRepository;
+import com.cotyledon.appletree.domain.repository.redis.RoomAppleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,23 +23,29 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
     private final LockAppleRoomRepository lockAppleRoomRepository;
     private final AppleRoomGroupRepository appleRoomGroupRepository;
+    private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     // reserve 이벤트 발행
     @Override
-    public RoomDTO makeRoomAndGet() {
+    public RoomDTO makeRoomAndGet(String hostUid) {
 
-        LockAppleRoom room = LockAppleRoom.builder().build();
-
+        // 룸 생성
+        LockAppleRoom room = LockAppleRoom.builder().hostUid(hostUid).build();
         lockAppleRoomRepository.save(room);
 
         String roomId = room.getId();
 
+        // 룸 그룹 생성
         Set<String> group = new HashSet<>();
-
         appleRoomGroupRepository.putGroup(roomId, group);
 
+        // 룸 사과 생성
+        AppleDTO apple = AppleDTO.withTitleAndTeamNameAndHostUid("타이틀", "팀 이름", hostUid);
+        roomAppleRepository.putApple(roomId, apple);
+
+        // reserve 이벤트 발행
         eventPublisher.publishEvent(ReserveLockAppleRoomEvent.builder().roomId(roomId).build());
 
         return RoomDTO.builder().roomId(roomId).build();
@@ -102,5 +107,44 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     public boolean hasRoomByRoomId(String roomId) {
         Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
         return room.isPresent();
+    }
+
+    @Override
+    public String getNicknameFromContent(Content content) {
+        List<ContentDescription> descriptions;
+
+        descriptions = content.getText();
+        if (descriptions != null &&
+                descriptions.get(0) != null &&
+                descriptions.get(0).getAuthor() != null &&
+                !descriptions.get(0).getAuthor().isBlank()) {
+            return descriptions.get(0).getAuthor();
+        }
+
+        descriptions = content.getPhoto();
+        if (descriptions != null &&
+                descriptions.get(0) != null &&
+                descriptions.get(0).getAuthor() != null &&
+                !descriptions.get(0).getAuthor().isBlank()) {
+            return descriptions.get(0).getAuthor();
+        }
+
+        descriptions = content.getAudio();
+        if (descriptions != null &&
+                descriptions.get(0) != null &&
+                descriptions.get(0).getAuthor() != null &&
+                !descriptions.get(0).getAuthor().isBlank()) {
+            return descriptions.get(0).getAuthor();
+        }
+
+        descriptions = content.getVideo();
+        if (descriptions != null &&
+                descriptions.get(0) != null &&
+                descriptions.get(0).getAuthor() != null &&
+                !descriptions.get(0).getAuthor().isBlank()) {
+            return descriptions.get(0).getAuthor();
+        }
+
+        throw new IllegalArgumentException("Invalid Content");
     }
 }

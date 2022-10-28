@@ -1,12 +1,14 @@
 package com.cotyledon.appletree.websocket.controller;
 
+import com.cotyledon.appletree.domain.dto.Content;
+import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.repository.collection.StompUserDAO;
+import com.cotyledon.appletree.domain.stomp.AddMessageData;
 import com.cotyledon.appletree.domain.stomp.BaseMessage;
 import com.cotyledon.appletree.domain.stomp.DestinationBuilder;
-import lombok.Getter;
+import com.cotyledon.appletree.service.LockAppleRoomService;
+import com.cotyledon.appletree.service.RoomAppleService;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -22,26 +24,13 @@ import java.util.Optional;
 @Slf4j
 public class LockAppleRoomController {
 
-    @Getter
-    @Setter
-    @ToString
-    public static class SomeData {
-        public String uid;
-        public String item;
-    }
-
-    @Getter
-    @Setter
-    @ToString
-    public static class SomeType {
-        public String data;
-    }
-
+    private final RoomAppleService roomAppleService;
+    private final LockAppleRoomService lockAppleRoomService;
     private final StompUserDAO stompUserDAO;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/lock-apple-room.{roomId}")
-    public void receive(@DestinationVariable String roomId, Message<SomeType> message) {
+    public void receive(@DestinationVariable String roomId, Message<Content> message) {
 
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(message);
 
@@ -54,13 +43,19 @@ public class LockAppleRoomController {
             return;
         }
 
-        String data = message.getPayload().getData();
+        Content content = message.getPayload();
 
-        SomeData someData = new SomeData();
-        someData.setUid(uid.get());
-        someData.setItem(data);
+        log.info("Content : {}", content);
+
+        String nickname = lockAppleRoomService.getNicknameFromContent(content);
+
+        roomAppleService.addMemberAndContentToAppleByRoomId(roomId,
+                Member.builder().uid(uid.get()).nickname(nickname).build(),
+                content);
 
         simpMessagingTemplate.convertAndSend(DestinationBuilder.build("lock-apple-room", roomId),
-                BaseMessage.withCommandAndData("add", someData));
+                BaseMessage.withCommandAndData("add", AddMessageData.withNickname(nickname)));
     }
+
+    // TODO: 사과 생성 호출
 }

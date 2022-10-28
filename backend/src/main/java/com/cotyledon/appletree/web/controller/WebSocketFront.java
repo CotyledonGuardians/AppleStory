@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/api/ws-front")
@@ -25,9 +27,9 @@ public class WebSocketFront {
     }
 
     @GetMapping("/lock-apple-room")
-    public ResponseEntity<?> reserveLockRoom() {
+    public ResponseEntity<?> reserveLockRoom(Principal principal) {
 
-        RoomDTO roomDTO = lockAppleRoomService.makeRoomAndGet();
+        RoomDTO roomDTO = lockAppleRoomService.makeRoomAndGet(principal.getName());
 
         return ResponseEntity.ok(roomDTO);
     }

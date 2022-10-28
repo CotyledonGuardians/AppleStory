@@ -12,4 +12,5 @@ public class LockAppleRoom {
 
     @Id
     private String id;
+    private String hostUid;
 }
