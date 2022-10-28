@@ -107,9 +107,16 @@ const data = {
         content: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
       },
       {
-        author: '옌',
-        content:
-          'https://firebasestorage.googleapis.com/v0/b/apple-tree-7f863.appspot.com/o/apple-id%2Fsimplescreenrecorder-2022-10-04_16.40.32_Trim.mp4?alt=media&token=705b0813-da0d-4049-acdc-1a9cf0b4441d',
+        author: '짤리',
+        content: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+      },
+      {
+        author: '짤리',
+        content: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+      },
+      {
+        author: '짤리',
+        content: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
       },
     ],
   },
@@ -118,12 +125,19 @@ const data = {
   isCatch: true,
 };
 
-const AppleDetail = () => {
+const AppleDetail = ({navigation}) => {
   let time = '0일 0시간 0분';
   let createTime = '2022/10/17';
   let title = '자율 프로젝트를 기념하며';
   let name = '떡잎방범대';
   let people = 6;
+
+  const seedDetail = nickname => {
+    navigation.navigate('SeedDetail', {
+      screen: 'SeedDetail',
+      nickname: nickname,
+    });
+  };
 
   function Header() {
     return (
@@ -195,8 +209,8 @@ const AppleDetail = () => {
       <TouchableOpacity
         style={styles.card}
         onPress={() => {
-          Alert.alert('상세보기로 넘어가렴~');
-          // appleDetail();
+          // Alert.alert('상세보기로 넘어가렴~');
+          seedDetail(nickname);
         }}>
         <Image
           source={require('../assets/pictures/seed.png')}
@@ -234,7 +248,7 @@ const AppleDetail = () => {
     return (
       <View style={{padding: 20}}>
         <Text style={styles.textFontBold}>기록된 사진</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {/* <Image
             style={{width: 50, height: 50}}
             source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
@@ -260,7 +274,7 @@ const AppleDetail = () => {
     return (
       <View style={{padding: 20}}>
         <Text style={styles.textFontBold}>기록된 영상</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {data.content.video.map((item, index) => {
             return (
               <Video
@@ -269,7 +283,7 @@ const AppleDetail = () => {
                   uri: item.content,
                 }}
                 style={{width: 200, height: 150, margin: 5}}
-                paused={false} // 재생/중지 여부
+                paused={true} // 재생/중지 여부
                 resizeMode={'cover'} // 프레임이 비디오 크기와 일치하지 않을 때 비디오 크기를 조정하는 방법을 결정합니다. cover : 비디오의 크기를 유지하면서 최대한 맞게
                 onLoad={e => console.log(e)} // 미디어가 로드되고 재생할 준비가 되면 호출되는 콜백 함수입니다.
                 repeat={true} // video가 끝나면 다시 재생할 지 여부
@@ -284,7 +298,7 @@ const AppleDetail = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Header />
         <ContentSeed />
         <Photo />
@@ -295,19 +309,6 @@ const AppleDetail = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  fullScreen: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-  },
   backgroundVideo: {
     position: 'absolute',
     top: 0,
