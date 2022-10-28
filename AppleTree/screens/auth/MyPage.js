@@ -1,11 +1,22 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Text, Image, ImageBackground} from 'react-native';
+import auth from '@react-native-firebase/auth';
+import {getMyAppleCount} from '../../api/AppleAPI';
 
 const MyPage = () => {
-  // const [appleCnt] = React.useState(null);
-  const email = 'ssafy@ssafy.com';
-  const appleCnt = 10;
+  const [appleCnt, setAppleCnt] = useState(0);
+  const email = auth().currentUser.email;
+
+  useEffect(() => {
+    getMyAppleCount()
+      .then(response => {
+        setAppleCnt(response.data.body);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  });
 
   return (
     <SafeAreaView style={styles.container}>
