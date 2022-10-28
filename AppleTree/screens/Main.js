@@ -11,7 +11,6 @@ import {
   ImageBackground,
 } from 'react-native';
 import {SmallButton} from '../components/Button';
-// import {width, height} from '../config/globalStyles';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -49,9 +48,17 @@ const Main = () => {
         console.log('error', error);
       });
   });
-
   const [modalVisible, setModalVisible] = useState(false);
-
+  //AsyncStorage 삭제
+  // const removeToken = async () => {
+  //   try {
+  //     await AsyncStorage.removeItem('idToken');
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // AsyncStorage 토큰 삭제 필요시
+  // removeToken();
   return (
     <SafeAreaView style={styles.container}>
       {/* {!isLoading
