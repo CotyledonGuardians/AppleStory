@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   StyleSheet,
   ImageBackground,
+  TouchableOpacity,
 } from 'react-native';
 import {SmallButton} from '../components/Button';
 import {
@@ -17,7 +18,15 @@ import {
 } from 'react-native-responsive-screen';
 import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 
-const Apple = ({index, apple}) => {
+// 남은 시간에 따라 사과 사진 변경
+const imgUrl = [
+  require('../assets/pictures/apple1.png'),
+  require('../assets/pictures/apple2.png'),
+  require('../assets/pictures/apple3.png'),
+  require('../assets/pictures/apple4.png'),
+];
+
+const Apple = ({index, apple, navigation}) => {
   const appleStyle = [
     styles.apple1,
     styles.apple2,
@@ -27,28 +36,82 @@ const Apple = ({index, apple}) => {
     styles.apple6,
   ];
 
-  // 남은 시간에 따라 사과 사진 변경
-  let imgUrl = [
-    require('../assets/pictures/apple1.png'),
-    require('../assets/pictures/apple2.png'),
-    require('../assets/pictures/apple3.png'),
-    require('../assets/pictures/apple4.png'),
-  ];
+  const today = new Date().getTime();
+  const unlockDay = new Date(apple.unlockAt.split('T')[0]).getTime();
 
-  return <Image style={appleStyle[index]} source={imgUrl[3]} />;
+  if (unlockDay - today - 32400 <= 0) {
+    return (
+      <TouchableOpacity
+        style={appleStyle[index]}
+        onPress={() => navigation.navigate('')}>
+        <Image style={styles.apple} source={imgUrl[3]} />
+      </TouchableOpacity>
+    );
+  } else {
+    const diff = Math.ceil((unlockDay - today - 32400) / (1000 * 60 * 60 * 24));
+    if (diff === 0) {
+      return (
+        <TouchableOpacity
+          style={appleStyle[index]}
+          onPress={() => {
+            navigation.navigate('');
+          }}>
+          <Image style={styles.apple} source={imgUrl[3]} />
+        </TouchableOpacity>
+      );
+    } else if (diff <= 3) {
+      return (
+        <TouchableOpacity style={appleStyle[index]}>
+          <Image style={styles.apple} source={imgUrl[2]} />
+        </TouchableOpacity>
+      );
+    } else if (diff <= 7) {
+      return (
+        <TouchableOpacity style={appleStyle[index]}>
+          <Image style={styles.apple} source={imgUrl[1]} />
+        </TouchableOpacity>
+      );
+    } else {
+      return (
+        <TouchableOpacity style={appleStyle[index]}>
+          <Image style={styles.apple} source={imgUrl[0]} />
+        </TouchableOpacity>
+      );
+    }
+  }
 };
 
-const Main = () => {
+// const openModal = apple => {
+//   setApple(apple);
+//   setModalVisible(true);
+// };
+
+const Main = ({navigation}) => {
+  const [openApples, setOpenApples] = useState();
+  const [closeApples, setCloseApples] = useState();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [apple, setApple] = useState();
+
   useEffect(() => {
-    getCloseAppleList(3, 0, 6)
+    getCloseAppleList(1, 0, 6)
       .then(response => {
-        console.log('response', response.data);
+        console.log('close-response', response.data);
+        setCloseApples(response.data.body.content);
       })
       .catch(error => {
         console.log('error', error);
       });
-  });
-  const [modalVisible, setModalVisible] = useState(false);
+
+    getOpenAppleList(1, 0, 1)
+      .then(response => {
+        console.log('open-response', response.data.body.content);
+        setOpenApples(response.data.body.content);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  }, []);
+
   //AsyncStorage 삭제
   // const removeToken = async () => {
   //   try {
@@ -59,81 +122,74 @@ const Main = () => {
   // };
   // AsyncStorage 토큰 삭제 필요시
   // removeToken();
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* {!isLoading
-        ? console.log('appleList', appleList)
-        : console.log('loading')} */}
-      <ImageBackground
-        style={styles.backgroundImg}
-        source={require('../assets/pictures/main.png')}>
-        <Image
-          style={styles.hanging}
-          source={require('../assets/gifs/hanging.gif')}
-        />
-        {/* {appleList.length > 0 ? (
-          <Apple index={0} apple={appleList[0]} />
-        ) : (
-          <></>
-        )}
-        {appleList.length > 1 ? (
-          <Apple index={1} apple={appleList[1]} />
-        ) : (
-          <></>
-        )}
-        {appleList.length > 2 ? (
-          <Apple index={2} apple={appleList[2]} />
-        ) : (
-          <></>
-        )}
-        {appleList.length > 3 ? (
-          <Apple index={3} apple={appleList[3]} />
-        ) : (
-          <></>
-        )}
-        {appleList.length > 4 ? (
-          <Apple index={4} apple={appleList[4]} />
-        ) : (
-          <></>
-        )}
-        {appleList.length > 5 ? (
-          <Apple index={5} apple={appleList[5]} />
-        ) : (
-          <></>
-        )}
-        {openApples.length > 0 ? (
+      {openApples && closeApples ? (
+        <ImageBackground
+          style={styles.backgroundImg}
+          source={require('../assets/pictures/main.png')}>
+          {closeApples.length > 0 ? (
+            <Apple index={0} apple={closeApples[0]} navigation={navigation} />
+          ) : (
+            <></>
+          )}
+          {closeApples.length > 1 ? (
+            <Apple index={1} apple={closeApples[1]} navigation={navigation} />
+          ) : (
+            <></>
+          )}
+          {closeApples.length > 2 ? (
+            <Apple index={2} apple={closeApples[2]} navigation={navigation} />
+          ) : (
+            <></>
+          )}
+          {closeApples.length > 3 ? (
+            <Apple index={3} apple={closeApples[3]} navigation={navigation} />
+          ) : (
+            <></>
+          )}
+          {closeApples.length > 4 ? (
+            <Apple index={4} apple={closeApples[4]} navigation={navigation} />
+          ) : (
+            <></>
+          )}
+          {closeApples.length > 5 ? (
+            <Apple index={5} apple={closeApples[5]} navigation={navigation} />
+          ) : (
+            <></>
+          )}
+          {openApples.length > 0 ? (
+            <TouchableOpacity
+              style={styles.basketTouch}
+              onPress={() => navigation.navigate('AppleList')}>
+              <Image
+                style={styles.basket}
+                source={require('../assets/pictures/basketfull.png')}
+              />
+            </TouchableOpacity>
+          ) : (
+            <Image
+              style={styles.basketTouch}
+              source={require('../assets/pictures/basket.png')}
+            />
+          )}
           <Image
-            style={styles.basket}
-            source={require('../assets/pictures/basketfull.png')}
+            style={styles.bear}
+            source={require('../assets/gifs/eatingApple.gif')}
           />
-        ) : (
-          <Image
-            style={styles.basket}
-            source={require('../assets/pictures/basket.png')}
-          />
-        )} */}
+        </ImageBackground>
+      ) : (
+        <Text>Loading</Text>
+      )}
 
-        <Apple index={0} />
-        <Apple index={1} />
-        <Apple index={2} />
-        <Apple index={3} />
-        <Apple index={4} />
-        <Apple index={5} />
-        <Image
-          style={styles.basket}
-          source={require('../assets/pictures/basketfull.png')}
-        />
-        <Image
-          style={styles.bear}
-          source={require('../assets/gifs/eatingApple.gif')}
-        />
-      </ImageBackground>
       {/* 안익은 사과 모달 start */}
       <View style={styles.centeredView}>
         <Modal
           animationType="fade"
           transparent={true}
           visible={modalVisible}
+          apple={apple}
           onRequestClose={() => {
             Alert.alert('모달 닫힘.');
             setModalVisible(!modalVisible);
@@ -158,13 +214,14 @@ const Main = () => {
             </View>
           </View>
         </Modal>
-        {/* 안익은 사과에 연결할 버튼!(임시) */}
-        {/* <Pressable
+      </View>
+
+      {/* 안익은 사과에 연결할 버튼!(임시) */}
+      {/* <Pressable
           style={[styles.button, styles.buttonOpen]}
           onPress={() => setModalVisible(true)}>
           <Text style={styles.textStyle}>안익은 사과</Text>
         </Pressable> */}
-      </View>
       {/* 안익은 사과 모달 end */}
     </SafeAreaView>
   );
@@ -175,11 +232,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  hanging: {
-    width: wp('20%'),
-    height: hp('30%'),
-    top: 0,
-    left: wp('90%'),
+  apple: {
+    width: wp('17%'),
+    height: wp('15%'),
   },
   apple1: {
     width: wp('17%'),
@@ -230,12 +285,16 @@ const styles = StyleSheet.create({
     top: hp('50%'),
     left: wp('50%'),
   },
-  basket: {
+  basketTouch: {
     width: wp('28%'),
     height: wp('29%'),
     position: 'absolute',
     top: hp('65%'),
     left: wp('10%'),
+  },
+  basket: {
+    width: wp('28%'),
+    height: wp('29%'),
   },
   //모달 스타일 start
   centeredView: {
