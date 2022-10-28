@@ -31,6 +31,7 @@ public class DisconnectHandler implements StompCommandHandler {
             return;
         }
 
+        // leave event 발행
         if (appleRoomUserService.releaseRoomUserByUidAndRemoveRoomIfEmpty(uid.get())) {
             log.info("이 Disconnect 로 인해 멤버가 비었으므로 RoomUser, Member, Room 모두 제거");
         } else {

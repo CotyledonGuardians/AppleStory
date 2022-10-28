@@ -5,7 +5,7 @@ import lombok.*;
 @Getter
 @Builder
 @ToString
-public class EnterLockAppleRoomEvent {
+public class AppleRoomJoinEvent {
 
     private String roomId;
     private String uid;

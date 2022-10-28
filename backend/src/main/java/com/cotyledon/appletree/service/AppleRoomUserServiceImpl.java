@@ -1,11 +1,13 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
+import com.cotyledon.appletree.domain.event.AppleRoomLeaveEvent;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomGroupRepository;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomUserRepository;
 import com.cotyledon.appletree.domain.repository.redis.LockAppleRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,12 +18,14 @@ import java.util.Set;
 @Slf4j
 public class AppleRoomUserServiceImpl implements AppleRoomUserService {
 
-    final LockAppleRoomRepository lockAppleRoomRepository;
-    final AppleRoomGroupRepository appleRoomGroupRepository;
-    final AppleRoomUserRepository appleRoomUserRepository;
+    private final LockAppleRoomRepository lockAppleRoomRepository;
+    private final AppleRoomGroupRepository appleRoomGroupRepository;
+    private final AppleRoomUserRepository appleRoomUserRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     // TODO: roomType 에 따라 repo 호출 분기 혹은 둘 다 쓰기?
     // 이 호출에 의해 룸이 비게 되었는지의 여부를 리턴
+    // leave event 발행
     public boolean releaseRoomUserByUidAndRemoveRoomIfEmpty(String uid) {
 
         Optional<AppleRoomUser> appleRoomUser = appleRoomUserRepository.findById(uid);
@@ -49,6 +53,12 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
 
         // 그롭에서 유저를 지움
         group.remove(uid);
+
+        // leave event 발행
+        eventPublisher.publishEvent(AppleRoomLeaveEvent.builder()
+                .roomId(roomId)
+                .uid(uid)
+                .build());
 
         if (!group.isEmpty()) {
             // 그룹이 비어 있지 않다면 그룹을 업데이트

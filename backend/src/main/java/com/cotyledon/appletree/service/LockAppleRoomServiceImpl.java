@@ -3,6 +3,7 @@ package com.cotyledon.appletree.service;
 import com.cotyledon.appletree.domain.dto.RoomDTO;
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
+import com.cotyledon.appletree.domain.event.AppleRoomJoinEvent;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomGroupRepository;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomUserRepository;
@@ -26,6 +27,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final ApplicationEventPublisher eventPublisher;
 
+    // reserve 이벤트 발행
     @Override
     public RoomDTO makeRoomAndGet() {
 
@@ -61,6 +63,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         }
     }
 
+    // join 이벤트 발행
     @Override
     public boolean enterRoomAndSaveRoomUser(String uid, String roomId) {
         Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
@@ -85,6 +88,12 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
         AppleRoomUser user = AppleRoomUser.builder().uid(uid).roomId(roomId).build();
         appleRoomUserRepository.save(user);
+
+        // join 이벤트 발행
+        eventPublisher.publishEvent(AppleRoomJoinEvent.builder()
+                .roomId(roomId)
+                .uid(uid)
+                .build());
 
         return true;
     }

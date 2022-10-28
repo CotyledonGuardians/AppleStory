@@ -1,6 +1,7 @@
 package com.cotyledon.appletree.eventListener;
 
-import com.cotyledon.appletree.domain.event.EnterLockAppleRoomEvent;
+import com.cotyledon.appletree.domain.event.AppleRoomJoinEvent;
+import com.cotyledon.appletree.domain.event.AppleRoomLeaveEvent;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.stomp.BaseMessage;
 import com.cotyledon.appletree.domain.stomp.DestinationBuilder;
@@ -37,10 +38,19 @@ public class LockAppleRoomEventListener {
 
     @Async
     @EventListener
-    public void onEnter(EnterLockAppleRoomEvent event) {
+    public void onJoin(AppleRoomJoinEvent event) {
         log.info("입장 이벤트 들었음");
 
         simpMessagingTemplate.convertAndSend(DestinationBuilder.build("lock-apple-room", event.getRoomId()),
                 BaseMessage.builder().command("join").data(event.getUid()).build());
+    }
+
+    @Async
+    @EventListener
+    public void onLeave(AppleRoomLeaveEvent event) {
+        log.info("퇴장 이벤트 들었음");
+
+        simpMessagingTemplate.convertAndSend(DestinationBuilder.build("lock-apple-room", event.getRoomId()),
+                BaseMessage.builder().command("leave").data(event.getUid()).build());
     }
 }

@@ -1,7 +1,6 @@
 package com.cotyledon.appletree.websocket.stompCommandHandler;
 
 import com.cotyledon.appletree.domain.repository.collection.StompUserDAO;
-import com.cotyledon.appletree.domain.event.EnterLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.stomp.Subscription;
 import com.cotyledon.appletree.exception.InvalidSubscriptionExceptionBuilder;
 import com.cotyledon.appletree.service.FirebaseAuthService;
@@ -9,7 +8,6 @@ import com.cotyledon.appletree.service.LockAppleRoomService;
 import com.google.firebase.auth.FirebaseAuthException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +20,6 @@ public class SubscribeHandler implements StompCommandHandler {
     private final StompUserDAO stompUserDAO;
     private final FirebaseAuthService firebaseAuthService;
     private final InvalidSubscriptionExceptionBuilder exception;
-    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public void handle(StompHeaderAccessor stompHeaderAccessor) {
@@ -47,13 +44,9 @@ public class SubscribeHandler implements StompCommandHandler {
 
             throw exception.withReleasing(sid);
         }
-
-        eventPublisher.publishEvent(EnterLockAppleRoomEvent.builder()
-                .roomId(subscription.getRoomId())
-                .uid(uid)
-                .build());
     }
 
+    // join 이벤트 발행
     private boolean enter(Subscription subscription, String sid, String uid) {
         switch (subscription.getRoomType()) {
             case LOCK:
