@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   Alert,
@@ -11,13 +11,11 @@ import {
   ImageBackground,
 } from 'react-native';
 import {SmallButton} from '../components/Button';
-// import {useQuery} from 'react-query';
-// import {width, height} from '../config/globalStyles';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-// import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
+import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 
 const Apple = ({index, apple}) => {
   const appleStyle = [
@@ -41,17 +39,31 @@ const Apple = ({index, apple}) => {
 };
 
 const Main = () => {
-  // const {data: appleList} = useQuery('getCloseAppleList', () =>
-  //   getCloseAppleList({sort: 1, page: 0, size: 6}),
-  // );
-  // const {data: openApples} = useQuery('getOpenAppleList', () =>
-  //   getOpenAppleList({sort: 1, page: 0, size: 1}),
-  // );
-
+  useEffect(() => {
+    getCloseAppleList(3, 0, 6)
+      .then(response => {
+        console.log('response', response.data);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  });
   const [modalVisible, setModalVisible] = useState(false);
-
+  //AsyncStorage 삭제
+  // const removeToken = async () => {
+  //   try {
+  //     await AsyncStorage.removeItem('idToken');
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // AsyncStorage 토큰 삭제 필요시
+  // removeToken();
   return (
     <SafeAreaView style={styles.container}>
+      {/* {!isLoading
+        ? console.log('appleList', appleList)
+        : console.log('loading')} */}
       <ImageBackground
         style={styles.backgroundImg}
         source={require('../assets/pictures/main.png')}>
