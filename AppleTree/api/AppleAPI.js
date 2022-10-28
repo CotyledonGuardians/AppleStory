@@ -10,4 +10,8 @@ const getCloseAppleList = async (sort, page, size) => {
   return await api('get', url);
 };
 
-export {getOpenAppleList, getCloseAppleList};
+const getMyAppleCount = async () => {
+  return await api('get', '/apple/count');
+};
+
+export {getOpenAppleList, getCloseAppleList, getMyAppleCount};
