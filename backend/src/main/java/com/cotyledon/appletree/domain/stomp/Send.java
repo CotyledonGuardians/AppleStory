@@ -9,41 +9,41 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 @Getter
 @Builder
 @ToString
-public class Subscription {
+public class Send {
 
     private RoomType roomType;
     private String roomId;
 
-    public static Subscription of(StompHeaderAccessor stompHeaderAccessor, InvalidStompHeaderExceptionBuilder exception) {
+    public static Send of(StompHeaderAccessor stompHeaderAccessor, InvalidStompHeaderExceptionBuilder exception) {
         String sid = stompHeaderAccessor.getSessionId();
 
         String destination = stompHeaderAccessor.getDestination();
 
         if (destination == null) {
-            throw exception.withReleasing(sid);
+            throw exception.withDefault();
         }
 
-        RoomType roomType = destination.startsWith(WebSocketConfiguration.BROKER_DESTINATION_PREFIX + "/lock-apple-room") ?
+        RoomType roomType = destination.startsWith(WebSocketConfiguration.APPLICATION_DESTINATION_PREFIX + "/lock-apple-room") ?
                 RoomType.LOCK :
-                destination.startsWith(WebSocketConfiguration.BROKER_DESTINATION_PREFIX + "/unlock-apple-room") ?
+                destination.startsWith(WebSocketConfiguration.APPLICATION_DESTINATION_PREFIX + "/unlock-apple-room") ?
                         RoomType.UNLOCK :
                         null;
 
         if (roomType == null) {
-            throw exception.withReleasing(sid);
+            throw exception.withDefault();
         }
 
         String roomId;
         try {
             roomId = destination.substring(destination.indexOf('.') + 1);
         } catch (IndexOutOfBoundsException e) {
-            throw exception.withReleasing(sid);
+            throw exception.withDefault();
         }
         if (roomId.isBlank()) {
-            throw exception.withReleasing(sid);
+            throw exception.withDefault();
         }
 
-        return Subscription.builder()
+        return Send.builder()
                 .roomType(roomType)
                 .roomId(roomId)
                 .build();

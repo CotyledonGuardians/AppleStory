@@ -42,7 +42,7 @@ public class LockAppleRoomEventListener {
         log.info("입장 이벤트 들었음");
 
         simpMessagingTemplate.convertAndSend(DestinationBuilder.build("lock-apple-room", event.getRoomId()),
-                BaseMessage.builder().command("join").data(event.getUid()).build());
+                BaseMessage.withCommandAndData("join", event.getUid()));
     }
 
     @Async
@@ -51,6 +51,6 @@ public class LockAppleRoomEventListener {
         log.info("퇴장 이벤트 들었음");
 
         simpMessagingTemplate.convertAndSend(DestinationBuilder.build("lock-apple-room", event.getRoomId()),
-                BaseMessage.builder().command("leave").data(event.getUid()).build());
+                BaseMessage.withCommandAndData("leave", event.getUid()));
     }
 }

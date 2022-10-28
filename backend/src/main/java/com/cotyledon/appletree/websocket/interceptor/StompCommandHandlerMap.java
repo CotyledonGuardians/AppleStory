@@ -17,13 +17,14 @@ public class StompCommandHandlerMap extends HashMap<StompCommand, StompCommandHa
             EchoCommandHandler echoCommandHandler,
             ConnectHandler connectHandler,
             SubscribeHandler subscribeHandler,
+            SendHandler sendHandler,
             DisconnectHandler disconnectHandler
     ) {
         put(UNSUBSCRIBE, echoCommandHandler);
-        put(SEND, echoCommandHandler);
 
         put(CONNECT, connectHandler);
         put(SUBSCRIBE, subscribeHandler);
+        put(SEND, sendHandler);
         put(DISCONNECT, disconnectHandler);
     }
 }

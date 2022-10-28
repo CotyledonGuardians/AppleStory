@@ -97,4 +97,10 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
         return true;
     }
+
+    @Override
+    public boolean hasRoomByRoomId(String roomId) {
+        Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
+        return room.isPresent();
+    }
 }

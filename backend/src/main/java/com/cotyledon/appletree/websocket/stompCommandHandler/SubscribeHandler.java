@@ -2,7 +2,7 @@ package com.cotyledon.appletree.websocket.stompCommandHandler;
 
 import com.cotyledon.appletree.domain.repository.collection.StompUserDAO;
 import com.cotyledon.appletree.domain.stomp.Subscription;
-import com.cotyledon.appletree.exception.InvalidSubscriptionExceptionBuilder;
+import com.cotyledon.appletree.exception.InvalidStompHeaderExceptionBuilder;
 import com.cotyledon.appletree.service.FirebaseAuthService;
 import com.cotyledon.appletree.service.LockAppleRoomService;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -19,7 +19,7 @@ public class SubscribeHandler implements StompCommandHandler {
     private final LockAppleRoomService lockAppleRoomService;
     private final StompUserDAO stompUserDAO;
     private final FirebaseAuthService firebaseAuthService;
-    private final InvalidSubscriptionExceptionBuilder exception;
+    private final InvalidStompHeaderExceptionBuilder exception;
 
     @Override
     public void handle(StompHeaderAccessor stompHeaderAccessor) {

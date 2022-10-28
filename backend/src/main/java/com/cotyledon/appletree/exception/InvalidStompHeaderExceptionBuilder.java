@@ -6,13 +6,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class InvalidSubscriptionExceptionBuilder {
+public class InvalidStompHeaderExceptionBuilder {
 
     private final StompUserDAO stompUserDAO;
 
     public IllegalArgumentException withReleasing(String sid) {
         stompUserDAO.release(sid);
 
-        return new IllegalArgumentException("Invalid Subscription");
+        return new IllegalArgumentException("Invalid Stomp Header");
+    }
+
+    public IllegalArgumentException withDefault() {
+        return new IllegalArgumentException("Invalid Stomp Header");
     }
 }
