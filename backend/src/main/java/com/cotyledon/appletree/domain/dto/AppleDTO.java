@@ -1,13 +1,19 @@
 package com.cotyledon.appletree.domain.dto;
 
-import com.cotyledon.appletree.domain.entity.Apple;
+import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.ArrayList;
 import java.util.Date;
 
 @Builder
+@Getter
+@Setter
 @ToString
 public class AppleDTO {
     private Boolean type;
@@ -36,6 +42,18 @@ public class AppleDTO {
                 .content(apple.getContent())
                 .location(apple.getLocation())
                 .useSpace(apple.getUseSpace())
+                .build();
+    }
+
+    public static AppleDTO withTitleAndTeamNameAndHostUid(String title, String teamName, String hostUid) {
+        return AppleDTO.builder()
+                .title(title)
+                .content(Content.ofEmpty())
+                .creator(Creator.builder()
+                        .teamName(teamName)
+                        .hostUid(hostUid)
+                        .member(new ArrayList<>())
+                        .build())
                 .build();
     }
 

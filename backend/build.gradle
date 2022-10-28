@@ -26,17 +26,27 @@ repositories {
 }
 
 dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.google.firebase:firebase-admin:9.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+	testImplementation 'io.projectreactor:reactor-test'
+
+	// for 랜덤 스트링 생성
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+	// Firebase admin
+	implementation 'com.google.firebase:firebase-admin:9.1.0'
 
 	// querydsl
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
@@ -52,6 +62,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('bootRun') {
+	systemProperty 'spring.profiles.active', findProperty('profile') ?: 'development'
 }
 
 /* querydsl */
