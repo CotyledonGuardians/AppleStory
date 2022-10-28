@@ -1,17 +1,16 @@
 import React, {useState} from 'react';
 import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Text, TextInput, Image, Pressable} from 'react-native';
+import Main from '../Main';
 import {Button} from '../../components/Button';
 import GoogleLogin from '../../components/firebase/GoogleLogin';
 
 const Login = ({navigation}) => {
   const [email] = useState(null);
+
   //하위컴포넌트(GoogleLogin)=>상위컴포넌트(Login)으로 props 전달하기 위한 함수
   const getLoginState = isLogin => {
-    // console.log('Login:isLogin: ', isLogin);
-    if (isLogin) {
-      navigation.navigate('Home', {screen: 'Main'});
-    }
+    console.log('Login:isLogin: ', isLogin);
   };
   return (
     <SafeAreaView style={styles.container}>
