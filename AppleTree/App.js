@@ -21,6 +21,7 @@ import GroupSession from './sessions/GroupSession';
 import AppleDetail from './screens/AppleDetail';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
+import SeedDetail from './screens/SeedDetail';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
 import {setGestureState} from 'react-native-reanimated/lib/reanimated2/NativeMethods';
@@ -28,6 +29,122 @@ import {setGestureState} from 'react-native-reanimated/lib/reanimated2/NativeMet
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const CreateStack = createStackNavigator();
+
+const Stack2 = createStackNavigator();
+function MyTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: heightPercentageToDP('9%'),
+        },
+        tabBarShowLabel: false,
+        tabBarInactiveBackgroundColor: '#ECE5E0',
+        tabBarActiveBackgroundColor: '#c3b8ae',
+      }}>
+      <Tab.Screen
+        name="Home"
+        component={Main}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/home.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Map"
+        component={Map}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/map.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="MakeRoom"
+        options={{
+          headerShown: false,
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/create.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}>
+        {() => (
+          <CreateStack.Navigator screenOptions={{headerShown: false}}>
+            <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
+            <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
+            <CreateStack.Screen name="GroupSession" component={GroupSession} />
+            <CreateStack.Screen name="RecordVoice" component={RecordVoice} />
+            <CreateStack.Screen name="AppleLockGIF" component={AppleLockGIF} />
+          </CreateStack.Navigator>
+        )}
+      </Tab.Screen>
+      <Tab.Screen
+        name="AppleList"
+        // component={AppleList}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/list.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}>
+        {() => (
+          <Stack2.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack2.Screen name="AppleList" component={AppleList} />
+            <Stack2.Screen name="AppleDetail" component={AppleDetail} />
+            <Stack2.Screen name="SeedDetail" component={SeedDetail} />
+          </Stack2.Navigator>
+        )}
+      </Tab.Screen>
+      <Tab.Screen
+        name="MyPage"
+        component={MyPage}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/mypage.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function MyStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      {/* 인트로 3개 */}
+      <Stack.Screen name="IntroFirst" component={IntroFirst} />
+      <Stack.Screen name="IntroSecond" component={IntroSecond} />
+      {/* 로그인 페이지 */}
+      <Stack.Screen name="Login" component={Login} />
+      {/* 회원가입 페이지 */}
+      <Stack.Screen name="Register" component={Register} />
+    </Stack.Navigator>
+  );
+}
+
+const isLogin = true;
+
 const HomeStack = createStackNavigator();
 const ListStack = createStackNavigator();
 
