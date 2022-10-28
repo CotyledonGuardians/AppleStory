@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
-import {Text, View, Image, StyleSheet} from 'react-native';
+import {Image, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -12,6 +12,7 @@ import AppleList from './screens/AppleList';
 import MyPage from './screens/auth/MyPage';
 import Map from './screens/Map';
 import Login from './screens/auth/Login';
+import Register from './screens/auth/Register';
 import {IntroFirst, IntroSecond} from './screens/Intro';
 import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
@@ -20,12 +21,132 @@ import GroupSession from './sessions/GroupSession';
 import AppleDetail from './screens/AppleDetail';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
+import SeedDetail from './screens/SeedDetail';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
+import {setGestureState} from 'react-native-reanimated/lib/reanimated2/NativeMethods';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 const CreateStack = createStackNavigator();
-const HomeStack = createStackNavigator();
+
 const Stack2 = createStackNavigator();
+function MyTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {
+          height: heightPercentageToDP('9%'),
+        },
+        tabBarShowLabel: false,
+        tabBarInactiveBackgroundColor: '#ECE5E0',
+        tabBarActiveBackgroundColor: '#c3b8ae',
+      }}>
+      <Tab.Screen
+        name="Home"
+        component={Main}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/home.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Map"
+        component={Map}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/map.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="MakeRoom"
+        options={{
+          headerShown: false,
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/create.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}>
+        {() => (
+          <CreateStack.Navigator screenOptions={{headerShown: false}}>
+            <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
+            <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
+            <CreateStack.Screen name="GroupSession" component={GroupSession} />
+            <CreateStack.Screen name="RecordVoice" component={RecordVoice} />
+            <CreateStack.Screen name="AppleLockGIF" component={AppleLockGIF} />
+          </CreateStack.Navigator>
+        )}
+      </Tab.Screen>
+      <Tab.Screen
+        name="AppleList"
+        // component={AppleList}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/list.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}>
+        {() => (
+          <Stack2.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack2.Screen name="AppleList" component={AppleList} />
+            <Stack2.Screen name="AppleDetail" component={AppleDetail} />
+            <Stack2.Screen name="SeedDetail" component={SeedDetail} />
+          </Stack2.Navigator>
+        )}
+      </Tab.Screen>
+      <Tab.Screen
+        name="MyPage"
+        component={MyPage}
+        options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/icons/mypage.png')}
+              style={styles.navIcon}
+            />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+function MyStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      {/* 인트로 3개 */}
+      <Stack.Screen name="IntroFirst" component={IntroFirst} />
+      <Stack.Screen name="IntroSecond" component={IntroSecond} />
+      {/* 로그인 페이지 */}
+      <Stack.Screen name="Login" component={Login} />
+      {/* 회원가입 페이지 */}
+      <Stack.Screen name="Register" component={Register} />
+    </Stack.Navigator>
+  );
+}
+
+const isLogin = true;
+
+const HomeStack = createStackNavigator();
+const ListStack = createStackNavigator();
 
 const styles = StyleSheet.create({
   navIcon: {
@@ -36,6 +157,35 @@ const styles = StyleSheet.create({
 
 export default function App() {
   const [token, setToken] = useState(null);
+
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState(false);
+
+  auth().onAuthStateChanged(user => {
+    if (user) {
+      setUser(true);
+    } else {
+      setUser(false);
+    }
+  });
+  function MyStacks() {
+    return (
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        {/* 인트로 3개 */}
+        <Stack.Screen name="IntroFirst" component={IntroFirst} />
+        <Stack.Screen name="IntroSecond" component={IntroSecond} />
+        {/* 로그인 페이지 */}
+        <Stack.Screen name="Login" component={Login} />
+        {/* 회원가입 페이지 */}
+        <Stack.Screen name="Register" component={Register} />
+      </Stack.Navigator>
+    );
+  }
+
   function MyTabs() {
     return (
       <Tab.Navigator
@@ -65,16 +215,7 @@ export default function App() {
                 headerShown: false,
                 tabBarStyle: {display: 'none'},
               }}>
-              {/* 인트로 3개 */}
-              {/* <HomeStack.Screen name="IntroFirst" component={IntroFirst} /> */}
-              {/* <HomeStack.Screen name="IntroSecond" component={IntroSecond} /> */}
-              {/* 로그인 페이지 */}
-              {/* 로그인여부에 따라 분기 */}
-              {token ? (
-                <HomeStack.Screen name="Main" component={Main} />
-              ) : (
-                <HomeStack.Screen name="Login" component={Login} />
-              )}
+              <HomeStack.Screen name="Main" component={Main} />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -122,16 +263,25 @@ export default function App() {
         </Tab.Screen>
         <Tab.Screen
           name="AppleList"
-          component={AppleList}
+          // component={AppleList}
           options={{
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/list.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
-          }}
-        />
+          }}>
+          {() => (
+            <ListStack.Navigator
+              screenOptions={{
+                headerShown: false,
+              }}>
+              <ListStack.Screen name="AppleList" component={AppleList} />
+              <ListStack.Screen name="AppleDetail" component={AppleDetail} />
+            </ListStack.Navigator>
+          )}
+        </Tab.Screen>
         <Tab.Screen
           name="MyPage"
           component={MyPage}
@@ -152,8 +302,8 @@ export default function App() {
     try {
       const savedToken = await AsyncStorage.getItem('idToken');
       setToken(savedToken);
-      const currentToken = savedToken;
-      console.log('currentToken:', currentToken);
+      // const currentToken = savedToken;
+      // console.log('currentToken:', currentToken);
     } catch (error) {
       console.log('getToken error' + error);
     }
@@ -168,7 +318,10 @@ export default function App() {
         '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
     });
   };
-
+  useEffect(() => {
+    getToken();
+    console.log('token잇냐?', token);
+  });
   useEffect(() => {
     try {
       setTimeout(() => {
@@ -179,11 +332,10 @@ export default function App() {
       console.warn('에러발생');
       console.warn(e);
     }
-    getToken();
   }, []);
   return (
     <NavigationContainer>
-      <MyTabs />
+      {user ? <MyTabs /> : <MyStacks />}
     </NavigationContainer>
   );
 }

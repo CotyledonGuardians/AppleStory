@@ -7,12 +7,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class FirebaseAuthService {
 
     private final FirebaseAuth firebaseAuth;
+
+    public void setClaimToAppleId(String uid, Long appleId) throws FirebaseAuthException {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("appleId", appleId);
+        firebaseAuth.setCustomUserClaims(uid, claims);
+    }
 
     public String getEmailByUid(String uid) throws FirebaseAuthException {
         UserRecord user = firebaseAuth.getUser(uid);

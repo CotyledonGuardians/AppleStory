@@ -1,62 +1,74 @@
 import React from 'react';
-import {SafeAreaView, View, StyleSheet} from 'react-native';
+import {SafeAreaView, View, StyleSheet, ScrollView} from 'react-native';
 import {Text, TextInput, Image} from 'react-native';
 import {Pressable} from 'react-native';
 import {Button} from '../components/Button';
 
 const GroupCreate = ({navigation}) => {
-  const [nickname] = React.useState(null);
-  const [content] = React.useState(null);
+  const [nickname, setNickName] = React.useState(null);
+  const [content, setContent] = React.useState(null);
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.txt}>닉네임</Text>
-      <TextInput
-        value={nickname}
-        style={styles.inputNick}
-        placeholder="자기만의 닉네임을 입력해주세요"
-        placeholderTextColor={'#AAA19B'}
-        maxLength={20}
-      />
-      <Text style={styles.txt}>사과에 담고 싶은 내용을 써주세요!</Text>
-      <TextInput
-        value={content}
-        style={styles.inputContent}
-        placeholder="내용을 입력해주세요"
-        placeholderTextColor={'#AAA19B'}
-        multiline={true}
-        numberOfLines={7}
-        blurOnSubmit={true}
-      />
-      <Text style={styles.txt}>사과에 담고 싶은 파일을 넣어 보세요!</Text>
-      <View style={{flexDirection: 'row', marginBottom: 20}}>
-        <Pressable style={styles.add}>
-          <Image
-            source={require('AppleTree/assets/icons/videoadd.png')}
-            style={styles.icon}
-          />
-          <Text style={styles.button}>추가하기</Text>
-        </Pressable>
-        <Pressable style={styles.add}>
-          <Image
-            source={require('AppleTree/assets/icons/imgadd.png')}
-            style={styles.icon}
-          />
-          <Text style={styles.button}>추가하기</Text>
-        </Pressable>
-        <Pressable
-          style={styles.add}
-          onPress={() =>
-            navigation.navigate('RecordVoice', {screen: 'RecordVoice'})
-          }>
-          <Image
-            source={require('AppleTree/assets/icons/mic.png')}
-            style={styles.icon}
-          />
-          <Text style={styles.button}>녹음하기</Text>
-        </Pressable>
-      </View>
-      <Button onPress={onSubmit} text="추억 만들기" />
+      <ScrollView contentContainerStyle={styles.wrapper}>
+        <Image
+          source={require('../assets/pictures/listpersonal1.png')}
+          style={{
+            width: 180,
+            height: 170,
+            marginTop: 30,
+            marginBottom: 10,
+          }}></Image>
+        <Text style={styles.txt}>닉네임</Text>
+        <TextInput
+          value={nickname}
+          style={styles.inputNick}
+          placeholder="자기만의 닉네임을 입력해주세요"
+          placeholderTextColor={'#AAA19B'}
+          maxLength={20}
+          onChangeText={text => setNickName(text)}
+        />
+        <Text style={styles.txt}>사과에 담고 싶은 내용을 써주세요!</Text>
+        <TextInput
+          value={content}
+          style={styles.inputContent}
+          placeholder="내용을 입력해주세요"
+          placeholderTextColor={'#AAA19B'}
+          multiline={true}
+          numberOfLines={7}
+          blurOnSubmit={true}
+          onChangeText={text => setContent(text)}
+        />
+        <Text style={styles.txt}>사과에 담고 싶은 파일을 넣어 보세요!</Text>
+        <View style={{flexDirection: 'row', marginBottom: 20}}>
+          <Pressable style={styles.add}>
+            <Image
+              source={require('AppleTree/assets/icons/videoadd.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.button}>추가하기</Text>
+          </Pressable>
+          <Pressable style={styles.add}>
+            <Image
+              source={require('AppleTree/assets/icons/imgadd.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.button}>추가하기</Text>
+          </Pressable>
+          <Pressable
+            style={styles.add}
+            onPress={() =>
+              navigation.navigate('RecordVoice', {screen: 'RecordVoice'})
+            }>
+            <Image
+              source={require('AppleTree/assets/icons/mic.png')}
+              style={styles.icon}
+            />
+            <Text style={styles.button}>녹음하기</Text>
+          </Pressable>
+        </View>
+        <Button onPress={onSubmit} text="추억 만들기" />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -74,10 +86,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   wrapper: {
-    flex: 1,
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
   },
   txt: {
     color: '#4C4036',
