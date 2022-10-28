@@ -1,18 +1,25 @@
-import React, {Component, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
-  ScrollView,
-  Alert,
   Image,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Button,
+  Slider,
+  Platform,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
 
-// https://github.com/zmxv/react-native-sound
+const img_speaker = require('../assets/icons/mic.png');
+const img_pause = require('../assets/icons/mic.png');
+const img_play = require('../assets/icons/mic.png');
+const img_playjumpleft = require('../assets/icons/mic.png');
+const img_playjumpright = require('../assets/icons/mic.png');
 
 const data = {
   id: 1,
@@ -100,8 +107,7 @@ const data = {
     audio: [
       {
         author: '짤리',
-        content:
-          'https://raw.githubusercontent.com/zmxv/react-native-sound-demo/master/advertising.mp3',
+        content: require('./vancouver.mp3'),
       },
       {
         author: '옌',
@@ -133,127 +139,137 @@ const data = {
   isCatch: true,
 };
 
-const Button = ({title, onPress}) => (
-  <TouchableOpacity onPress={onPress}>
-    <Text style={styles.button}>{title}</Text>
-  </TouchableOpacity>
-);
+export default class PlayerScreen extends React.Component {
+  // static navigationOptions = props => ({
+  //   // title: props.navigation.state.params.title,
+  //   nickname: props.navigation.state.params,
+  // });
 
-const Header = ({children, style}) => (
-  <Text style={[styles.header, style]}>{children}</Text>
-);
+  constructor() {
+    super();
+    this.state = {
+      playState: 'paused', //playing, paused
+      playSeconds: 0,
+      duration: 0,
+    };
+    this.sliderEditing = false;
+  }
 
-const Feature = ({title, onPress, buttonLabel = 'PLAY', status}) => (
-  <View style={styles.feature}>
-    <Header style={{flex: 1}}>{title}</Header>
-    {/* {status ? (
-      <Text style={{padding: 5}}>{resultIcons[status] || ''}</Text>
-    ) : null} */}
-    <Button title={buttonLabel} onPress={onPress} />
-  </View>
-);
+  componentDidMount() {
+    // this.play();
 
-const resultIcons = {
-  '': '',
-  pending: '?',
-  playing: '\u25B6',
-  win: '\u2713',
-  fail: '\u274C',
-};
-
-const audioTests = [
-  {
-    title: 'mp3 via require()',
-    isRequire: true,
-    url: require('./vancouver.mp3'),
-  },
-  {
-    title: 'mp3 remote download',
-    url: 'https://raw.githubusercontent.com/zmxv/react-native-sound-demo/master/advertising.mp3',
-  },
-];
-
-function setTestState(testInfo, component, status) {
-  component.setState({
-    tests: {...component.state.tests, [testInfo.title]: status},
-  });
-}
-
-/**
- * Generic play function for majority of tests
- */
-function playSound(testInfo, component) {
-  setTestState(testInfo, component, 'pending');
-  console.log('testInfo', testInfo);
-  const callback = (error, sound) => {
-    if (error) {
-      Alert.alert('error', error.message);
-      setTestState(testInfo, component, 'fail');
-      return;
+    this.timeout = setInterval(() => {
+      if (
+        this.sound &&
+        this.sound.isLoaded() &&
+        this.state.playState == 'playing' &&
+        !this.sliderEditing
+      ) {
+        this.sound.getCurrentTime((seconds, isPlaying) => {
+          this.setState({playSeconds: seconds});
+        });
+      }
+    }, 100);
+  }
+  componentWillUnmount() {
+    if (this.sound) {
+      this.sound.release();
+      this.sound = null;
     }
-    setTestState(testInfo, component, 'playing');
-    // Run optional pre-play callback
-    testInfo.onPrepared && testInfo.onPrepared(sound, component);
-    sound.play(() => {
-      // Success counts as getting to the end
-      setTestState(testInfo, component, 'win');
-      // Release when it's done so we're not using up resources
-      sound.release();
-    });
+    if (this.timeout) {
+      clearInterval(this.timeout);
+    }
+  }
+
+  onSliderEditStart = () => {
+    this.sliderEditing = true;
+  };
+  onSliderEditEnd = () => {
+    this.sliderEditing = false;
+  };
+  onSliderEditing = value => {
+    if (this.sound) {
+      this.sound.setCurrentTime(value);
+      this.setState({playSeconds: value});
+    }
   };
 
-  // If the audio is a 'require' then the second parameter must be the callback.
-  if (testInfo.isRequire) {
-    const sound = new Sound(testInfo, error => callback(error, sound));
-  } else {
-    const sound = new Sound(testInfo, testInfo.basePath, error =>
-      callback(error, sound),
-    );
-  }
-}
+  play = async () => {
+    if (this.sound) {
+      this.sound.play(this.playComplete);
+      this.setState({playState: 'playing'});
+    } else {
+      const filepath = require('./vancouver.mp3');
+      console.log('[Play]', filepath);
 
-class SeedDetail extends Component {
-  constructor(props) {
-    super(props);
-
-    Sound.setCategory('Playback', true); // true = mixWithOthers
-
-    // Special case for stopping
-    this.stopSoundLooped = () => {
-      if (!this.state.loopingSound) {
-        return;
+      this.sound = new Sound(filepath, (error, _sound) => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          Alert.alert('Notice', 'audio file error. (Error code : 1)');
+          this.setState({playState: 'paused'});
+        } else {
+          this.setState({
+            playState: 'playing',
+            duration: this.sound.getDuration(),
+          });
+          this.sound.play(this.playComplete);
+        }
+      });
+    }
+  };
+  playComplete = success => {
+    if (this.sound) {
+      if (success) {
+        console.log('successfully finished playing');
+      } else {
+        console.log('playback failed due to audio decoding errors');
+        Alert.alert('Notice', 'audio file error. (Error code : 2)');
       }
+      this.setState({playState: 'paused', playSeconds: 0});
+      this.sound.setCurrentTime(0);
+    }
+  };
 
-      this.state.loopingSound.stop().release();
-      this.setState({
-        loopingSound: null,
-        tests: {...this.state.tests, ['mp3 in bundle (looped)']: 'win'},
-        // count: {...this.state.count, +1},
+  pause = () => {
+    if (this.sound) {
+      this.sound.pause();
+    }
+
+    this.setState({playState: 'paused'});
+  };
+
+  jumpPrev15Seconds = () => {
+    this.jumpSeconds(-15);
+  };
+  jumpNext15Seconds = () => {
+    this.jumpSeconds(15);
+  };
+  jumpSeconds = secsDelta => {
+    if (this.sound) {
+      this.sound.getCurrentTime((secs, isPlaying) => {
+        let nextSecs = secs + secsDelta;
+        if (nextSecs < 0) nextSecs = 0;
+        else if (nextSecs > this.state.duration) nextSecs = this.state.duration;
+        this.sound.setCurrentTime(nextSecs);
+        this.setState({playSeconds: nextSecs});
       });
-    };
+    }
+  };
 
-    this.clickSound = () => {
-      this.setState({
-        count: this.state.count + 1,
-      });
-    };
+  getAudioTimeString(seconds) {
+    const m = parseInt((seconds % (60 * 60)) / 60);
+    const s = parseInt(seconds % 60);
 
-    this.state = {
-      loopingSound: undefined,
-      tests: {},
-      count: 0,
-    };
+    return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
   }
-
-  //   const [count, setCount] = useState(0);
 
   render() {
     let nickname = '짤리';
+    // let nickname = this.props.navigation.state.params;
     let text = '';
     let image = '';
     let video = '';
     let audio = '';
-
     for (let i = 0; i < data.content.text.length; i++) {
       if (data.content.text[i].author === nickname) {
         text = data.content.text[i].content;
@@ -278,86 +294,119 @@ class SeedDetail extends Component {
         break;
       }
     }
-
-    // const [playSound, setPlaySound] = useState(false);
-    // console.log(playSound);
-    // const changeSound = () => {
-    //   console.log(playSound);
-    //   setPlaySound((playSound: boolean) => !playSound);
-    // };
+    const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
+    const durationString = this.getAudioTimeString(this.state.duration);
 
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={styles.textFontBold}>{nickname}님의 기록</Text>
-          <View style={styles.textBox}>
-            <Text style={styles.textFont}>{text}</Text>
-          </View>
-          <View style={styles.imageBox}>
-            <Image
-              style={{width: '100%', height: 200}}
-              source={{
-                uri: image,
-              }}
-            />
-          </View>
-          <Video
-            source={{
-              uri: video,
-            }}
-            style={{width: '100%', height: 200, marginTop: '5%'}}
-            paused={false} // 재생/중지 여부
-            resizeMode={'cover'} // 프레임이 비디오 크기와 일치하지 않을 때 비디오 크기를 조정하는 방법을 결정합니다. cover : 비디오의 크기를 유지하면서 최대한 맞게
-            onLoad={e => console.log(e)} // 미디어가 로드되고 재생할 준비가 되면 호출되는 콜백 함수입니다.
-            repeat={true} // video가 끝나면 다시 재생할 지 여부
-            onAnimatedValueUpdate={() => {}}
-          />
-          <View style={styles.audioBox}>
-            <TouchableOpacity
-              onPress={() => {
-                this.clickSound;
-                return playSound(audio, this);
-              }}>
+          {text !== '' && (
+            <View style={styles.textBox}>
+              <Text style={styles.textFont}>{text}</Text>
+            </View>
+          )}
+          {image !== '' && (
+            <View style={styles.imageBox}>
               <Image
-                style={{
-                  width: 30,
-                  height: 30,
-                  margin: 15,
+                style={{width: '100%', height: 200}}
+                source={{
+                  uri: image,
                 }}
-                source={require('../assets/icons/mic.png')}
               />
-            </TouchableOpacity>
-            <Image
-              style={{
-                width: 30,
-                height: 30,
-                margin: 15,
-                alignItems: 'flex-end',
+            </View>
+          )}
+          {video !== '' && (
+            <Video
+              source={{
+                uri: video,
               }}
-              source={require('../assets/icons/downloadbrown.png')}
+              style={{width: '100%', height: 200, marginTop: '5%'}}
+              paused={false} // 재생/중지 여부
+              resizeMode={'cover'} // 프레임이 비디오 크기와 일치하지 않을 때 비디오 크기를 조정하는 방법을 결정합니다. cover : 비디오의 크기를 유지하면서 최대한 맞게
+              onLoad={e => console.log(e)} // 미디어가 로드되고 재생할 준비가 되면 호출되는 콜백 함수입니다.
+              repeat={true} // video가 끝나면 다시 재생할 지 여부
+              onAnimatedValueUpdate={() => {}}
             />
-          </View>
-          {/* <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.scrollContainer}>
-            {audioTests.map(testInfo => {
-              return (
-                <Feature
-                  status={this.state.tests[testInfo.title]}
-                  key={testInfo.title}
-                  title={testInfo.title}
-                  onPress={() => {
-                    return playSound(testInfo.url, this);
-                  }}
-                />
-              );
-            })}
-            <Feature
-              title="mp3 in bundle (looped)"
-              buttonLabel={'STOP'}
-              onPress={this.stopSoundLooped}
-            />
-          </ScrollView> */}
+          )}
+          {audio !== '' && (
+            <View style={styles.audioBox}>
+              <View style={{flex: 1, justifyContent: 'center'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    marginVertical: 10,
+                  }}>
+                  <TouchableOpacity
+                    onPress={this.jumpPrev15Seconds}
+                    style={{justifyContent: 'center'}}>
+                    <Image
+                      source={require('../assets/icons/rotate-left.png')}
+                      style={{width: 25, height: 25}}
+                    />
+                    <Text style={styles.textFontJump}>15</Text>
+                  </TouchableOpacity>
+                  {this.state.playState == 'playing' && (
+                    <TouchableOpacity
+                      onPress={this.pause}
+                      style={{marginHorizontal: 20}}>
+                      <Image
+                        source={require('../assets/icons/pause.png')}
+                        style={{width: 25, height: 25}}
+                      />
+                    </TouchableOpacity>
+                  )}
+                  {this.state.playState == 'paused' && (
+                    <TouchableOpacity
+                      onPress={this.play}
+                      style={{marginHorizontal: 20}}>
+                      <Image
+                        source={require('../assets/icons/playbrown.png')}
+                        style={{width: 25, height: 25}}
+                      />
+                    </TouchableOpacity>
+                  )}
+                  <TouchableOpacity
+                    onPress={this.jumpNext15Seconds}
+                    style={{justifyContent: 'center'}}>
+                    <Image
+                      source={require('../assets/icons/rotate-right.png')}
+                      style={{width: 25, height: 25}}
+                    />
+                    <Text style={styles.textFontJump}>15</Text>
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    // marginVertical: 10,
+                    marginHorizontal: 15,
+                    flexDirection: 'row',
+                  }}>
+                  <Text style={styles.textFontTime}>{currentTimeString}</Text>
+                  <Slider
+                    onTouchStart={this.onSliderEditStart}
+                    // onTouchMove={() => console.log('onTouchMove')}
+                    onTouchEnd={this.onSliderEditEnd}
+                    // onTouchEndCapture={() => console.log('onTouchEndCapture')}
+                    // onTouchCancel={() => console.log('onTouchCancel')}
+                    onValueChange={this.onSliderEditing}
+                    value={this.state.playSeconds}
+                    maximumValue={this.state.duration}
+                    maximumTrackTintColor="gray"
+                    minimumTrackTintColor="#4C4036"
+                    thumbTintColor="#4C4036"
+                    style={{
+                      flex: 1,
+                      alignSelf: 'center',
+                      marginHorizontal: Platform.select({ios: 5}),
+                    }}
+                  />
+                  <Text style={styles.textFontTime}>{durationString}</Text>
+                </View>
+              </View>
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     );
@@ -372,6 +421,21 @@ const styles = StyleSheet.create({
   },
   textFont: {
     fontFamily: 'UhBee Se_hyun',
+  },
+  textFontJump: {
+    position: 'absolute',
+    alignSelf: 'center',
+    marginTop: 1,
+    fontFamily: 'UhBee Se_hyun',
+    color: '#4C4036',
+    fontSize: 10,
+  },
+  textFontTime: {
+    fontFamily: 'UhBee Se_hyun',
+    alignItems: 'center',
+    // marginTop: 15,
+    fontSize: 16,
+    color: '#4C4036',
   },
   textFontBold: {
     fontFamily: 'UhBee Se_hyun Bold',
@@ -390,43 +454,10 @@ const styles = StyleSheet.create({
   audioBox: {
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
-    height: 60,
+    height: 100,
     marginTop: '5%',
     marginBottom: '5%',
-    flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  scrollContainer: {},
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    paddingTop: 30,
-    padding: 20,
-    textAlign: 'center',
-    backgroundColor: 'rgba(240,240,240,1)',
-  },
-  button: {
-    fontSize: 20,
-    backgroundColor: 'rgba(220,220,220,1)',
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(80,80,80,0.5)',
-    overflow: 'hidden',
-    padding: 7,
-  },
-  header: {
-    textAlign: 'left',
-  },
-  feature: {
     flexDirection: 'row',
-    padding: 10,
-    alignSelf: 'stretch',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgb(180,180,180)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgb(230,230,230)',
   },
 });
-
-export default SeedDetail;

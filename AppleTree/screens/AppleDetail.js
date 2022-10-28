@@ -132,8 +132,11 @@ const AppleDetail = ({navigation}) => {
   let name = '떡잎방범대';
   let people = 6;
 
-  const seedDetail = () => {
-    navigation.navigate('SeedDetail', {screen: 'SeedDetail'});
+  const seedDetail = nickname => {
+    navigation.navigate('SeedDetail', {
+      screen: 'SeedDetail',
+      nickname: nickname,
+    });
   };
 
   function Header() {
@@ -207,7 +210,7 @@ const AppleDetail = ({navigation}) => {
         style={styles.card}
         onPress={() => {
           // Alert.alert('상세보기로 넘어가렴~');
-          seedDetail();
+          seedDetail(nickname);
         }}>
         <Image
           source={require('../assets/pictures/seed.png')}
