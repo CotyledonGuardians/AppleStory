@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   Alert,
@@ -11,14 +11,12 @@ import {
   ImageBackground,
 } from 'react-native';
 import {SmallButton} from '../components/Button';
-import {useQuery} from 'react-query';
 // import {width, height} from '../config/globalStyles';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {getCloseAppleList} from '../api/AppleAPI';
-// import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
+import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 
 const Apple = ({index, apple}) => {
   const appleStyle = [
@@ -42,20 +40,23 @@ const Apple = ({index, apple}) => {
 };
 
 const Main = () => {
-  const {isLoading, data: appleList} = useQuery('getCloseAppleList', () =>
-    getCloseAppleList({sort: 1, page: 0, size: 6}),
-  );
-  // const {data: openApples} = useQuery('getOpenAppleList', () =>
-  //   getOpenAppleList({sort: 1, page: 0, size: 1}),
-  // );
+  useEffect(() => {
+    getCloseAppleList(3, 0, 6)
+      .then(response => {
+        console.log('response', response.data);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  });
 
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
-      {!isLoading
+      {/* {!isLoading
         ? console.log('appleList', appleList)
-        : console.log('loading')}
+        : console.log('loading')} */}
       <ImageBackground
         style={styles.backgroundImg}
         source={require('../assets/pictures/main.png')}>

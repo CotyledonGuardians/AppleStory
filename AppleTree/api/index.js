@@ -1,16 +1,15 @@
 import axios from 'axios';
-import {AsyncStorage} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import auth from '@react-native-firebase/auth';
+import Config from 'react-native-config';
 
-const accessTokenStore = AsyncStorage.getItem('ACCESS_TOKEN');
-console.log('accessTokenStore', accessTokenStore);
 /**
  * accessToken: string 을 받아서
  * 인터셉터가 설정된 Axios 인스턴스를 반환
  */
 const GetAxios = accessToken => {
   const axiosPrivate = axios.create({
-    baseURL: process.env.REACT_APP_API_SERVER_BASE_URL,
+    baseURL: Config.API_APP_KEY,
   });
 
   axiosPrivate.interceptors.request.use(config => {
@@ -35,12 +34,13 @@ const RefreshToken = async () => {
   return auth()
     .currentUser.getIdToken()
     .then(idToken => {
-      accessTokenStore.setAccessToken(idToken);
+      console.log('idToken', idToken);
+      AsyncStorage.setItem('idToken', idToken);
       return idToken;
+    })
+    .then(idToken => {
+      return GetAxios(idToken);
     });
-  // .then(idToken => {
-  //   return useStored(idToken);
-  // });
 };
 
 /**
@@ -53,8 +53,8 @@ const RefreshToken = async () => {
  * Promise (Axios 요청 결과)
  */
 const api = async (method, url, body) => {
-  const accessToken = accessTokenStore.accessToken;
-
+  const accessToken = AsyncStorage.getItem('idToken');
+  console.log('api1', accessToken);
   if (!accessToken || accessToken === '') {
     throw {no_access_token: true};
   }

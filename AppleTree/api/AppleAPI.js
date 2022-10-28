@@ -1,13 +1,13 @@
 import api from './index';
 
-const getOpenAppleList = async body => {
-  return await api('get', '/apple/open', body);
+const getOpenAppleList = async (sort, page, size) => {
+  const url = '/apple/open' + `?sort=${sort}&page=${page}&size=${size}`;
+  return await api('get', url);
 };
 
-const getCloseAppleList = async body => {
-  // const result = await jwtAxios.get('/apple/close', body);
-  // return result.data;
-  return await api('get', '/apple/close', body);
+const getCloseAppleList = async (sort, page, size) => {
+  const url = '/apple/close' + `?sort=${sort}&page=${page}&size=${size}`;
+  return await api('get', url);
 };
 
 export {getOpenAppleList, getCloseAppleList};

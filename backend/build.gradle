@@ -9,7 +9,6 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
 	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 	id 'java'
-	id 'com.google.gms.google-services'
 }
 
 group = 'com.cotyledon'
