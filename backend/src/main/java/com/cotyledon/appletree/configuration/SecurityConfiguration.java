@@ -16,7 +16,7 @@ import static org.springframework.http.HttpMethod.*;
 @Configuration
 public class SecurityConfiguration {
 
-    @Value("${com.cotyledon.appletree.firebase_project_id}")
+    @Value("${com.cotyledon.appletree.firebase-project-id}")
     private String firebaseProjectId;
     private final List<String> EMPTY_LIST = Collections.emptyList();
     private final String ROLE_USER = "ROLE_USER";

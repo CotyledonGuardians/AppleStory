@@ -1,16 +1,16 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/apple_tree?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
-    password: ssafy
+    url: jdbc:mysql://${com.cotyledon.appletree.dev-dep.host}:3306/apple_tree?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+    password: ${com.cotyledon.appletree.dev-dep.password}
   output:
     ansi:
       enabled: always
   rabbitmq:
-    host: localhost
-    password: ssafy
+    host: ${com.cotyledon.appletree.dev-dep.host}
+    password: ${com.cotyledon.appletree.dev-dep.password}
   redis:
-    host: localhost
-    password: adpass
+    host: ${com.cotyledon.appletree.dev-dep.host}
+    password: ${com.cotyledon.appletree.dev-dep.password}
 
 logging:
   level:
