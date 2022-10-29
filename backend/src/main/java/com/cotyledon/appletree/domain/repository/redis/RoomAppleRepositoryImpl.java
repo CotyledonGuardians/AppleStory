@@ -13,20 +13,21 @@ import java.util.Optional;
 @Slf4j
 public class RoomAppleRepositoryImpl implements RoomAppleRepository {
 
+    private static final String KEY = "apple";
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public void putApple(String roomId, AppleDTO apple) {
-        redisTemplate.opsForHash().put("apple", roomId, apple);
+        redisTemplate.opsForHash().put(KEY, roomId, apple);
     }
 
     @Override
     public Optional<AppleDTO> findAppleByRoomId(String roomId) {
-        return Optional.ofNullable((AppleDTO) redisTemplate.opsForHash().get("apple", roomId));
+        return Optional.ofNullable((AppleDTO) redisTemplate.opsForHash().get(KEY, roomId));
     }
 
     @Override
     public void deleteAppleByRoomId(String roomId) {
-        redisTemplate.opsForHash().delete("apple", roomId);
+        redisTemplate.opsForHash().delete(KEY, roomId);
     }
 }

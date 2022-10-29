@@ -1,9 +1,9 @@
 package com.cotyledon.appletree.service;
 
-import com.cotyledon.appletree.domain.dto.*;
+import com.cotyledon.appletree.domain.dto.AppleDTO;
+import com.cotyledon.appletree.domain.dto.RoomDTO;
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
-import com.cotyledon.appletree.domain.event.AppleRoomJoinEvent;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomGroupRepository;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomUserRepository;
@@ -25,6 +25,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     private final AppleRoomGroupRepository appleRoomGroupRepository;
     private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
+    private final LockAppleRoomLogService lockAppleRoomLogService;
     private final ApplicationEventPublisher eventPublisher;
 
     // reserve 이벤트 발행
@@ -87,18 +88,15 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
             return false;
         }
 
+        AppleRoomUser user = AppleRoomUser.builder().uid(uid).roomId(roomId).build();
+        appleRoomUserRepository.save(user);
+
         Set<String> group = groupOptional.get();
         group.add(uid);
         appleRoomGroupRepository.putGroup(roomId, group);
 
-        AppleRoomUser user = AppleRoomUser.builder().uid(uid).roomId(roomId).build();
-        appleRoomUserRepository.save(user);
-
-        // join 이벤트 발행
-        eventPublisher.publishEvent(AppleRoomJoinEvent.builder()
-                .roomId(roomId)
-                .uid(uid)
-                .build());
+        // change 이벤트 발행
+        lockAppleRoomLogService.logForJoined(roomId, uid);
 
         return true;
     }
@@ -107,44 +105,5 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     public boolean hasRoomByRoomId(String roomId) {
         Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
         return room.isPresent();
-    }
-
-    @Override
-    public String getNicknameFromContent(Content content) {
-        List<ContentDescription> descriptions;
-
-        descriptions = content.getText();
-        if (descriptions != null &&
-                descriptions.get(0) != null &&
-                descriptions.get(0).getAuthor() != null &&
-                !descriptions.get(0).getAuthor().isBlank()) {
-            return descriptions.get(0).getAuthor();
-        }
-
-        descriptions = content.getPhoto();
-        if (descriptions != null &&
-                descriptions.get(0) != null &&
-                descriptions.get(0).getAuthor() != null &&
-                !descriptions.get(0).getAuthor().isBlank()) {
-            return descriptions.get(0).getAuthor();
-        }
-
-        descriptions = content.getAudio();
-        if (descriptions != null &&
-                descriptions.get(0) != null &&
-                descriptions.get(0).getAuthor() != null &&
-                !descriptions.get(0).getAuthor().isBlank()) {
-            return descriptions.get(0).getAuthor();
-        }
-
-        descriptions = content.getVideo();
-        if (descriptions != null &&
-                descriptions.get(0) != null &&
-                descriptions.get(0).getAuthor() != null &&
-                !descriptions.get(0).getAuthor().isBlank()) {
-            return descriptions.get(0).getAuthor();
-        }
-
-        throw new IllegalArgumentException("Invalid Content");
     }
 }

@@ -13,20 +13,21 @@ import java.util.Set;
 @Slf4j
 public class AppleRoomGroupRepositoryImpl implements AppleRoomGroupRepository {
 
+    private static final String KEY = "group";
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public void putGroup(String roomId, Set<String> group) {
-        redisTemplate.opsForHash().put("group", roomId, group);
+        redisTemplate.opsForHash().put(KEY, roomId, group);
     }
 
     @Override
     public Optional<Set<String>> findGroupByRoomId(String roomId) {
-        return Optional.ofNullable((Set<String>) redisTemplate.opsForHash().get("group", roomId));
+        return Optional.ofNullable((Set<String>) redisTemplate.opsForHash().get(KEY, roomId));
     }
 
     @Override
     public void deleteGroupByRoomId(String roomId) {
-        redisTemplate.opsForHash().delete("group", roomId);
+        redisTemplate.opsForHash().delete(KEY, roomId);
     }
 }

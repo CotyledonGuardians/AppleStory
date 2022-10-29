@@ -1,14 +1,9 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
-import com.cotyledon.appletree.domain.event.AppleRoomLeaveEvent;
-import com.cotyledon.appletree.domain.repository.redis.AppleRoomGroupRepository;
-import com.cotyledon.appletree.domain.repository.redis.AppleRoomUserRepository;
-import com.cotyledon.appletree.domain.repository.redis.LockAppleRoomRepository;
-import com.cotyledon.appletree.domain.repository.redis.RoomAppleRepository;
+import com.cotyledon.appletree.domain.repository.redis.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,7 +18,8 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
     private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomGroupRepository appleRoomGroupRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
-    private final ApplicationEventPublisher eventPublisher;
+    private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
+    private final LockAppleRoomLogService lockAppleRoomLogService;
 
     // TODO: roomType 에 따라 repo 호출 분기 혹은 둘 다 쓰기?
     // 이 호출에 의해 룸이 비게 되었는지의 여부를 리턴
@@ -56,11 +52,8 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
         // 그롭에서 유저를 지움
         group.remove(uid);
 
-        // leave event 발행
-        eventPublisher.publishEvent(AppleRoomLeaveEvent.builder()
-                .roomId(roomId)
-                .uid(uid)
-                .build());
+        // change 이벤트 발행
+        lockAppleRoomLogService.logForLeft(roomId, uid);
 
         if (!group.isEmpty()) {
             // 그룹이 비어 있지 않다면 그룹을 업데이트
@@ -69,15 +62,16 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
             return false;
         }
 
-        // 그룹이 비었으니 다 지움
-        deleteAll(roomId);
+        // 그룹이 비었으니 관련된 것 다 지움
+        deleteAllRelatedToRoomIdOf(roomId);
 
         return true;
     }
 
-    private void deleteAll(String roomId) {
+    private void deleteAllRelatedToRoomIdOf(String roomId) {
         appleRoomGroupRepository.deleteGroupByRoomId(roomId);
         roomAppleRepository.deleteAppleByRoomId(roomId);
+        lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
         lockAppleRoomRepository.deleteById(roomId);
     }
 }
