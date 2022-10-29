@@ -66,6 +66,8 @@ tasks.named('test') {
 
 tasks.named('bootRun') {
 	systemProperty 'spring.profiles.active', findProperty('profile') ?: 'development'
+	systemProperty 'com.cotyledon.appletree.dev-dep.host', findProperty('dev-dep.host') ?: '!!!_WRONG_HOST_!!!'
+	systemProperty 'com.cotyledon.appletree.dev-dep.password', findProperty('dev-dep.password') ?: '!!!_WRONG_PASSWORD_!!!'
 }
 
 /* querydsl */
