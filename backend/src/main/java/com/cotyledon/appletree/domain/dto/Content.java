@@ -1,16 +1,15 @@
 package com.cotyledon.appletree.domain.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
-import org.springframework.stereotype.Service;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Builder
 @Getter
-@Service
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class Content {
     private List<ContentDescription> text;

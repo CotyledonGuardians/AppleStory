@@ -2,8 +2,11 @@ package com.cotyledon.appletree.domain.dto;
 
 import lombok.*;
 
-@Getter
 @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class RoomDTO {
 

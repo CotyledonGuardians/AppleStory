@@ -2,12 +2,17 @@ package com.cotyledon.appletree.domain.dto;
 
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import com.cotyledon.appletree.domain.entity.jpa.AppleUser;
-import lombok.Data;
+import lombok.*;
 import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
-@Data
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class AppleListDTO {
     private Boolean type;
     private String title;

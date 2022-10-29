@@ -7,9 +7,9 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-@ToString
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Creator {
     private String teamName;
     private String hostUid;

@@ -1,11 +1,12 @@
 package com.cotyledon.appletree.domain.dto;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.springframework.stereotype.Service;
+import lombok.*;
 
+@Builder
 @Getter
-@Service
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class ContentDescription {
     private String author;

@@ -1,10 +1,7 @@
 package com.cotyledon.appletree.domain.dto;
 
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -14,6 +11,8 @@ import java.util.Date;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class AppleDTO {
     private Boolean type;

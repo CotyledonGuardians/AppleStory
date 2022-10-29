@@ -1,19 +1,18 @@
 package com.cotyledon.appletree.domain.dto;
 
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Builder
 @Getter
 @Setter
-@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class LockAppleDTO {
     private Boolean type;

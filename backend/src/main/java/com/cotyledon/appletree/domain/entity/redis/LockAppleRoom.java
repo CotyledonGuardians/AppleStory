@@ -6,7 +6,10 @@ import org.springframework.data.redis.core.RedisHash;
 
 @RedisHash(value = "lock_apple_room")
 @Getter
+@Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
 public class LockAppleRoom {
 
