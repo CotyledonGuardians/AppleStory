@@ -16,7 +16,7 @@ import org.springframework.stereotype.Controller;
 import java.util.Optional;
 
 @Controller
-@MessageMapping("/lock-apple-room.{roomId}")
+@MessageMapping("lock-apple-room")
 @RequiredArgsConstructor
 @Slf4j
 public class LockAppleRoomController {
@@ -25,7 +25,7 @@ public class LockAppleRoomController {
     private final LockAppleRoomLogService lockAppleRoomLogService;
     private final StompUserDAO stompUserDAO;
 
-    @MessageMapping(".adding")
+    @MessageMapping("{roomId}.adding")
     public void adding(@DestinationVariable String roomId, Message<Object> message) {
 
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(message);
@@ -42,7 +42,7 @@ public class LockAppleRoomController {
         lockAppleRoomLogService.logForAdding(roomId, uid.get());
     }
 
-    @MessageMapping(".added")
+    @MessageMapping("{roomId}.added")
     public void receiveContent(@DestinationVariable String roomId, Message<Content> message) {
 
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(message);
@@ -72,7 +72,7 @@ public class LockAppleRoomController {
                 content);
     }
 
-    @MessageMapping(".cancelled")
+    @MessageMapping("{roomId}.cancelled")
     public void cancelled(@DestinationVariable String roomId, Message<Object> message) {
 
         StompHeaderAccessor stompHeaderAccessor = StompHeaderAccessor.wrap(message);
@@ -89,7 +89,7 @@ public class LockAppleRoomController {
         lockAppleRoomLogService.logForCancelled(roomId, uid.get());
     }
 
-    @MessageMapping(".submit")
+    @MessageMapping("{roomId}.submit")
     public void submit(@DestinationVariable String roomId, Message<Object> message) {
         log.info("제출됨");
     }
