@@ -1,3 +1,4 @@
 *-secret.*
 /secrets/
 *.log
+*-prod.*

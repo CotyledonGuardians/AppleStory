@@ -1,9 +1,9 @@
 package com.cotyledon.appletree.web.controller;
 
-import com.cotyledon.appletree.common.service.FirebaseAuthService;
+import com.cotyledon.appletree.service.FirebaseAuthService;
 import com.cotyledon.appletree.common.util.BaseResponse;
 import com.cotyledon.appletree.domain.dto.AppleDTO;
-import com.cotyledon.appletree.web.service.SingleAppleService;
+import com.cotyledon.appletree.service.SingleAppleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;

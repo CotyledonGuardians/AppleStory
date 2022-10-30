@@ -1,29 +1,32 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/apple_tree?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
     username: ssafy
-    password: ssafy
-  output:
-    ansi:
-      enabled: always
+  jpa:
+    open-in-view: false
+    hibernate:
+#      dialect: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+#      database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+      format_sql: true
+      ddl-auto: create-drop
+      show-sql: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  rabbitmq:
+    port: 5672
+    username: ssafy
+  redis:
+    port: 6379
+    username: ssafy
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: https://www.googleapis.com/service_accounts/v1/jwk/securetoken%40system.gserviceaccount.com
-  jpa:
-    open-in-view: false
-    hibernate:
-#      dialect: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
-      database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
-      format_sql: true
-      ddl-auto: update
-      show-sql: true
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
 
 com:
   cotyledon.appletree:
-      firebase_project_id: apple-tree-7f863
+    firebase-project-id: apple-tree-7f863
+    rabbitmq:
+      stomp-port: 61613
