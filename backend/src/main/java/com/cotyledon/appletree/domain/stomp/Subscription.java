@@ -3,7 +3,9 @@ package com.cotyledon.appletree.domain.stomp;
 import com.cotyledon.appletree.configuration.WebSocketConfiguration;
 import com.cotyledon.appletree.domain.enums.RoomType;
 import com.cotyledon.appletree.exception.InvalidStompHeaderExceptionBuilder;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
 @Getter
@@ -20,32 +22,29 @@ public class Subscription {
         String destination = stompHeaderAccessor.getDestination();
 
         if (destination == null) {
-            throw exception.withReleasing(sid);
-        }
-
-        RoomType roomType = destination.startsWith(WebSocketConfiguration.BROKER_DESTINATION_PREFIX + "/lock-apple-room") ?
-                RoomType.LOCK :
-                destination.startsWith(WebSocketConfiguration.BROKER_DESTINATION_PREFIX + "/unlock-apple-room") ?
-                        RoomType.UNLOCK :
-                        null;
-
-        if (roomType == null) {
-            throw exception.withReleasing(sid);
+            throw exception.buildWithReleasing(sid);
         }
 
         String roomId;
+        RoomType roomType;
+
         try {
-            roomId = destination.substring(destination.indexOf('.') + 1);
-        } catch (IndexOutOfBoundsException e) {
-            throw exception.withReleasing(sid);
+            String[] strings = destination.split("\\.");
+
+            roomId = strings[1];
+
+            roomType = (WebSocketConfiguration.BROKER_DESTINATION_PREFIX + "/lock-apple-room").equals(strings[0]) ?
+                    RoomType.LOCK :
+                    (WebSocketConfiguration.BROKER_DESTINATION_PREFIX + "/unlock-apple-room").equals(strings[0]) ?
+                            RoomType.UNLOCK :
+                            null;
+        } catch (RuntimeException e) {
+            throw exception.buildWithReleasing(sid);
         }
-        if (roomId.isBlank()) {
-            throw exception.withReleasing(sid);
+        if (roomType == null || roomId.isBlank()) {
+            throw exception.buildWithReleasing(sid);
         }
 
-        return Subscription.builder()
-                .roomType(roomType)
-                .roomId(roomId)
-                .build();
+        return Subscription.builder().roomType(roomType).roomId(roomId).build();
     }
 }

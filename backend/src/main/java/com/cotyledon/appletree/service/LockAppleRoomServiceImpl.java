@@ -5,10 +5,7 @@ import com.cotyledon.appletree.domain.dto.RoomDTO;
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
-import com.cotyledon.appletree.domain.repository.redis.AppleRoomGroupRepository;
-import com.cotyledon.appletree.domain.repository.redis.AppleRoomUserRepository;
-import com.cotyledon.appletree.domain.repository.redis.LockAppleRoomRepository;
-import com.cotyledon.appletree.domain.repository.redis.RoomAppleRepository;
+import com.cotyledon.appletree.domain.repository.redis.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,12 +22,18 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     private final AppleRoomGroupRepository appleRoomGroupRepository;
     private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
+    private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
     private final LockAppleRoomLogService lockAppleRoomLogService;
     private final ApplicationEventPublisher eventPublisher;
 
     // reserve 이벤트 발행
     @Override
-    public RoomDTO makeRoomAndGet(String hostUid) {
+    public RoomDTO reserveRoomAndGetRoomDTO(String hostUid, AppleDTO apple) {
+
+        // 필수 속성 있는지 검사 & 다른 속성 초기화
+        if (!apple.validateAndCleanWithHostUidForReservingRoom(hostUid)) {
+            throw new IllegalArgumentException("Invalid MakeLockAppleRoom Request");
+        }
 
         // 룸 생성
         LockAppleRoom room = LockAppleRoom.builder().hostUid(hostUid).build();
@@ -38,12 +41,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
         String roomId = room.getId();
 
-        // 룸 그룹 생성
-        Set<String> group = new HashSet<>();
-        appleRoomGroupRepository.putGroup(roomId, group);
-
-        // 룸 사과 생성
-        AppleDTO apple = AppleDTO.withTitleAndTeamNameAndHostUid("타이틀", "팀 이름", hostUid);
+        // Put 룸 사과
         roomAppleRepository.putApple(roomId, apple);
 
         // reserve 이벤트 발행
@@ -55,9 +53,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     @Override
     public void deleteRoomIfEmpty(String roomId) {
 
-        Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
-
-        if (room.isEmpty()) {
+        if (lockAppleRoomRepository.findById(roomId).isEmpty()) {
             // 이미 룸이 없는 경우 (유저가 방 만들고 빨리 나감)
             return;
         }
@@ -65,7 +61,10 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         Optional<Set<String>> group = appleRoomGroupRepository.findGroupByRoomId(roomId);
 
         if (group.isEmpty() || group.get().isEmpty()) {
-            lockAppleRoomRepository.delete(room.get());
+            appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+            roomAppleRepository.deleteAppleByRoomId(roomId);
+            lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
+            lockAppleRoomRepository.deleteById(roomId);
         }
     }
 
@@ -80,18 +79,10 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
         log.info("방 찾음");
 
-        Optional<Set<String>> groupOptional = appleRoomGroupRepository.findGroupByRoomId(roomId);
-
-        if (groupOptional.isEmpty()) {
-            log.warn("뭔가 잘못됨");
-
-            return false;
-        }
-
         AppleRoomUser user = AppleRoomUser.builder().uid(uid).roomId(roomId).build();
         appleRoomUserRepository.save(user);
 
-        Set<String> group = groupOptional.get();
+        Set<String> group = appleRoomGroupRepository.findGroupByRoomId(roomId).orElse(new HashSet<>());
         group.add(uid);
         appleRoomGroupRepository.putGroup(roomId, group);
 

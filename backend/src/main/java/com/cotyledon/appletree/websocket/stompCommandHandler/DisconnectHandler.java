@@ -32,7 +32,7 @@ public class DisconnectHandler implements StompCommandHandler {
         }
 
         try {
-            if (appleRoomUserService.releaseRoomUserByUidAndRemoveRoomIfEmpty(uid.get())) {
+            if (appleRoomUserService.removeRoomUserAndRoomIfEmptyByUid(uid.get())) {
                 log.info("이 Disconnect 로 인해 멤버가 비었으므로 RoomUser, Member, Room 모두 제거");
             } else {
                 log.info("Disconnect 된 사용자의 Room 이 비어있지 않으므로 RoomUser 만 제거");

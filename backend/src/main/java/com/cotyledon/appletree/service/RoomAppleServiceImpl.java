@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
@@ -48,12 +45,17 @@ public class RoomAppleServiceImpl implements RoomAppleService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean validContent(Content content) {
+    public boolean validateAndCleanContent(Content content) {
         List<ContentDescription>[] lists = new List[]{
                 orEmpty(content.getText()),
                 orEmpty(content.getPhoto()),
                 orEmpty(content.getAudio()),
                 orEmpty(content.getVideo())};
+
+        content.setText(lists[0]);
+        content.setPhoto(lists[1]);
+        content.setAudio(lists[2]);
+        content.setVideo(lists[3]);
 
         return !allEmpty(lists) && !anyBlank(lists);
     }
@@ -61,7 +63,7 @@ public class RoomAppleServiceImpl implements RoomAppleService {
     @Override
     public String getAnyAuthorFromContent(Content content) {
         return Stream.of(content.getText(), content.getPhoto(), content.getAudio(), content.getVideo())
-                .flatMap(Collection::stream).findAny().get().getAuthor();
+                .flatMap(Collection::stream).findAny().orElse(ContentDescription.DUMMY).getAuthor();
     }
 
     private List<ContentDescription> orEmpty(List<ContentDescription> list) {

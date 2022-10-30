@@ -31,7 +31,7 @@ public class SubscribeHandler implements StompCommandHandler {
 
         // uid 중복시 false
         if (!stompUserDAO.load(sid, uid)) {
-            throw exception.withReleasing(sid);
+            throw exception.buildWithReleasing(sid);
         }
 
         // 이 라인을 통과하면 올바른 형식의 구독 정보임이 보장됨 (유효성이 보장되지는 않음)
@@ -42,7 +42,7 @@ public class SubscribeHandler implements StompCommandHandler {
         if (!enter(subscription, sid, uid)) {
             log.info("입장 실패");
 
-            throw exception.withReleasing(sid);
+            throw exception.buildWithReleasing(sid);
         }
     }
 
@@ -56,7 +56,7 @@ public class SubscribeHandler implements StompCommandHandler {
                 log.warn("여기 unlock 서비스로 교체해야 함~~~~~~~");
                 return lockAppleRoomService.enterRoomAndSaveRoomUser(uid, subscription.getRoomId());
             default:
-                throw exception.withReleasing(sid);
+                throw exception.buildWithReleasing(sid);
         }
     }
 
@@ -64,13 +64,13 @@ public class SubscribeHandler implements StompCommandHandler {
         String idToken = stompHeaderAccessor.getFirstNativeHeader("accessToken");
 
         if (idToken == null || idToken.isBlank()) {
-            throw exception.withReleasing(stompHeaderAccessor.getSessionId());
+            throw exception.buildWithReleasing(stompHeaderAccessor.getSessionId());
         }
 
         try {
             return firebaseAuthService.getUidFromIdToken(idToken);
         } catch (FirebaseAuthException e) {
-            throw exception.withReleasing(stompHeaderAccessor.getSessionId());
+            throw exception.buildWithReleasing(stompHeaderAccessor.getSessionId());
         }
     }
 }

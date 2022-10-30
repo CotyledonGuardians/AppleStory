@@ -17,7 +17,7 @@ public class LockAppleRoomLogRepositoryImpl implements LockAppleRoomLogRepositor
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public void putLog(String roomId, ChangeMessageData changeMessageData) {
+    public void putChangeMessageDataLog(String roomId, ChangeMessageData changeMessageData) {
         redisTemplate.opsForHash().put(KEY, roomId, changeMessageData);
     }
 

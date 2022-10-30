@@ -48,7 +48,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
             return index;
         });
 
-        lockAppleRoomLogRepository.putLog(roomId, changeMessageData);
+        lockAppleRoomLogRepository.putChangeMessageDataLog(roomId, changeMessageData);
 
         eventPublisher.publishEvent(LockAppleRoomLogEvent.builder()
                 .roomId(roomId)
@@ -76,7 +76,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
             return index;
         });
 
-        lockAppleRoomLogRepository.putLog(roomId, changeMessageData);
+        lockAppleRoomLogRepository.putChangeMessageDataLog(roomId, changeMessageData);
 
         eventPublisher.publishEvent(LockAppleRoomLogEvent.builder()
                 .roomId(roomId)
@@ -106,7 +106,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
             return index;
         });
 
-        lockAppleRoomLogRepository.putLog(roomId, changeMessageData);
+        lockAppleRoomLogRepository.putChangeMessageDataLog(roomId, changeMessageData);
 
         eventPublisher.publishEvent(LockAppleRoomLogEvent.builder()
                 .roomId(roomId)
@@ -134,7 +134,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
             return index;
         });
 
-        lockAppleRoomLogRepository.putLog(roomId, changeMessageData);
+        lockAppleRoomLogRepository.putChangeMessageDataLog(roomId, changeMessageData);
 
         eventPublisher.publishEvent(LockAppleRoomLogEvent.builder()
                 .roomId(roomId)
@@ -190,7 +190,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
             return index;
         });
 
-        lockAppleRoomLogRepository.putLog(roomId, changeMessageData);
+        lockAppleRoomLogRepository.putChangeMessageDataLog(roomId, changeMessageData);
 
         eventPublisher.publishEvent(LockAppleRoomLogEvent.builder()
                 .roomId(roomId)
@@ -216,7 +216,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
             return index;
         });
 
-        lockAppleRoomLogRepository.putLog(roomId, changeMessageData);
+        lockAppleRoomLogRepository.putChangeMessageDataLog(roomId, changeMessageData);
 
         eventPublisher.publishEvent(LockAppleRoomLogEvent.builder()
                 .roomId(roomId)

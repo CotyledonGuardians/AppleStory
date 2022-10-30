@@ -10,13 +10,13 @@ public class InvalidStompHeaderExceptionBuilder {
 
     private final StompUserDAO stompUserDAO;
 
-    public IllegalArgumentException withReleasing(String sid) {
+    public IllegalArgumentException buildWithReleasing(String sid) {
         stompUserDAO.release(sid);
 
-        return new IllegalArgumentException("Invalid Stomp Header");
+        return buildDefault();
     }
 
-    public IllegalArgumentException withDefault() {
+    public IllegalArgumentException buildDefault() {
         return new IllegalArgumentException("Invalid Stomp Header");
     }
 }

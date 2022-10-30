@@ -15,37 +15,32 @@ public class Send {
     private String roomId;
 
     public static Send of(StompHeaderAccessor stompHeaderAccessor, InvalidStompHeaderExceptionBuilder exception) {
-        String sid = stompHeaderAccessor.getSessionId();
-
         String destination = stompHeaderAccessor.getDestination();
 
         if (destination == null) {
-            throw exception.withDefault();
-        }
-
-        RoomType roomType = destination.startsWith(WebSocketConfiguration.APPLICATION_DESTINATION_PREFIX + "/lock-apple-room") ?
-                RoomType.LOCK :
-                destination.startsWith(WebSocketConfiguration.APPLICATION_DESTINATION_PREFIX + "/unlock-apple-room") ?
-                        RoomType.UNLOCK :
-                        null;
-
-        if (roomType == null) {
-            throw exception.withDefault();
+            throw exception.buildDefault();
         }
 
         String roomId;
+        RoomType roomType;
+
         try {
-            roomId = destination.substring(destination.indexOf('.') + 1);
-        } catch (IndexOutOfBoundsException e) {
-            throw exception.withDefault();
+            String[] strings = destination.split("\\.");
+
+            roomId = strings[1];
+
+            roomType = (WebSocketConfiguration.APPLICATION_DESTINATION_PREFIX + "/lock-apple-room").equals(strings[0]) ?
+                    RoomType.LOCK :
+                    (WebSocketConfiguration.APPLICATION_DESTINATION_PREFIX + "/unlock-apple-room").equals(strings[0]) ?
+                            RoomType.UNLOCK :
+                            null;
+        } catch (RuntimeException e) {
+            throw exception.buildDefault();
         }
-        if (roomId.isBlank()) {
-            throw exception.withDefault();
+        if (roomType == null || roomId.isBlank()) {
+            throw exception.buildDefault();
         }
 
-        return Send.builder()
-                .roomType(roomType)
-                .roomId(roomId)
-                .build();
+        return Send.builder().roomType(roomType).roomId(roomId).build();
     }
 }

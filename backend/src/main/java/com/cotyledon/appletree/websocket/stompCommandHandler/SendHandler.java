@@ -19,15 +19,15 @@ public class SendHandler implements StompCommandHandler {
     @Override
     public void handle(StompHeaderAccessor stompHeaderAccessor) {
 
-        String sid = stompHeaderAccessor.getSessionId();
-
         // 이 라인을 통과하면 올바른 형식의 샌드 정보임이 보장됨 (유효성이 보장되지는 않음)
         Send send = Send.of(stompHeaderAccessor, exception);
+
+        log.debug("send: {}", send);
 
         if (!valid(send)) {
             log.info("SEND 실패");
 
-            throw exception.withDefault();
+            throw exception.buildDefault();
         }
     }
 
@@ -40,7 +40,7 @@ public class SendHandler implements StompCommandHandler {
                 log.warn("여기 unlock 으로 바꿔야 함~~~~~");
                 return lockAppleRoomService.hasRoomByRoomId(send.getRoomId());
             default:
-                throw exception.withDefault();
+                throw exception.buildDefault();
         }
     }
 }

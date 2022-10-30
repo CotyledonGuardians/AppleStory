@@ -24,7 +24,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
     // TODO: roomType 에 따라 repo 호출 분기 혹은 둘 다 쓰기?
     // 이 호출에 의해 룸이 비게 되었는지의 여부를 리턴
     // leave event 발행
-    public boolean releaseRoomUserByUidAndRemoveRoomIfEmpty(String uid) {
+    public boolean removeRoomUserAndRoomIfEmptyByUid(String uid) {
 
         Optional<AppleRoomUser> appleRoomUser = appleRoomUserRepository.findById(uid);
 
@@ -32,10 +32,10 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
             return false;
         }
 
+        String roomId = appleRoomUser.get().getRoomId();
+
         // 유저를 지움
         appleRoomUserRepository.delete(appleRoomUser.get());
-
-        String roomId = appleRoomUser.get().getRoomId();
 
         if (roomId == null) {
             return false;
@@ -48,6 +48,13 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
         }
 
         Set<String> group = groupOptional.get();
+
+        if (group.isEmpty()) {
+            // 모종의 문제로 빈 그룹이 있다면 그것을 지움
+            appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+            
+            return false;
+        }
 
         // 그롭에서 유저를 지움
         group.remove(uid);

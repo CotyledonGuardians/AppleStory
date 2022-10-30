@@ -42,6 +42,7 @@ public class LockAppleRoomController {
         lockAppleRoomLogService.logForAdding(roomId, uid.get());
     }
 
+    // TODO: 같은 멤버가 중복으로 올릴 수 있는 이슈
     @MessageMapping("{roomId}.added")
     public void receiveContent(@DestinationVariable String roomId, Message<Content> message) {
 
@@ -60,8 +61,8 @@ public class LockAppleRoomController {
 
         log.info("Content : {}", content);
 
-        if (!roomAppleService.validContent(content)) {
-            log.warn("INVALID CONTENT");
+        if (!roomAppleService.validateAndCleanContent(content)) {
+            log.info("INVALID CONTENT");
             return;
         }
 
@@ -91,6 +92,7 @@ public class LockAppleRoomController {
 
     @MessageMapping("{roomId}.submit")
     public void submit(@DestinationVariable String roomId, Message<Object> message) {
+        // TODO: 사과 생성 호출
         log.info("제출됨");
     }
 }

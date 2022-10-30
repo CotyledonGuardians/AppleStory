@@ -47,6 +47,8 @@ public class LockAppleRoomEventListener {
         }
 
         simpMessagingTemplate.convertAndSend(DestinationBuilder.build("lock-apple-room", event.getRoomId()),
-                BaseMessage.withCommandAndData("change", event.getChangeMessageData()));
+                BaseMessage.withCommandAndData("onChange", event.getChangeMessageData()));
+
+        log.info("Message sent: {}", event.getChangeMessageData());
     }
 }

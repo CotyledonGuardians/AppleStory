@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface LockAppleRoomLogRepository {
 
-    void putLog(String roomId, ChangeMessageData changeMessageData);
+    void putChangeMessageDataLog(String roomId, ChangeMessageData changeMessageData);
     Optional<ChangeMessageData> findLogByRoomId(String roomId);
     void deleteLogByRoomId(String roomId);
 }

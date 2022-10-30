@@ -1,14 +1,12 @@
 package com.cotyledon.appletree.web.controller;
 
+import com.cotyledon.appletree.domain.dto.AppleDTO;
 import com.cotyledon.appletree.domain.dto.RoomDTO;
 import com.cotyledon.appletree.service.LockAppleRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -26,10 +24,12 @@ public class WebSocketFront {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/lock-apple-room")
-    public ResponseEntity<?> reserveLockRoom(Principal principal) {
+    // 필요한 AppleDTO 속성
+    // title, teamName (creator), unlockAt
+    @PostMapping("/lock-apple-room")
+    public ResponseEntity<?> reserveLockAppleRoom(Principal principal, @RequestBody AppleDTO apple) {
 
-        RoomDTO roomDTO = lockAppleRoomService.makeRoomAndGet(principal.getName());
+        RoomDTO roomDTO = lockAppleRoomService.reserveRoomAndGetRoomDTO(principal.getName(), apple);
 
         return ResponseEntity.ok(roomDTO);
     }
