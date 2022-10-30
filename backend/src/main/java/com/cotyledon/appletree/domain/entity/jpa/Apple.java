@@ -1,11 +1,12 @@
 package com.cotyledon.appletree.domain.entity.jpa;
 
 import com.cotyledon.appletree.domain.dto.Content;
+import com.cotyledon.appletree.domain.dto.GeoLocation;
 import com.cotyledon.appletree.domain.util.ContentConverter;
 import com.cotyledon.appletree.domain.dto.Creator;
 import com.cotyledon.appletree.domain.util.CreatorConverter;
+import com.cotyledon.appletree.domain.util.GeoLocationConverter;
 import lombok.*;
-import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
@@ -36,9 +37,10 @@ public class Apple extends BaseEntity{
     @Column(columnDefinition = "TEXT")
     @Convert(converter = ContentConverter.class)
     private Content content;
-    @Column(columnDefinition = "POINT")
-    private Point location;
+    @Convert(converter = GeoLocationConverter.class)
+    private GeoLocation location;
     private Boolean useSpace;
 
+    @Builder.Default
     private Boolean isCatch = false;
 }

@@ -3,7 +3,6 @@ package com.cotyledon.appletree.domain.dto;
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import com.cotyledon.appletree.domain.entity.jpa.AppleUser;
 import lombok.*;
-import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
@@ -26,7 +25,7 @@ public class AppleListDTO {
     private String createScene;
 
     private Content content;
-    private Point location;
+    private GeoLocation location;
     private Boolean useSpace;
 
     private String uid;

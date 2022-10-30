@@ -6,9 +6,9 @@ spring:
     open-in-view: false
     hibernate:
 #      dialect: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
-      database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
+#      database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
       format_sql: true
-      ddl-auto: update
+      ddl-auto: create-drop
       show-sql: true
   mvc:
     pathmatch:

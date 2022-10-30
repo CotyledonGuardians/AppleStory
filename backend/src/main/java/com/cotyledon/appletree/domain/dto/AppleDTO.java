@@ -2,10 +2,8 @@ package com.cotyledon.appletree.domain.dto;
 
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import lombok.*;
-import org.locationtech.jts.geom.Point;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 @Builder
@@ -27,7 +25,7 @@ public class AppleDTO {
     private String createScene;
 
     private Content content;
-    private Point location;
+    private GeoLocation location;
     private Boolean useSpace;
 
     public static AppleDTO of(Apple apple) {
@@ -41,18 +39,6 @@ public class AppleDTO {
                 .content(apple.getContent())
                 .location(apple.getLocation())
                 .useSpace(apple.getUseSpace())
-                .build();
-    }
-
-    public static AppleDTO withTitleAndTeamNameAndHostUid(String title, String teamName, String hostUid) {
-        return AppleDTO.builder()
-                .title(title)
-                .content(Content.ofEmpty())
-                .creator(Creator.builder()
-                        .teamName(teamName)
-                        .hostUid(hostUid)
-                        .member(new ArrayList<>())
-                        .build())
                 .build();
     }
 
@@ -84,5 +70,34 @@ public class AppleDTO {
                 .useSpace(this.useSpace)
                 .isCatch(true)
                 .build();
+    }
+
+    public boolean validateAndCleanWithHostUidForReservingRoom(String hostUid) {
+
+        if (this.title == null ||
+                this.title.isBlank() ||
+                this.creator == null ||
+                this.creator.getTeamName() == null ||
+                this.creator.getTeamName().isBlank() ||
+                this.unlockAt == null ||
+                this.unlockAt.before(new Date()) ||
+                this.location == null ||
+                this.location.getLat() == null ||
+                this.location.getLng() == null) {
+            return false;
+        }
+
+        cleanWithHostUidForReservingRoom(hostUid);
+
+        return true;
+    }
+
+    private void cleanWithHostUidForReservingRoom(String hostUid) {
+        this.type = false;
+        this.creator = Creator.ofEmptyMemberWithTeamNameAndHostUid(creator.getTeamName(), hostUid);
+        this.createAt = null;
+        this.createScene = null;
+        this.content = Content.ofEmpty();
+        this.useSpace = false;
     }
 }

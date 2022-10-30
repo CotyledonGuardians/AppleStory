@@ -53,7 +53,8 @@ dependencies {
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 	// Point type
-	implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '5.6.10.Final'
+//	implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '5.6.10.Final'
+//	implementation group: 'com.graphhopper.external', name: 'jackson-datatype-jts', version: '1.0-2.7'
 
 	// swagger
 	implementation "io.springfox:springfox-boot-starter:3.0.0"
