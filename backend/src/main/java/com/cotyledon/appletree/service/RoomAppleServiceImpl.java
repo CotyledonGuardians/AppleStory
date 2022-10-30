@@ -46,6 +46,7 @@ public class RoomAppleServiceImpl implements RoomAppleService {
         lockAppleRoomLogService.logForAdded(roomId, member, content);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean validContent(Content content) {
         List<ContentDescription>[] lists = new List[]{
