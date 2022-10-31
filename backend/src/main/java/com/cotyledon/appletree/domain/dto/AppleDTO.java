@@ -27,6 +27,15 @@ public class AppleDTO {
     private Content content;
     private GeoLocation location;
     private Boolean useSpace;
+    private Boolean isCatch;
+
+    public static AppleDTO ofEmpty() {
+        return AppleDTO.builder()
+                .type(false)
+                .useSpace(false)
+                .isCatch(false)
+                .build();
+    }
 
     public static AppleDTO of(Apple apple) {
         return AppleDTO.builder()
@@ -39,6 +48,7 @@ public class AppleDTO {
                 .content(apple.getContent())
                 .location(apple.getLocation())
                 .useSpace(apple.getUseSpace())
+                .isCatch(apple.getIsCatch())
                 .build();
     }
 
@@ -53,7 +63,7 @@ public class AppleDTO {
                 .content(this.content)
                 .location(this.location)
                 .useSpace(this.useSpace)
-                .isCatch(false)
+                .isCatch(this.isCatch)
                 .build();
     }
 
@@ -80,6 +90,7 @@ public class AppleDTO {
                 this.creator.getTeamName() == null ||
                 this.creator.getTeamName().isBlank() ||
                 this.unlockAt == null ||
+                // TODO: Timestamp.valueOf(LocalDateTime.now())로 교체
                 this.unlockAt.before(new Date()) ||
                 this.location == null ||
                 this.location.getLat() == null ||

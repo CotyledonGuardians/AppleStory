@@ -3,6 +3,7 @@ package com.cotyledon.appletree.service;
 import com.cotyledon.appletree.domain.dto.AppleDTO;
 import com.cotyledon.appletree.domain.dto.Content;
 import com.cotyledon.appletree.domain.dto.Member;
+import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 import com.cotyledon.appletree.domain.event.LockAppleRoomLogEvent;
 import com.cotyledon.appletree.domain.repository.redis.LockAppleRoomLogRepository;
 import com.cotyledon.appletree.domain.repository.redis.RoomAppleRepository;
@@ -146,7 +147,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
     @Transactional
     public void logForLeft(String roomId, String uid) {
 
-        Optional<AppleDTO> apple = roomAppleRepository.findAppleByRoomId(roomId);
+        Optional<RoomApple> apple = roomAppleRepository.findRoomAppleByRoomId(roomId);
 
         if (apple.isEmpty()) {
             return;
