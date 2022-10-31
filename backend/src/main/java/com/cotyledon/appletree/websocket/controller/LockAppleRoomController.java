@@ -3,6 +3,7 @@ package com.cotyledon.appletree.websocket.controller;
 import com.cotyledon.appletree.domain.dto.Content;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
+import com.cotyledon.appletree.domain.stomp.ContentPayload;
 import com.cotyledon.appletree.service.LockAppleRoomLogService;
 import com.cotyledon.appletree.service.LockAppleRoomService;
 import com.cotyledon.appletree.service.RoomAppleService;
@@ -40,30 +41,35 @@ public class LockAppleRoomController {
         lockAppleRoomLogService.logForAdding(roomId, uid.get());
     }
 
-    // TODO: 같은 멤버가 중복으로 올릴 수 있는 이슈
     @MessageMapping("{roomId}.added")
-    public void receiveContent(@DestinationVariable String roomId, Message<Content> message) {
+    public void receiveContent(@DestinationVariable String roomId, Message<ContentPayload> message) {
 
-        Optional<String> uid = stompUserService.getUidFromMessage(message);
+        Optional<String> uidOptional = stompUserService.getUidFromMessage(message);
 
-        if (uid.isEmpty()) {
+        if (uidOptional.isEmpty()) {
             log.warn("UID NOT FOUND");
             return;
         }
 
-        Content content = message.getPayload();
+        String uid = uidOptional.get();
 
-        log.info("Content : {}", content);
+        ContentPayload contentPayload = message.getPayload();
+        Content content = contentPayload.getContent();
+        String nickname = contentPayload.getNickname();
 
-        if (!roomAppleService.validateAndCleanContent(content)) {
+        log.info("Payload : {}", contentPayload);
+
+        if (content == null || nickname == null || nickname.isBlank()) {
+            throw new IllegalArgumentException("Bad Request");
+        }
+
+        if (!roomAppleService.validateAndCleanContent(content, uid)) {
             log.info("INVALID CONTENT");
             return;
         }
 
-        String nickname = roomAppleService.getAnyAuthorFromContent(content);
-
         roomAppleService.addMemberAndContentToAppleByRoomId(roomId,
-                Member.builder().uid(uid.get()).nickname(nickname).build(),
+                Member.builder().uid(uid).nickname(nickname).build(),
                 content);
     }
 
