@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
@@ -24,6 +24,9 @@ public class RoomAppleServiceImpl implements RoomAppleService {
     public void addMemberAndContentToAppleByRoomId(String roomId, Member member, Content content) {
         RoomApple apple = roomAppleRepository.findRoomAppleByRoomId(roomId)
                 .orElseThrow(IllegalArgumentException::new);
+
+        // 이미 담았다면 기존의 내용을 버림
+        removeExistingMemberAndContentByMember(apple, member);
 
         Content contents = apple.getContent();
         contents.getText().addAll(content.getText());
@@ -46,12 +49,12 @@ public class RoomAppleServiceImpl implements RoomAppleService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean validateAndCleanContent(Content content) {
+    public boolean validateAndCleanContent(Content content, String uid) {
         List<ContentDescription>[] lists = new List[]{
-                orEmpty(content.getText()),
-                orEmpty(content.getPhoto()),
-                orEmpty(content.getAudio()),
-                orEmpty(content.getVideo())};
+                ofAuthorOrEmpty(content.getText(), uid),
+                ofAuthorOrEmpty(content.getPhoto(), uid),
+                ofAuthorOrEmpty(content.getAudio(), uid),
+                ofAuthorOrEmpty(content.getVideo(), uid)};
 
         content.setText(lists[0]);
         content.setPhoto(lists[1]);
@@ -61,14 +64,20 @@ public class RoomAppleServiceImpl implements RoomAppleService {
         return !allEmpty(lists) && !anyBlank(lists);
     }
 
-    @Override
-    public String getAnyAuthorFromContent(Content content) {
-        return Stream.of(content.getText(), content.getPhoto(), content.getAudio(), content.getVideo())
-                .flatMap(Collection::stream).findAny().orElse(ContentDescription.DUMMY).getAuthor();
+    private void removeExistingMemberAndContentByMember(RoomApple apple, Member member) {
+        apple.getCreator().getMember().removeIf(m -> m.getUid().equals(member.getUid()));
+
+        Content content = apple.getContent();
+
+        content.getText().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
+        content.getPhoto().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
+        content.getAudio().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
+        content.getVideo().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
     }
 
-    private List<ContentDescription> orEmpty(List<ContentDescription> list) {
-        return Optional.ofNullable(list).orElse(Collections.emptyList());
+    private List<ContentDescription> ofAuthorOrEmpty(List<ContentDescription> list, String uid) {
+        return Optional.ofNullable(list).orElse(Collections.emptyList()).stream()
+                .peek(cd -> cd.setAuthor(uid)).collect(Collectors.toList());
     }
 
     private boolean allEmpty(List<ContentDescription>[] lists) {

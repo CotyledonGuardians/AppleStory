@@ -110,5 +110,6 @@ public class AppleDTO {
         this.createScene = null;
         this.content = Content.ofEmpty();
         this.useSpace = false;
+        this.isCatch = false;
     }
 }

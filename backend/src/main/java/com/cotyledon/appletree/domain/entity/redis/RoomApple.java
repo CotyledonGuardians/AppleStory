@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 public class RoomApple {
-    private Long appleId;
+
     private Boolean type;
     private String title;
     private Creator creator;
@@ -42,9 +42,8 @@ public class RoomApple {
                 .build();
     }
 
-    public static RoomApple withAppleDTOAndAppleId(AppleDTO appleDTO, long appleId) {
+    public static RoomApple of(AppleDTO appleDTO) {
         return RoomApple.builder()
-                .appleId(appleId)
                 .type(appleDTO.getType())
                 .title(appleDTO.getTitle())
                 .creator(appleDTO.getCreator())
