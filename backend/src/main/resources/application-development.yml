@@ -2,6 +2,10 @@ spring:
   datasource:
     url: jdbc:mysql://${com.cotyledon.appletree.dev-dep.host}:3306/apple_tree?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
     password: ${com.cotyledon.appletree.dev-dep.password}
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
   output:
     ansi:
       enabled: always
@@ -14,5 +18,9 @@ spring:
 
 logging:
   level:
-    com.cotyledon.appletree: debug
-    org.springframework.web: debug
+    com.cotyledon.appletree: DEBUG
+    org:
+      hibernate:
+        SQL: DEBUG
+        type.descriptor.sql.BasicBinder: TRACE
+      springframework.web: DEBUG

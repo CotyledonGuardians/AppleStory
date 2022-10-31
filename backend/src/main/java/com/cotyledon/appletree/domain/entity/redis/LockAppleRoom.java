@@ -15,5 +15,8 @@ public class LockAppleRoom {
 
     @Id
     private String id;
+    private Long appleId;
     private String hostUid;
+    @Builder.Default
+    private Boolean saved = false;
 }
