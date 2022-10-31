@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {
   Image,
-  Alert,
   Modal,
   Text,
-  Pressable,
   View,
   SafeAreaView,
   StyleSheet,
@@ -26,7 +24,14 @@ const imgUrl = [
   require('../assets/pictures/apple4.png'),
 ];
 
-const Apple = ({index, apple, navigation}) => {
+const Apple = ({
+  index,
+  apple,
+  navigation,
+  setApple,
+  setModalVisible,
+  setTime,
+}) => {
   const appleStyle = [
     styles.apple1,
     styles.apple2,
@@ -43,7 +48,7 @@ const Apple = ({index, apple, navigation}) => {
     return (
       <TouchableOpacity
         style={appleStyle[index]}
-        onPress={() => navigation.navigate('')}>
+        onPress={() => navigation.navigate('HitApple')}>
         <Image style={styles.apple} source={imgUrl[3]} />
       </TouchableOpacity>
     );
@@ -54,26 +59,38 @@ const Apple = ({index, apple, navigation}) => {
         <TouchableOpacity
           style={appleStyle[index]}
           onPress={() => {
-            navigation.navigate('');
+            navigation.navigate('HitApple');
           }}>
           <Image style={styles.apple} source={imgUrl[3]} />
         </TouchableOpacity>
       );
     } else if (diff <= 3) {
       return (
-        <TouchableOpacity style={appleStyle[index]}>
+        <TouchableOpacity
+          style={appleStyle[index]}
+          onPress={() => {
+            openModal(apple, diff, setApple, setModalVisible, setTime);
+          }}>
           <Image style={styles.apple} source={imgUrl[2]} />
         </TouchableOpacity>
       );
     } else if (diff <= 7) {
       return (
-        <TouchableOpacity style={appleStyle[index]}>
+        <TouchableOpacity
+          style={appleStyle[index]}
+          onPress={() => {
+            openModal(apple, diff, setApple, setModalVisible, setTime);
+          }}>
           <Image style={styles.apple} source={imgUrl[1]} />
         </TouchableOpacity>
       );
     } else {
       return (
-        <TouchableOpacity style={appleStyle[index]}>
+        <TouchableOpacity
+          style={appleStyle[index]}
+          onPress={() => {
+            openModal(apple, diff, setApple, setModalVisible, setTime);
+          }}>
           <Image style={styles.apple} source={imgUrl[0]} />
         </TouchableOpacity>
       );
@@ -81,16 +98,18 @@ const Apple = ({index, apple, navigation}) => {
   }
 };
 
-// const openModal = apple => {
-//   setApple(apple);
-//   setModalVisible(true);
-// };
+const openModal = (apple, diff, setApple, setModalVisible, setTime) => {
+  setApple(apple);
+  setTime('D - ' + diff);
+  setModalVisible(true);
+};
 
 const Main = ({navigation}) => {
   const [openApples, setOpenApples] = useState();
   const [closeApples, setCloseApples] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [apple, setApple] = useState();
+  const [time, setTime] = useState('D - 3');
 
   useEffect(() => {
     getCloseAppleList(1, 0, 6)
@@ -130,32 +149,74 @@ const Main = ({navigation}) => {
           style={styles.backgroundImg}
           source={require('../assets/pictures/main.png')}>
           {closeApples.length > 0 ? (
-            <Apple index={0} apple={closeApples[0]} navigation={navigation} />
+            <Apple
+              index={0}
+              apple={closeApples[0]}
+              navigation={navigation}
+              setApple={setApple}
+              setModalVisible={setModalVisible}
+              setTime={setTime}
+            />
           ) : (
             <></>
           )}
           {closeApples.length > 1 ? (
-            <Apple index={1} apple={closeApples[1]} navigation={navigation} />
+            <Apple
+              index={1}
+              apple={closeApples[1]}
+              navigation={navigation}
+              setApple={setApple}
+              setModalVisible={setModalVisible}
+              setTime={setTime}
+            />
           ) : (
             <></>
           )}
           {closeApples.length > 2 ? (
-            <Apple index={2} apple={closeApples[2]} navigation={navigation} />
+            <Apple
+              index={2}
+              apple={closeApples[2]}
+              navigation={navigation}
+              setApple={setApple}
+              setModalVisible={setModalVisible}
+              setTime={setTime}
+            />
           ) : (
             <></>
           )}
           {closeApples.length > 3 ? (
-            <Apple index={3} apple={closeApples[3]} navigation={navigation} />
+            <Apple
+              index={3}
+              apple={closeApples[3]}
+              navigation={navigation}
+              setApple={setApple}
+              setModalVisible={setModalVisible}
+              setTime={setTime}
+            />
           ) : (
             <></>
           )}
           {closeApples.length > 4 ? (
-            <Apple index={4} apple={closeApples[4]} navigation={navigation} />
+            <Apple
+              index={4}
+              apple={closeApples[4]}
+              navigation={navigation}
+              setApple={setApple}
+              setModalVisible={setModalVisible}
+              setTime={setTime}
+            />
           ) : (
             <></>
           )}
           {closeApples.length > 5 ? (
-            <Apple index={5} apple={closeApples[5]} navigation={navigation} />
+            <Apple
+              index={5}
+              apple={closeApples[5]}
+              navigation={navigation}
+              setApple={setApple}
+              setModalVisible={setModalVisible}
+              setTime={setTime}
+            />
           ) : (
             <></>
           )}
@@ -189,24 +250,27 @@ const Main = ({navigation}) => {
           animationType="fade"
           transparent={true}
           visible={modalVisible}
-          apple={apple}
           onRequestClose={() => {
-            Alert.alert('모달 닫힘.');
             setModalVisible(!modalVisible);
           }}>
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>사과를 아직 열 수 없어요!</Text>
               <Image source={require('../assets/pictures/aegomkey.png')} />
-              <Text style={styles.timeText}>334일 2시 32분</Text>
-              <View style={{flexDirection: 'row'}}>
+              <Text style={styles.timeText}>{time}</Text>
+              <View style={styles.buttonBox}>
                 <SmallButton
                   onPress={() => setModalVisible(!modalVisible)}
                   text="닫기"
                   disabled={false}
                 />
                 <SmallButton
-                  onPress={() => setModalVisible(!modalVisible)}
+                  onPress={() => {
+                    setModalVisible(false);
+                    navigation.navigate('LockAppleDetail', {
+                      id: apple.id,
+                    });
+                  }}
                   text="자세히 보기"
                   disabled={false}
                 />
@@ -215,14 +279,6 @@ const Main = ({navigation}) => {
           </View>
         </Modal>
       </View>
-
-      {/* 안익은 사과에 연결할 버튼!(임시) */}
-      {/* <Pressable
-          style={[styles.button, styles.buttonOpen]}
-          onPress={() => setModalVisible(true)}>
-          <Text style={styles.textStyle}>안익은 사과</Text>
-        </Pressable> */}
-      {/* 안익은 사과 모달 end */}
     </SafeAreaView>
   );
 };
@@ -322,19 +378,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-
-  //나중에 삭제
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    margin: 5,
-    elevation: 2,
+  buttonBox: {
+    flexDirection: 'row',
   },
-  buttonOpen: {
-    backgroundColor: 'red',
-  },
-  //나중에 삭제 end
-
   textStyle: {
     color: 'white',
     fontWeight: 'bold',
