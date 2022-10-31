@@ -109,7 +109,7 @@ const Main = ({navigation}) => {
   const [closeApples, setCloseApples] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const [apple, setApple] = useState();
-  const [time, setTime] = useState('D - 3');
+  const [time, setTime] = useState();
 
   useEffect(() => {
     getCloseAppleList(1, 0, 6)
