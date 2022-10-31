@@ -7,9 +7,7 @@ spring:
     hibernate:
 #      dialect: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
 #      database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
-      format_sql: true
       ddl-auto: update
-      show-sql: true
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
