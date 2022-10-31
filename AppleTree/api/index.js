@@ -52,7 +52,8 @@ const RefreshToken = async () => {
  * Promise (Axios 요청 결과)
  */
 const api = async (method, url, body) => {
-  const accessToken = AsyncStorage.getItem('idToken');
+  const accessToken = await AsyncStorage.getItem('idToken');
+  console.log('accessToken', accessToken);
   if (!accessToken || accessToken === '') {
     throw {no_access_token: true};
   }

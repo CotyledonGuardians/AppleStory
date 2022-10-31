@@ -16,6 +16,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const AppleList = ({navigation}) => {
   const data = [
     {
+      id: 1,
       type: false,
       title: '테스트임1!',
       creator: {
@@ -39,6 +40,7 @@ const AppleList = ({navigation}) => {
       isOpen: false,
     },
     {
+      id: 8,
       type: true,
       title: '테스트임1!',
       creator: {
@@ -62,6 +64,7 @@ const AppleList = ({navigation}) => {
       isOpen: false,
     },
     {
+      id: 8,
       type: false,
       title: '테스트임1!',
       creator: {
@@ -85,6 +88,7 @@ const AppleList = ({navigation}) => {
       isOpen: false,
     },
     {
+      id: 9,
       type: false,
       title: '테스트임1!',
       creator: {
@@ -108,6 +112,7 @@ const AppleList = ({navigation}) => {
       isOpen: false,
     },
     {
+      id: 7,
       type: false,
       title: '테스트임1!',
       creator: {
@@ -131,6 +136,7 @@ const AppleList = ({navigation}) => {
       isOpen: false,
     },
     {
+      id: 8,
       type: false,
       title: '테스트임1!',
       creator: {
@@ -154,6 +160,7 @@ const AppleList = ({navigation}) => {
       isOpen: false,
     },
     {
+      id: 8,
       type: true,
       title: '테스트임1!',
       creator: {
@@ -187,11 +194,12 @@ const AppleList = ({navigation}) => {
     require('../assets/pictures/readyhitgroup2.png'),
   ];
 
-  const appleDetail2 = () => {
-    navigation.navigate('AppleDetail', {screen: 'AppleDetail'});
+  const appleDetail = id => {
+    console.log('id', id);
+    navigation.navigate('AppleDetail', {screen: 'AppleDetail', id: id});
   };
 
-  const Card = ({type, title, unlockAt, isOpen, index}: any) => {
+  const Card = ({type, title, unlockAt, isOpen, index, id}: any) => {
     let lockDate = new Date(unlockAt);
     let today = new Date();
     var url = '';
@@ -217,7 +225,7 @@ const AppleList = ({navigation}) => {
         style={styles.card}
         onPress={() => {
           // Alert.alert('상세보기로 넘어가렴~');
-          appleDetail2();
+          appleDetail(id);
         }}>
         <Image
           source={url}
@@ -290,6 +298,7 @@ const AppleList = ({navigation}) => {
                   type={item.type}
                   unlockAt={item.unlockAt}
                   isOpen={item.isOpen}
+                  id={item.id}
                 />
               </View>
             );
@@ -327,6 +336,7 @@ const AppleList = ({navigation}) => {
                   type={item.type}
                   unlockAt={item.unlockAt}
                   isOpen={item.isOpen}
+                  id={item.id}
                 />
               </View>
             );

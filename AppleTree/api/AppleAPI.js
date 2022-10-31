@@ -14,4 +14,8 @@ const getMyAppleCount = async () => {
   return await api('get', '/apple/count');
 };
 
-export {getOpenAppleList, getCloseAppleList, getMyAppleCount};
+const getAppleDetail = async id => {
+  return await api('get', `/apple/${id}`);
+};
+
+export {getOpenAppleList, getCloseAppleList, getMyAppleCount, getAppleDetail};
