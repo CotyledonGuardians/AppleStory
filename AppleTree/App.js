@@ -21,130 +21,16 @@ import GroupSession from './sessions/GroupSession';
 import AppleDetail from './screens/AppleDetail';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
-import SeedDetail from './screens/SeedDetail';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SeedDetail from './screens/SeedDetail';
+import HitApple from './sessions/AppleHitSession';
+import LockAppleDetail from './screens/lock/LockAppleDetail';
 import auth from '@react-native-firebase/auth';
 import {setGestureState} from 'react-native-reanimated/lib/reanimated2/NativeMethods';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const CreateStack = createStackNavigator();
-
-const Stack2 = createStackNavigator();
-function MyTabs() {
-  return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          height: heightPercentageToDP('9%'),
-        },
-        tabBarShowLabel: false,
-        tabBarInactiveBackgroundColor: '#ECE5E0',
-        tabBarActiveBackgroundColor: '#c3b8ae',
-      }}>
-      <Tab.Screen
-        name="Home"
-        component={Main}
-        options={{
-          tabBarIcon: () => (
-            <Image
-              source={require('./assets/icons/home.png')}
-              style={styles.navIcon}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Map"
-        component={Map}
-        options={{
-          tabBarIcon: () => (
-            <Image
-              source={require('./assets/icons/map.png')}
-              style={styles.navIcon}
-            />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="MakeRoom"
-        options={{
-          headerShown: false,
-          tabBarIcon: () => (
-            <Image
-              source={require('./assets/icons/create.png')}
-              style={styles.navIcon}
-            />
-          ),
-        }}>
-        {() => (
-          <CreateStack.Navigator screenOptions={{headerShown: false}}>
-            <CreateStack.Screen name="MakeRoomForm" component={MakeRoomForm} />
-            <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
-            <CreateStack.Screen name="GroupSession" component={GroupSession} />
-            <CreateStack.Screen name="RecordVoice" component={RecordVoice} />
-            <CreateStack.Screen name="AppleLockGIF" component={AppleLockGIF} />
-          </CreateStack.Navigator>
-        )}
-      </Tab.Screen>
-      <Tab.Screen
-        name="AppleList"
-        // component={AppleList}
-        options={{
-          tabBarIcon: () => (
-            <Image
-              source={require('./assets/icons/list.png')}
-              style={styles.navIcon}
-            />
-          ),
-        }}>
-        {() => (
-          <Stack2.Navigator
-            screenOptions={{
-              headerShown: false,
-            }}>
-            <Stack2.Screen name="AppleList" component={AppleList} />
-            <Stack2.Screen name="AppleDetail" component={AppleDetail} />
-            <Stack2.Screen name="SeedDetail" component={SeedDetail} />
-          </Stack2.Navigator>
-        )}
-      </Tab.Screen>
-      <Tab.Screen
-        name="MyPage"
-        component={MyPage}
-        options={{
-          tabBarIcon: () => (
-            <Image
-              source={require('./assets/icons/mypage.png')}
-              style={styles.navIcon}
-            />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
-}
-
-function MyStack() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
-      {/* 인트로 3개 */}
-      <Stack.Screen name="IntroFirst" component={IntroFirst} />
-      <Stack.Screen name="IntroSecond" component={IntroSecond} />
-      {/* 로그인 페이지 */}
-      <Stack.Screen name="Login" component={Login} />
-      {/* 회원가입 페이지 */}
-      <Stack.Screen name="Register" component={Register} />
-    </Stack.Navigator>
-  );
-}
-
-const isLogin = true;
-
 const HomeStack = createStackNavigator();
 const ListStack = createStackNavigator();
 
@@ -205,7 +91,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/home.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}>
@@ -216,6 +102,11 @@ export default function App() {
                 tabBarStyle: {display: 'none'},
               }}>
               <HomeStack.Screen name="Main" component={Main} />
+              <HomeStack.Screen name="HitApple" component={HitApple} />
+              <HomeStack.Screen
+                name="LockAppleDetail"
+                component={LockAppleDetail}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -226,7 +117,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/map.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}
@@ -237,7 +128,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/create.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}>
@@ -262,7 +153,7 @@ export default function App() {
           )}
         </Tab.Screen>
         <Tab.Screen
-          name="AppleList"
+          name="List"
           // component={AppleList}
           options={{
             tabBarIcon: () => (
@@ -279,6 +170,8 @@ export default function App() {
               }}>
               <ListStack.Screen name="AppleList" component={AppleList} />
               <ListStack.Screen name="AppleDetail" component={AppleDetail} />
+              <ListStack.Screen name="SeedDetail" component={SeedDetail} />
+              <ListStack.Screen name="HitApple" component={HitApple} />
             </ListStack.Navigator>
           )}
         </Tab.Screen>
@@ -289,7 +182,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/mypage.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}
@@ -320,7 +213,6 @@ export default function App() {
   };
   useEffect(() => {
     getToken();
-    console.log('token잇냐?', token);
   });
   useEffect(() => {
     try {
@@ -329,7 +221,7 @@ export default function App() {
       }, 500); /** 스플래시 시간 조절 (0.5초) **/
       googleSigninConfigure();
     } catch (e) {
-      console.warn('에러발생');
+      // console.warn('에러발생');
       console.warn(e);
     }
   }, []);
