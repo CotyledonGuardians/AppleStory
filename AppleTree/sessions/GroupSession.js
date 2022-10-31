@@ -89,17 +89,17 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const actAdded = () => {
     SendIfSubscribed(
       `/lock-apple-room.${roomId}.added`,
-      {
+      /* {
         nickname: '닉네무',
-        content: {
+        content: */{
           text: [
             {
               author: '여기는 백엔드에서 uid 로 덮어써짐',
               content: 'This is text.',
             },
           ],
-        },
-      }
+        }
+      /* } */
     );
   };
 
