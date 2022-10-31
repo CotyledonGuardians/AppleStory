@@ -14,4 +14,9 @@ const getMyAppleCount = async () => {
   return await api('get', '/apple/count');
 };
 
-export {getOpenAppleList, getCloseAppleList, getMyAppleCount};
+//방만들기
+const makeRoomAPI = async appleDTO => {
+  return api('post', '/ws-front/lock-apple-room', appleDTO);
+};
+
+export {getOpenAppleList, getCloseAppleList, getMyAppleCount, makeRoomAPI};

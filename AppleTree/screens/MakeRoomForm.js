@@ -12,11 +12,15 @@ import moment from 'moment';
 import 'moment/locale/ko';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
-const MakeRoomForm = ({navigation}) => {
+import {makeRoomAPI} from '../api/AppleAPI';
+import {UseStomp} from '../stomp';
+import GroupSession from '../sessions/GroupSession';
+const MakeRoomForm = ({navigation: {navigate}}) => {
   //inputs
   const [title, setTitle] = useState(null);
   const [teamName, setTeamName] = useState(null);
   const [unlockDate, setUnlockDate] = useState(null);
+  const [appleDTO, setAppleDTO] = useState(null);
   //datePicker
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [text, onChangeText] = useState('');
@@ -42,7 +46,42 @@ const MakeRoomForm = ({navigation}) => {
   let today = new Date();
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
-    navigation.navigate('GroupSession', {screen: 'GroupSession'});
+    // api connect start
+    const tempAppleDTO = {
+      title: 'test1',
+      creator: {
+        teamName: 'test',
+      },
+      unlockAt: '2022-12-13',
+      location: {
+        lat: 37.5,
+        lng: 127.5,
+      },
+    };
+    setAppleDTO(tempAppleDTO);
+    console.log('tempAppleDTO', tempAppleDTO);
+    makeRoomAPI(tempAppleDTO)
+      .then(response => {
+        console.log('makeRoom::response', response);
+        // console.log('makeRoom::response.data', response.data);
+        return response.data;
+      })
+      .then(({roomId}) => {
+        UseStomp(
+          () => {
+            console.log('make room succeed', roomId);
+            navigate('GroupSession', {roomId: roomId});
+          },
+          () => {
+            console.log('make room failed', roomId);
+            navigate('GroupSession');
+          },
+        );
+      })
+      .catch(error => {
+        console.log('makeRoom::error', error);
+      });
+    // api connect end
   };
   // input valid handler start
   const titleChangeHandler = text => {
@@ -61,6 +100,7 @@ const MakeRoomForm = ({navigation}) => {
     }
     setTeamName(text);
   };
+
   // inpust valid handler end
   return (
     <SafeAreaView style={styles.container}>
@@ -146,7 +186,7 @@ const MakeRoomForm = ({navigation}) => {
             disabled={!titleValid || !teamNameValid || !dateValid}
           />
           <SmallButton
-            onPress={() => navigation.goBack()}
+            onPress={() => navigate.goBack()}
             text="홈으로"
             disabled={false}
           />
