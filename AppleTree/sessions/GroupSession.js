@@ -87,14 +87,20 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
 
   const actAdded = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
-      text: [
-        {
-          author: '나',
-          content: 'This is text.',
-        },
-      ],
-    });
+    SendIfSubscribed(
+      `/lock-apple-room.${roomId}.added`,
+      /* {
+        nickname: '닉네무',
+        content: */{
+          text: [
+            {
+              author: '여기는 백엔드에서 uid 로 덮어써짐',
+              content: 'This is text.',
+            },
+          ],
+        }
+      /* } */
+    );
   };
 
   const actCancelled = () => {
