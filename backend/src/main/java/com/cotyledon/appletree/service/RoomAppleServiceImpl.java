@@ -1,6 +1,7 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.dto.*;
+import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 import com.cotyledon.appletree.domain.repository.redis.RoomAppleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class RoomAppleServiceImpl implements RoomAppleService {
 
     @Override
     public void addMemberAndContentToAppleByRoomId(String roomId, Member member, Content content) {
-        AppleDTO apple = roomAppleRepository.findAppleByRoomId(roomId)
+        RoomApple apple = roomAppleRepository.findRoomAppleByRoomId(roomId)
                 .orElseThrow(IllegalArgumentException::new);
 
         Content contents = apple.getContent();
@@ -37,7 +38,7 @@ public class RoomAppleServiceImpl implements RoomAppleService {
         creator.setMember(members);
         apple.setCreator(creator);
 
-        roomAppleRepository.putApple(roomId, apple);
+        roomAppleRepository.putRoomApple(roomId, apple);
 
         // change 이벤트 발행
         lockAppleRoomLogService.logForAdded(roomId, member, content);

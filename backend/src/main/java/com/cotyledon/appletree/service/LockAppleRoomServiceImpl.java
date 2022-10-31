@@ -4,6 +4,7 @@ import com.cotyledon.appletree.domain.dto.AppleDTO;
 import com.cotyledon.appletree.domain.dto.RoomDTO;
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
+import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.*;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
     // reserve 이벤트 발행
     @Override
-    public RoomDTO reserveRoomAndGetRoomDTO(String hostUid, AppleDTO apple) {
+    public RoomDTO reserveRoomAndGetRoomDTO(String hostUid, AppleDTO apple, long appleId) {
 
         // 필수 속성 있는지 검사 & 다른 속성 초기화
         if (!apple.validateAndCleanWithHostUidForReservingRoom(hostUid)) {
@@ -42,30 +43,36 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         String roomId = room.getId();
 
         // Put 룸 사과
-        roomAppleRepository.putApple(roomId, apple);
+        roomAppleRepository.putRoomApple(roomId, RoomApple.withAppleDTOAndAppleId(apple, appleId));
 
         // reserve 이벤트 발행
-        eventPublisher.publishEvent(ReserveLockAppleRoomEvent.builder().roomId(roomId).build());
+        eventPublisher.publishEvent(ReserveLockAppleRoomEvent.builder().roomId(roomId).appleId(appleId).build());
 
         return RoomDTO.builder().roomId(roomId).build();
     }
 
     @Override
-    public void deleteRoomIfEmpty(String roomId) {
+    public boolean deleteRoomIfEmpty(String roomId) {
 
         if (lockAppleRoomRepository.findById(roomId).isEmpty()) {
             // 이미 룸이 없는 경우 (유저가 방 만들고 빨리 나감)
-            return;
+            return false;
         }
 
         Optional<Set<String>> group = appleRoomGroupRepository.findGroupByRoomId(roomId);
 
-        if (group.isEmpty() || group.get().isEmpty()) {
-            appleRoomGroupRepository.deleteGroupByRoomId(roomId);
-            roomAppleRepository.deleteAppleByRoomId(roomId);
-            lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
-            lockAppleRoomRepository.deleteById(roomId);
+        if (group.isPresent() && !group.get().isEmpty()) {
+            return false;
         }
+
+        appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+        roomAppleRepository.deleteRoomAppleByRoomId(roomId);
+        lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
+        lockAppleRoomRepository.deleteById(roomId);
+
+        log.info("예약된 룸 (+관련 컬렉션 전부) 을 지움");
+
+        return true;
     }
 
     // join 이벤트 발행

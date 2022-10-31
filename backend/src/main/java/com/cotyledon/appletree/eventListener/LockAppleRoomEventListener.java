@@ -5,6 +5,7 @@ import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.stomp.BaseMessage;
 import com.cotyledon.appletree.domain.stomp.DestinationBuilder;
 import com.cotyledon.appletree.service.LockAppleRoomService;
+import com.cotyledon.appletree.service.MultiAppleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 public class LockAppleRoomEventListener {
 
     private final LockAppleRoomService lockAppleRoomService;
+    private final MultiAppleService multiAppleService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Async
@@ -32,7 +34,9 @@ public class LockAppleRoomEventListener {
             log.trace("", e);
         }
 
-        lockAppleRoomService.deleteRoomIfEmpty(event.getRoomId());
+        if (lockAppleRoomService.deleteRoomIfEmpty(event.getRoomId())) {
+            multiAppleService.deleteAppleIfEmpty(event.getAppleId());
+        }
     }
 
     @Async

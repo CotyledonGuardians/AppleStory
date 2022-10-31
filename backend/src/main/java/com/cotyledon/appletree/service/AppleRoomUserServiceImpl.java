@@ -77,7 +77,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
 
     private void deleteAllRelatedToRoomIdOf(String roomId) {
         appleRoomGroupRepository.deleteGroupByRoomId(roomId);
-        roomAppleRepository.deleteAppleByRoomId(roomId);
+        roomAppleRepository.deleteRoomAppleByRoomId(roomId);
         lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
         lockAppleRoomRepository.deleteById(roomId);
     }
