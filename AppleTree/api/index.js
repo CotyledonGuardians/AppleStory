@@ -35,6 +35,7 @@ const RefreshToken = async () => {
     .currentUser.getIdToken()
     .then(idToken => {
       AsyncStorage.setItem('idToken', idToken);
+      // console.log('idToken-2', idToken);
       return idToken;
     })
     .then(idToken => {
@@ -53,6 +54,7 @@ const RefreshToken = async () => {
  */
 const api = async (method, url, body) => {
   const accessToken = await AsyncStorage.getItem('idToken');
+  // console.log('idToken-1', accessToken);
   if (!accessToken || accessToken === '') {
     throw {no_access_token: true};
   }
