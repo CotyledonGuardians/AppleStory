@@ -1,12 +1,12 @@
 package com.cotyledon.appletree.domain.repository.redis;
 
-import com.cotyledon.appletree.domain.dto.AppleDTO;
+import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 
 import java.util.Optional;
 
 public interface RoomAppleRepository {
 
-    void putApple(String roomId, AppleDTO apple);
-    Optional<AppleDTO> findAppleByRoomId(String roomId);
-    void deleteAppleByRoomId(String roomId);
+    void putRoomApple(String roomId, RoomApple apple);
+    Optional<RoomApple> findRoomAppleByRoomId(String roomId);
+    void deleteRoomAppleByRoomId(String roomId);
 }
