@@ -3,9 +3,12 @@
 buildscript {
     ext {
         buildToolsVersion = "30.0.2"
-        minSdkVersion = 21
+        // Note: Below change is necessary for pause / resume audio feature. Not for Kotlin.
+        minSdkVersion = 24
         compileSdkVersion = 31
         targetSdkVersion = 31
+        kotlinVersion = '1.6.10'
+
         ndkVersion = "20.1.5948944"
     }
     repositories {
@@ -17,7 +20,7 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.14'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
-        classpath ("com.google.gms:google-services:4.3.14")
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
