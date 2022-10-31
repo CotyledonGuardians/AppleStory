@@ -51,7 +51,7 @@ const RecordVoiceTest = () => {
       console.log("err:removePlayer ", err);
     }
     setAudioRecorderPlayer(new AudioRecorderPlayer());
-    setRecordTime(0);
+    setRecordTime("00:00");
     setRecordStatus(0);
   }
 
@@ -119,7 +119,7 @@ const RecordVoiceTest = () => {
     const result = await audioRecorderPlayer.startRecorder().then((uri) => {
         return uri;
     }).catch((err) => {
-        console.log("Error in startRecorder: ". err);
+        console.log("Error in startRecorder: ", err);
     });
     
     try{  
@@ -127,7 +127,6 @@ const RecordVoiceTest = () => {
         if(Math.floor(e.currentPosition/1000) >= 60) {
           onStopRecord();
         }
-        // setRecordSecs(e.currentPosition/1000);
         setRecordTime(audioRecorderPlayer.mmss(Math.floor(e.currentPosition/1000)));
       });
     } catch(err) {
