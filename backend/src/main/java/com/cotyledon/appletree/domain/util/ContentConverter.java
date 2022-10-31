@@ -5,7 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
+@Converter
 public class ContentConverter implements AttributeConverter<Content, String> {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
