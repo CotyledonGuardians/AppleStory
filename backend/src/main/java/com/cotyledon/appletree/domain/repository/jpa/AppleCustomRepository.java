@@ -46,6 +46,7 @@ public class AppleCustomRepository extends QuerydslRepositorySupport {
 
         long totalCount = query.fetchCount();
         List<AppleListDTO> results = getQuerydsl().applyPagination(pageable, query).fetch();
+        System.out.println(results);
         return new PageImpl<>(results, pageable, totalCount);
     }
 
@@ -82,6 +83,7 @@ public class AppleCustomRepository extends QuerydslRepositorySupport {
 
         long totalCount = query.fetchCount();
         List<AppleListDTO> results =  getQuerydsl().applyPagination(pageable, query).fetch();
+        System.out.println(results);
         return new PageImpl<>(results, pageable, totalCount);
     }
 }
