@@ -2,12 +2,12 @@ package com.cotyledon.appletree.domain.dto;
 
 import lombok.*;
 
-import java.io.Serializable;
-
-@Getter
 @Builder
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Member {
     private String nickname;
     private String uid;

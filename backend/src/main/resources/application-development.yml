@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${com.cotyledon.appletree.dev-dep.host}:3306/apple_tree?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true
+    password: ${com.cotyledon.appletree.dev-dep.password}
+  output:
+    ansi:
+      enabled: always
+  rabbitmq:
+    host: ${com.cotyledon.appletree.dev-dep.host}
+    password: ${com.cotyledon.appletree.dev-dep.password}
+  redis:
+    host: ${com.cotyledon.appletree.dev-dep.host}
+    password: ${com.cotyledon.appletree.dev-dep.password}
+
+logging:
+  level:
+    com.cotyledon.appletree: debug
+    org.springframework.web: debug
