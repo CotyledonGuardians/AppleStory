@@ -1,17 +1,27 @@
 import api from './index';
 
 const getOpenAppleList = async (sort, page, size) => {
-  const url = '/apple/open' + `?sort=${sort}&page=${page}&size=${size}`;
-  return await api('get', url);
+  return await api('get', `/apple/open?sort=${sort}&page=${page}&size=${size}`);
 };
 
 const getCloseAppleList = async (sort, page, size) => {
-  const url = '/apple/close' + `?sort=${sort}&page=${page}&size=${size}`;
-  return await api('get', url);
+  return await api(
+    'get',
+    `/apple/close?sort=${sort}&page=${page}&size=${size}`,
+  );
 };
 
 const getMyAppleCount = async () => {
   return await api('get', '/apple/count');
 };
 
-export {getOpenAppleList, getCloseAppleList, getMyAppleCount};
+const getLockAppleDetail = async id => {
+  return await api('get', `/apple/${id}`);
+};
+
+export {
+  getOpenAppleList,
+  getCloseAppleList,
+  getMyAppleCount,
+  getLockAppleDetail,
+};
