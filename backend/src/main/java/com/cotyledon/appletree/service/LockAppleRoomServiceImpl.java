@@ -5,8 +5,11 @@ import com.cotyledon.appletree.domain.dto.RoomDTO;
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
 import com.cotyledon.appletree.domain.entity.redis.RoomApple;
+import com.cotyledon.appletree.domain.enums.LockAppleRoomUserStage;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.*;
+import com.cotyledon.appletree.domain.stomp.ChangeMessageData;
+import com.cotyledon.appletree.domain.stomp.LockAppleRoomUserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,6 +28,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
     private final LockAppleRoomLogService lockAppleRoomLogService;
+    private final MultiAppleService multiAppleService;
     private final ApplicationEventPublisher eventPublisher;
 
     // reserve 이벤트 발행
@@ -103,5 +107,64 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     public boolean hasRoomByRoomId(String roomId) {
         Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
         return room.isPresent();
+    }
+
+    @Override
+    public Optional<LockAppleRoom> findByRoomId(String roomId) {
+        return lockAppleRoomRepository.findById(roomId);
+    }
+
+    @Override
+    public boolean saveAppleIfHostByRoomAndUid(LockAppleRoom room, String uid) {
+
+        String hostUid = room.getHostUid();
+        if (!uid.equals(hostUid)) {
+            log.info("Unauthorized");
+            return false;
+        }
+
+        String roomId = room.getId();
+
+        Optional<RoomApple> roomApple = roomAppleRepository.findRoomAppleByRoomId(room.getId());
+        if (roomApple.isEmpty()) {
+            log.info("Room Apple Not Found");
+            return false;
+        }
+
+        Optional<ChangeMessageData> changeMessageDataOptional = lockAppleRoomLogRepository.findLogByRoomId(roomId);
+        if (changeMessageDataOptional.isEmpty()) {
+            log.info("Room Log Not Found");
+            return false;
+        }
+
+        List<String> userUids = new ArrayList<>();
+        boolean containsHost = false;
+
+        ChangeMessageData changeMessageData = changeMessageDataOptional.get();
+        Map<String, Integer> uidToIndex = changeMessageData.getUidToIndex();
+        Set<String> uids = uidToIndex.keySet();
+        for (String _uid : uids) {
+            ArrayList<LockAppleRoomUserStatus> statuses = changeMessageData.getStatuses();
+            if (statuses.get(uidToIndex.get(_uid)).getStage() == LockAppleRoomUserStage.ADDED) {
+                userUids.add(_uid);
+                if (_uid.equals(hostUid)) {
+                    containsHost = true;
+                }
+            }
+        }
+
+        if (userUids.isEmpty()) {
+            log.info("Creator Empty");
+            return false;
+        }
+
+        if (!containsHost) {
+            userUids.add(hostUid);
+            log.info("호스트가 업로드하지 않아서 호스트를 추가함");
+        }
+
+        multiAppleService.saveAppleAndAppleUsers(roomApple.get().toAppleDTO(), userUids);
+
+        return true;
     }
 }
