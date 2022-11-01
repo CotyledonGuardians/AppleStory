@@ -8,175 +8,101 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import {useEffect, useState, useRef} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import {getCloseAppleList, getOpenAppleList} from '../api/AppleAPI';
 
 const AppleList = ({navigation}) => {
-  const data = [
-    {
-      type: false,
-      title: '테스트임1!',
-      creator: {
-        teamName: '테스트팀',
-        hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-        member: [
-          {
-            nickname: '테스트닉네임',
-            uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-          },
-        ],
-      },
-      createAt: '2022-10-15T00:00:00.000+00:00',
-      unlockAt: '2024-10-14T00:00:00.000+00:00',
-      createScene: 'https://www.google.com',
-      content: null,
-      location: null,
-      useSpace: false,
-      uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      isShow: false,
-      isOpen: false,
-    },
-    {
-      type: true,
-      title: '테스트임1!',
-      creator: {
-        teamName: '테스트팀',
-        hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-        member: [
-          {
-            nickname: '테스트닉네임',
-            uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-          },
-        ],
-      },
-      createAt: '2022-10-15T00:00:00.000+00:00',
-      unlockAt: '2022-10-16T00:00:00.000+00:00',
-      createScene: 'https://www.google.com',
-      content: null,
-      location: null,
-      useSpace: false,
-      uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      isShow: false,
-      isOpen: false,
-    },
-    {
-      type: false,
-      title: '테스트임1!',
-      creator: {
-        teamName: '테스트팀',
-        hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-        member: [
-          {
-            nickname: '테스트닉네임',
-            uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-          },
-        ],
-      },
-      createAt: '2022-10-15T00:00:00.000+00:00',
-      unlockAt: '2024-10-14T00:00:00.000+00:00',
-      createScene: 'https://www.google.com',
-      content: null,
-      location: null,
-      useSpace: false,
-      uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      isShow: false,
-      isOpen: false,
-    },
-    {
-      type: false,
-      title: '테스트임1!',
-      creator: {
-        teamName: '테스트팀',
-        hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-        member: [
-          {
-            nickname: '테스트닉네임',
-            uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-          },
-        ],
-      },
-      createAt: '2022-10-15T00:00:00.000+00:00',
-      unlockAt: '2024-10-14T00:00:00.000+00:00',
-      createScene: 'https://www.google.com',
-      content: null,
-      location: null,
-      useSpace: false,
-      uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      isShow: false,
-      isOpen: false,
-    },
-    {
-      type: false,
-      title: '테스트임1!',
-      creator: {
-        teamName: '테스트팀',
-        hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-        member: [
-          {
-            nickname: '테스트닉네임',
-            uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-          },
-        ],
-      },
-      createAt: '2022-10-15T00:00:00.000+00:00',
-      unlockAt: '2022-10-14T00:00:00.000+00:00',
-      createScene: 'https://www.google.com',
-      content: null,
-      location: null,
-      useSpace: false,
-      uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      isShow: false,
-      isOpen: false,
-    },
-    {
-      type: false,
-      title: '테스트임1!',
-      creator: {
-        teamName: '테스트팀',
-        hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-        member: [
-          {
-            nickname: '테스트닉네임',
-            uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-          },
-        ],
-      },
-      createAt: '2022-10-15T00:00:00.000+00:00',
-      unlockAt: '2022-10-14T00:00:00.000+00:00',
-      createScene: 'https://www.google.com',
-      content: null,
-      location: null,
-      useSpace: false,
-      uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      isShow: false,
-      isOpen: false,
-    },
-    {
-      type: true,
-      title: '테스트임1!',
-      creator: {
-        teamName: '테스트팀',
-        hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-        member: [
-          {
-            nickname: '테스트닉네임',
-            uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-          },
-        ],
-      },
-      createAt: '2022-10-15T00:00:00.000+00:00',
-      unlockAt: '2024-10-22T00:00:00.000+00:00',
-      createScene: 'https://www.google.com',
-      content: null,
-      location: null,
-      useSpace: false,
-      uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      isShow: false,
-      isOpen: true,
-    },
-  ];
+  const [route, setRoute] = useState('열린 사과');
+  const [routeSort, setRouteSort] = useState('최신순');
+
+  const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
+  const [page, setPage] = useState(1);
+  const [page2, setPage2] = useState(1);
+  const [sort, setSort] = useState(0);
+  const [sort2, setSort2] = useState(0);
+
+  const [closeList, setCloseList] = useState([]);
+  const [openList, setOpenList] = useState([]);
+
+  const getInitData = async sort => {
+    getOpenAppleList(sort, 0, 6)
+      .then(response => {
+        setOpenList(response.data.body.content);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+
+    getCloseAppleList(sort, 0, 6)
+      .then(response => {
+        setCloseList(response.data.body.content);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  };
+
+  // 컴포넌트가 마운트되면 해당 함수를 호출해 초기 데이터 설정
+  useEffect(() => {
+    getInitData(sort);
+  }, [sort]);
+
+  const updateList = async type => {
+    if (type === 'close') {
+      // API로부터 받아온 페이징 데이터를 이용해 다음 데이터를 로드
+      getCloseAppleList(sort, page, 6)
+        .then(response => {
+          const fetchedData = response.data.body.content; // 피드 데이터 부분
+
+          if (fetchedData.length === 0) {
+            setLoading(true);
+            return;
+          }
+          // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.
+          const mergedData = closeList.concat(fetchedData);
+          if (fetchedData.length <= 6) {
+            setLoading(true);
+          }
+
+          setCloseList(mergedData);
+          setPage(page + 1);
+          setRoute('잠긴 사과');
+        })
+        .catch(error => {
+          console.log('error', error);
+        });
+    } else if (type === 'open') {
+      // API로부터 받아온 페이징 데이터를 이용해 다음 데이터를 로드
+      getOpenAppleList(sort, page2, 6)
+        .then(response => {
+          const fetchedData = response.data.body.content; // 피드 데이터 부분
+
+          if (fetchedData.length === 0) {
+            setLoading2(true);
+            console.log('데이터 없음');
+            return;
+          }
+          // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.
+          const mergedData = openList.concat(fetchedData);
+          console.log('WEFWEFWEF', mergedData);
+          if (fetchedData.length <= 6) {
+            setLoading2(true);
+          }
+
+          setOpenList(mergedData);
+          setPage2(page2 + 1);
+          setRoute('열린 사과');
+        })
+        .catch(error => {
+          console.log('error', error);
+        });
+    }
+  };
 
   var randomgroupImages = [
     require('../assets/pictures/listgroup1.png'),
@@ -239,13 +165,22 @@ const AppleList = ({navigation}) => {
       '많이 남은 시간 순',
     ];
 
+    console.log('DropdownSelect..');
+
     return (
       <SelectDropdown
         data={countries}
-        defaultValueByIndex={1}
-        defaultValue={'최신순'}
+        // defaultValueByIndex={1}
+        defaultValue={routeSort}
         onSelect={(selectedItem, index) => {
+          setPage(1);
+          setSort(index);
+          setLoading(false);
+          setPage2(1);
+          setSort2(index);
+          setLoading2(false);
           console.log(selectedItem, index);
+          setRouteSort(countries[index]);
         }}
         buttonTextAfterSelection={(selectedItem, index) => {
           return selectedItem;
@@ -263,6 +198,7 @@ const AppleList = ({navigation}) => {
   }
 
   function HomeScreen() {
+    console.log('HomeScreen..');
     return (
       <View
         style={{
@@ -275,13 +211,31 @@ const AppleList = ({navigation}) => {
           <DropdownSelect />
         </View>
         <ScrollView
+          onScroll={e => {
+            // 현재 스크롤 값
+            const updateScroll = e.nativeEvent.contentOffset.y;
+            if (updateScroll === 0) {
+              return;
+            }
+            // 전체 문서의 높이
+            const documentHeight = e.nativeEvent.contentSize.height;
+            // 현재 보여지는 화면 높이
+            const screenHeight = e.nativeEvent.layoutMeasurement.height;
+            // 원하는 로직을 시작하는 시점
+            const endPoint = 10;
+
+            if (screenHeight + updateScroll + endPoint >= documentHeight) {
+              if (!loading) {
+                updateList('close');
+              }
+            }
+          }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: 'row',
             flexWrap: 'wrap',
           }}>
-          {data.map((item, index) => {
-            //   console.log(index);
+          {closeList.map((item, index) => {
             return (
               <View style={{width: '50%', flexDirection: 'row'}} key={index}>
                 <Card
@@ -294,12 +248,16 @@ const AppleList = ({navigation}) => {
               </View>
             );
           })}
+          {closeList.length === 1 && (
+            <View style={{width: '50%', flexDirection: 'row'}}></View>
+          )}
         </ScrollView>
       </View>
     );
   }
 
   function SettingsScreen() {
+    console.log('SettingsScreen..');
     return (
       <View
         style={{
@@ -312,13 +270,31 @@ const AppleList = ({navigation}) => {
           <DropdownSelect />
         </View>
         <ScrollView
+          onScroll={e => {
+            // 현재 스크롤 값
+            const updateScroll = e.nativeEvent.contentOffset.y;
+            if (updateScroll === 0) {
+              return;
+            }
+            // 전체 문서의 높이
+            const documentHeight = e.nativeEvent.contentSize.height;
+            // 현재 보여지는 화면 높이
+            const screenHeight = e.nativeEvent.layoutMeasurement.height;
+            // 원하는 로직을 시작하는 시점
+            const endPoint = 10;
+
+            if (screenHeight + updateScroll + endPoint >= documentHeight) {
+              if (!loading2) {
+                updateList('open');
+              }
+            }
+          }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: 'row',
             flexWrap: 'wrap',
           }}>
-          {data.map((item, index) => {
-            //   console.log(index);
+          {openList.map((item, index) => {
             return (
               <View style={{width: '50%', flexDirection: 'row'}} key={index}>
                 <Card
@@ -331,6 +307,9 @@ const AppleList = ({navigation}) => {
               </View>
             );
           })}
+          {openList.length === 1 && (
+            <View style={{width: '50%', flexDirection: 'row'}}></View>
+          )}
         </ScrollView>
       </View>
     );
@@ -339,9 +318,11 @@ const AppleList = ({navigation}) => {
   const Tab = createMaterialTopTabNavigator();
 
   function MyTabsTwo() {
+    console.log('MyTabsTwo..');
     return (
       <NavigationContainer independent={true}>
         <Tab.Navigator
+          initialRouteName={route}
           screenOptions={{
             tabBarLabelStyle: {fontSize: 18, fontFamily: 'UhBee Se_hyun Bold'},
             tabBarStyle: {
@@ -407,3 +388,167 @@ const styles = StyleSheet.create({
 });
 
 export default AppleList;
+
+// const data = [
+//   {
+//     type: false,
+//     title: '테스트임1!',
+//     creator: {
+//       teamName: '테스트팀',
+//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//       member: [
+//         {
+//           nickname: '테스트닉네임',
+//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//         },
+//       ],
+//     },
+//     createAt: '2022-10-15T00:00:00.000+00:00',
+//     unlockAt: '2024-10-14T00:00:00.000+00:00',
+//     createScene: 'https://www.google.com',
+//     content: null,
+//     location: null,
+//     useSpace: false,
+//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//     isShow: false,
+//     isOpen: false,
+//   },
+//   {
+//     type: true,
+//     title: '테스트임1!',
+//     creator: {
+//       teamName: '테스트팀',
+//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//       member: [
+//         {
+//           nickname: '테스트닉네임',
+//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//         },
+//       ],
+//     },
+//     createAt: '2022-10-15T00:00:00.000+00:00',
+//     unlockAt: '2022-10-16T00:00:00.000+00:00',
+//     createScene: 'https://www.google.com',
+//     content: null,
+//     location: null,
+//     useSpace: false,
+//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//     isShow: false,
+//     isOpen: false,
+//   },
+//   {
+//     type: false,
+//     title: '테스트임1!',
+//     creator: {
+//       teamName: '테스트팀',
+//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//       member: [
+//         {
+//           nickname: '테스트닉네임',
+//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//         },
+//       ],
+//     },
+//     createAt: '2022-10-15T00:00:00.000+00:00',
+//     unlockAt: '2024-10-14T00:00:00.000+00:00',
+//     createScene: 'https://www.google.com',
+//     content: null,
+//     location: null,
+//     useSpace: false,
+//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//     isShow: false,
+//     isOpen: false,
+//   },
+//   {
+//     type: false,
+//     title: '테스트임1!',
+//     creator: {
+//       teamName: '테스트팀',
+//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//       member: [
+//         {
+//           nickname: '테스트닉네임',
+//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//         },
+//       ],
+//     },
+//     createAt: '2022-10-15T00:00:00.000+00:00',
+//     unlockAt: '2024-10-14T00:00:00.000+00:00',
+//     createScene: 'https://www.google.com',
+//     content: null,
+//     location: null,
+//     useSpace: false,
+//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//     isShow: false,
+//     isOpen: false,
+//   },
+//   {
+//     type: false,
+//     title: '테스트임1!',
+//     creator: {
+//       teamName: '테스트팀',
+//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//       member: [
+//         {
+//           nickname: '테스트닉네임',
+//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//         },
+//       ],
+//     },
+//     createAt: '2022-10-15T00:00:00.000+00:00',
+//     unlockAt: '2022-10-14T00:00:00.000+00:00',
+//     createScene: 'https://www.google.com',
+//     content: null,
+//     location: null,
+//     useSpace: false,
+//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//     isShow: false,
+//     isOpen: false,
+//   },
+//   {
+//     type: false,
+//     title: '테스트임1!',
+//     creator: {
+//       teamName: '테스트팀',
+//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//       member: [
+//         {
+//           nickname: '테스트닉네임',
+//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//         },
+//       ],
+//     },
+//     createAt: '2022-10-15T00:00:00.000+00:00',
+//     unlockAt: '2022-10-14T00:00:00.000+00:00',
+//     createScene: 'https://www.google.com',
+//     content: null,
+//     location: null,
+//     useSpace: false,
+//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//     isShow: false,
+//     isOpen: false,
+//   },
+//   {
+//     type: true,
+//     title: '테스트임1!',
+//     creator: {
+//       teamName: '테스트팀',
+//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//       member: [
+//         {
+//           nickname: '테스트닉네임',
+//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//         },
+//       ],
+//     },
+//     createAt: '2022-10-15T00:00:00.000+00:00',
+//     unlockAt: '2024-10-22T00:00:00.000+00:00',
+//     createScene: 'https://www.google.com',
+//     content: null,
+//     location: null,
+//     useSpace: false,
+//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
+//     isShow: false,
+//     isOpen: true,
+//   },
+// ];
