@@ -22,6 +22,9 @@ import AppleDetail from './screens/AppleDetail';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SeedDetail from './screens/SeedDetail';
+import HitApple from './sessions/AppleHitSession';
+import LockAppleDetail from './screens/lock/LockAppleDetail';
 import auth from '@react-native-firebase/auth';
 import {setGestureState} from 'react-native-reanimated/lib/reanimated2/NativeMethods';
 
@@ -88,7 +91,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/home.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}>
@@ -99,6 +102,11 @@ export default function App() {
                 tabBarStyle: {display: 'none'},
               }}>
               <HomeStack.Screen name="Main" component={Main} />
+              <HomeStack.Screen name="HitApple" component={HitApple} />
+              <HomeStack.Screen
+                name="LockAppleDetail"
+                component={LockAppleDetail}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -109,7 +117,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/map.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}
@@ -120,7 +128,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/create.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}>
@@ -145,7 +153,7 @@ export default function App() {
           )}
         </Tab.Screen>
         <Tab.Screen
-          name="AppleList"
+          name="List"
           // component={AppleList}
           options={{
             tabBarIcon: () => (
@@ -162,6 +170,8 @@ export default function App() {
               }}>
               <ListStack.Screen name="AppleList" component={AppleList} />
               <ListStack.Screen name="AppleDetail" component={AppleDetail} />
+              <ListStack.Screen name="SeedDetail" component={SeedDetail} />
+              <ListStack.Screen name="HitApple" component={HitApple} />
             </ListStack.Navigator>
           )}
         </Tab.Screen>
@@ -172,7 +182,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/mypage.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}
@@ -203,7 +213,6 @@ export default function App() {
   };
   useEffect(() => {
     getToken();
-    console.log('token잇냐?', token);
   });
   useEffect(() => {
     try {
@@ -212,7 +221,7 @@ export default function App() {
       }, 500); /** 스플래시 시간 조절 (0.5초) **/
       googleSigninConfigure();
     } catch (e) {
-      console.warn('에러발생');
+      // console.warn('에러발생');
       console.warn(e);
     }
   }, []);

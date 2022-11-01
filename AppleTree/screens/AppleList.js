@@ -275,6 +275,7 @@ const AppleList = ({navigation}) => {
           <DropdownSelect />
         </View>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: 'row',
             flexWrap: 'wrap',
@@ -311,6 +312,7 @@ const AppleList = ({navigation}) => {
           <DropdownSelect />
         </View>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: 'row',
             flexWrap: 'wrap',
@@ -351,8 +353,8 @@ const AppleList = ({navigation}) => {
               height: 5,
             },
           }}>
-          <Tab.Screen name="잠긴 사과" component={HomeScreen} />
           <Tab.Screen name="열린 사과" component={SettingsScreen} />
+          <Tab.Screen name="잠긴 사과" component={HomeScreen} />
         </Tab.Navigator>
       </NavigationContainer>
     );
