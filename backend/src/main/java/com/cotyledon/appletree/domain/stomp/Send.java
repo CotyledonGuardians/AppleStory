@@ -2,7 +2,7 @@ package com.cotyledon.appletree.domain.stomp;
 
 import com.cotyledon.appletree.configuration.WebSocketConfiguration;
 import com.cotyledon.appletree.domain.enums.RoomType;
-import com.cotyledon.appletree.exception.InvalidStompHeaderExceptionBuilder;
+import com.cotyledon.appletree.exception.InvalidStompMessageExceptionBuilder;
 import lombok.*;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
@@ -14,7 +14,7 @@ public class Send {
     private RoomType roomType;
     private String roomId;
 
-    public static Send of(StompHeaderAccessor stompHeaderAccessor, InvalidStompHeaderExceptionBuilder exception) {
+    public static Send of(StompHeaderAccessor stompHeaderAccessor, InvalidStompMessageExceptionBuilder exception) {
         String destination = stompHeaderAccessor.getDestination();
 
         if (destination == null) {

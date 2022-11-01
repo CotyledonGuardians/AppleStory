@@ -1,7 +1,7 @@
 package com.cotyledon.appletree.websocket.stompCommandHandler;
 
 import com.cotyledon.appletree.domain.stomp.Send;
-import com.cotyledon.appletree.exception.InvalidStompHeaderExceptionBuilder;
+import com.cotyledon.appletree.exception.InvalidStompMessageExceptionBuilder;
 import com.cotyledon.appletree.service.LockAppleRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class SendHandler implements StompCommandHandler {
 
     private final LockAppleRoomService lockAppleRoomService;
-    private final InvalidStompHeaderExceptionBuilder exception;
+    private final InvalidStompMessageExceptionBuilder exception;
 
     @Override
     public void handle(StompHeaderAccessor stompHeaderAccessor) {

@@ -19,7 +19,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
     private final AppleRepository appleRepository;
     private final LockAppleRoomRepository lockAppleRoomRepository;
     private final RoomAppleRepository roomAppleRepository;
-    private final AppleRoomGroupRepository appleRoomGroupRepository;
+    private final LockAppleRoomGroupRepository lockAppleRoomGroupRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
     private final LockAppleRoomLogService lockAppleRoomLogService;
@@ -44,7 +44,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
             return false;
         }
 
-        Optional<Set<String>> groupOptional = appleRoomGroupRepository.findGroupByRoomId(roomId);
+        Optional<Set<String>> groupOptional = lockAppleRoomGroupRepository.findGroupByRoomId(roomId);
 
         if (groupOptional.isEmpty()) {
             return false;
@@ -54,7 +54,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
 
         if (group.isEmpty()) {
             // 모종의 문제로 빈 그룹이 있다면 그것을 지움
-            appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+            lockAppleRoomGroupRepository.deleteGroupByRoomId(roomId);
             
             return false;
         }
@@ -67,7 +67,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
 
         if (!group.isEmpty()) {
             // 그룹이 비어 있지 않다면 그룹을 업데이트
-            appleRoomGroupRepository.putGroup(roomId, group);
+            lockAppleRoomGroupRepository.putGroup(roomId, group);
 
             return false;
         }
@@ -81,7 +81,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
     // TODO: unlock 에서도 지우기 추가
     private void deleteAllRelatedToRoomIdOf(String roomId) {
 
-        appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+        lockAppleRoomGroupRepository.deleteGroupByRoomId(roomId);
         roomAppleRepository.deleteRoomAppleByRoomId(roomId);
         lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
 

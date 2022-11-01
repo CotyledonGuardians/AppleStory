@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -81,5 +83,34 @@ public class AppleServiceImpl implements AppleService{
     @Override
     public int getMyAppleCount(Principal principal) throws Exception {
         return appleUserRepository.countByUid(principal.getName());
+    }
+
+    @Override
+    public Optional<Apple> findById(Long appleId) {
+        return appleRepository.findById(appleId);
+    }
+
+    @Override
+    public boolean caught(Long appleId) {
+        return findById(appleId).orElseThrow().getIsCatch();
+    }
+
+    @Override
+    public boolean containsMember(Long appleId, String uid) {
+        boolean isMember = false;
+        List<Member> members = findById(appleId).orElseThrow().getCreator().getMember();
+        for (Member member : members) {
+            if (member.getUid().equals(uid)) {
+                isMember = true;
+                break;
+            }
+        }
+        return isMember;
+    }
+
+    @Override
+    public double getInitHealth(Long appleId) {
+        int size = findById(appleId).orElseThrow().getCreator().getMember().size();
+        return size * 150;
     }
 }

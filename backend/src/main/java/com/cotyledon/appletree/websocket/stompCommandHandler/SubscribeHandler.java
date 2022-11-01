@@ -1,25 +1,32 @@
 package com.cotyledon.appletree.websocket.stompCommandHandler;
 
+import com.cotyledon.appletree.domain.entity.redis.UnlockAppleRoom;
 import com.cotyledon.appletree.domain.repository.collection.StompUserDAO;
 import com.cotyledon.appletree.domain.stomp.Subscription;
-import com.cotyledon.appletree.exception.InvalidStompHeaderExceptionBuilder;
+import com.cotyledon.appletree.exception.InvalidStompMessageExceptionBuilder;
+import com.cotyledon.appletree.service.AppleService;
 import com.cotyledon.appletree.service.FirebaseAuthService;
 import com.cotyledon.appletree.service.LockAppleRoomService;
+import com.cotyledon.appletree.service.UnlockAppleRoomService;
 import com.google.firebase.auth.FirebaseAuthException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class SubscribeHandler implements StompCommandHandler {
 
+    private final AppleService appleService;
     private final LockAppleRoomService lockAppleRoomService;
+    private final UnlockAppleRoomService unlockAppleRoomService;
     private final StompUserDAO stompUserDAO;
     private final FirebaseAuthService firebaseAuthService;
-    private final InvalidStompHeaderExceptionBuilder exception;
+    private final InvalidStompMessageExceptionBuilder exception;
 
     @Override
     public void handle(StompHeaderAccessor stompHeaderAccessor) {
@@ -52,12 +59,53 @@ public class SubscribeHandler implements StompCommandHandler {
             case LOCK:
                 return lockAppleRoomService.enterRoomAndSaveRoomUser(uid, subscription.getRoomId());
             case UNLOCK:
-                // TODO: unlock 서비스로 교체
-                log.warn("여기 unlock 서비스로 교체해야 함~~~~~~~");
-                return lockAppleRoomService.enterRoomAndSaveRoomUser(uid, subscription.getRoomId());
+                // 해제는 appleId 가 곧 roomId 임
+                Long appleId = subscription.getAppleId();
+
+                if (!catchable(uid, appleId)) {
+                    throw exception.buildWithReleasing(sid);
+                }
+
+                saveRoomAndSetHealthIfAbsent(appleId);
+                return unlockAppleRoomService.enterRoomAndSaveRoomUser(uid, appleId);
             default:
                 throw exception.buildWithReleasing(sid);
         }
+    }
+
+    private void saveRoomAndSetHealthIfAbsent(Long appleId) {
+
+        Optional<UnlockAppleRoom> roomOptional = unlockAppleRoomService.findById(appleId);
+
+        if (roomOptional.isPresent()) {
+            return;
+        }
+
+        double initHealth = appleService.getInitHealth(appleId);
+
+        UnlockAppleRoom room = UnlockAppleRoom.builder().appleId(appleId).health(initHealth).build();
+
+        unlockAppleRoomService.save(room);
+    }
+
+    private boolean catchable(String uid, Long appleId) {
+
+        if (appleService.findById(appleId).isEmpty()) {
+            log.info("No Such Apple");
+            return false;
+        }
+
+        if (appleService.caught(appleId)) {
+            log.info("Apple Already Caught");
+            return false;
+        }
+
+        if (!appleService.containsMember(appleId, uid)) {
+            log.info("Unauthorized");
+            return false;
+        }
+
+        return true;
     }
 
     private String uidOf(StompHeaderAccessor stompHeaderAccessor) {

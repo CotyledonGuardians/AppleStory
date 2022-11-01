@@ -4,17 +4,16 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash(value = "apple_room_user")
+@RedisHash(value = "lock_apple_room")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class AppleRoomUser {
+public class UnlockAppleRoom {
 
     @Id
-    private String uid;
-    private String roomId;
     private Long appleId;
+    private Double health;
 }

@@ -21,7 +21,7 @@ import java.util.*;
 public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
     private final LockAppleRoomRepository lockAppleRoomRepository;
-    private final AppleRoomGroupRepository appleRoomGroupRepository;
+    private final LockAppleRoomGroupRepository lockAppleRoomGroupRepository;
     private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
@@ -61,13 +61,13 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
             return false;
         }
 
-        Optional<Set<String>> group = appleRoomGroupRepository.findGroupByRoomId(roomId);
+        Optional<Set<String>> group = lockAppleRoomGroupRepository.findGroupByRoomId(roomId);
 
         if (group.isPresent() && !group.get().isEmpty()) {
             return false;
         }
 
-        appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+        lockAppleRoomGroupRepository.deleteGroupByRoomId(roomId);
         roomAppleRepository.deleteRoomAppleByRoomId(roomId);
         lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
         lockAppleRoomRepository.deleteById(roomId);
@@ -91,9 +91,9 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         AppleRoomUser user = AppleRoomUser.builder().uid(uid).roomId(roomId).build();
         appleRoomUserRepository.save(user);
 
-        Set<String> group = appleRoomGroupRepository.findGroupByRoomId(roomId).orElse(new HashSet<>());
+        Set<String> group = lockAppleRoomGroupRepository.findGroupByRoomId(roomId).orElse(new HashSet<>());
         group.add(uid);
-        appleRoomGroupRepository.putGroup(roomId, group);
+        lockAppleRoomGroupRepository.putGroup(roomId, group);
 
         // change 이벤트 발행
         lockAppleRoomLogService.logForJoined(roomId, uid);
