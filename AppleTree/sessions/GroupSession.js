@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {SmallButton, Button} from '../components/Button';
@@ -26,8 +27,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   let sessionLink = 'https://복사한-url-키키키키';
   // room id
   const {roomId} = route.params;
-  // session uid, status
-  const [uid, setUid] = useState({});
+  // session status
   const [status, setStatus] = useState([]);
 
   // 클립보드 복사
@@ -37,7 +37,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
   // 사과매달기 함수 추후 변경
   const hangApple = () => {
-    alert('사과 매달기 API');
     navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
   };
 
@@ -57,28 +56,21 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         break;
     }
   };
-  // console.log('status:: 0', status[0].nickname);
-  // console.log('status:: 1', status[0].nickname);
-  // console.log('status::2', JSON.stringify(status.nickname));
-  // console.log('status::3', JSON.parse(status).nickname);
-  // console.log('status::4', status.nickname);
-  // console.log('status::5', [status].nickname);
   // session start
   useEffect(() => {
     const messageListeners = {
       onChange: ({uidToIndex, statuses}) => {
-        // console.log('onchange::cuidToIndex', uidToIndex);
-        // console.log('onchange::cstatuses', statuses);
-        setUid(uidToIndex);
+        //세션의 들어온 사용자의 상태 저장
         setStatus(statuses);
       },
     };
+    //방에 들어가기
     SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
   }, [roomId]);
 
   const disconnect = () => {
     DisconnectIfConnected(() => {
-      navigate.goBack();
+      navigate('Home', {screen: 'Main'});
     });
   };
 
@@ -91,14 +83,14 @@ const GroupSession = ({navigation: {navigate}, route}) => {
       `/lock-apple-room.${roomId}.added`,
       /* {
         nickname: '닉네무',
-        content: */{
-          text: [
-            {
-              author: '여기는 백엔드에서 uid 로 덮어써짐',
-              content: 'This is text.',
-            },
-          ],
-        }
+        content: */ {
+        text: [
+          {
+            author: '여기는 백엔드에서 uid 로 덮어써짐',
+            content: 'This is text.',
+          },
+        ],
+      },
       /* } */
     );
   };
@@ -115,7 +107,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     <SafeAreaView style={styles.container}>
       <Image
         source={require('../assets/pictures/aegom6.png')}
-        style={{width: 111, height: 140}}
+        style={styles.image}
       />
       <Text style={styles.complete}>
         {/* 추후 변경 */}
@@ -145,17 +137,19 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         />
         <View style={styles.buttons}>
           {isOwner ? (
-            <Button onPress={() => disconnect()} text="추억 담기"></Button>
+            <Button onPress={() => disconnect()} text="추억 담기" />
           ) : (
             <>
               <SmallButton
                 onPress={() => hangApple()}
                 text="사과 매달기"
-                disabled={false}></SmallButton>
+                disabled={false}
+              />
               <SmallButton
                 onPress={() => navigate('GroupCreate', {screen: 'GroupCreate'})}
                 text="추억 담기"
-                disabled={false}></SmallButton>
+                disabled={false}
+              />
             </>
           )}
         </View>
@@ -210,6 +204,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 10,
+  },
+  image: {
+    width: 111,
+    height: 140,
   },
 });
 

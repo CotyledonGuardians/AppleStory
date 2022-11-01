@@ -106,17 +106,10 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
     <SafeAreaView style={styles.container}>
       <Image
         source={require('../assets/pictures/listgroup1.png')}
-        style={{width: 170, height: 170}}></Image>
+        style={styles.image}
+      />
       <View style={styles.marginTopBottom}>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          제목
-        </Text>
+        <Text style={styles.txt}>제목</Text>
         <View style={styles.form}>
           <TextInput
             value={title}
@@ -126,15 +119,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             onChangeText={text => titleChangeHandler(text)}
           />
         </View>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          팀 이름
-        </Text>
+        <Text style={styles.txt}>팀 이름</Text>
         <View style={styles.form}>
           <TextInput
             value={teamName}
@@ -144,15 +129,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             onChangeText={text => teamNameChangeHandler(text)}
           />
         </View>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          해제 날짜
-        </Text>
+        <Text style={styles.txt}>해제 날짜</Text>
         <View style={styles.form}>
           <Pressable onPress={showDatePicker}>
             <TextInput
@@ -179,7 +156,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
         />
-        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+        <View style={styles.buttonWrap}>
           <SmallButton
             onPress={() => makeRoom()}
             text="방 만들기"
@@ -246,6 +223,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#373043',
     paddingHorizontal: 10,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  txt: {
+    textAlign: 'left',
+    fontSize: 15,
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
+  },
+  buttonWrap: {
+    flexDirection: 'row',
     justifyContent: 'center',
   },
 });
