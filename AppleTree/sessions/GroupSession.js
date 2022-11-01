@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,10 +7,16 @@ import {
   Image,
   TextInput,
   Pressable,
+  BackHandler,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {SmallButton, Button} from '../components/Button';
-const GroupSession = ({navigation}) => {
+import {
+  SubscribeIfConnected,
+  DisconnectIfConnected,
+  SendIfSubscribed,
+} from '../stomp/';
+const GroupSession = ({navigation: {navigate}, route}) => {
   // set copy text
   const [copiedText, setCopiedText] = useState('');
   // unlockGIF loading
@@ -19,6 +25,11 @@ const GroupSession = ({navigation}) => {
   let isOwner = false;
   // 복사할 앱 링크 추후 변경
   let sessionLink = 'https://복사한-url-키키키키';
+  // room id
+  const {roomId} = route.params;
+  // session status
+  const [status, setStatus] = useState([]);
+
   // 클립보드 복사
   const copyToClipboard = () => {
     Clipboard.setString(sessionLink);
@@ -26,14 +37,77 @@ const GroupSession = ({navigation}) => {
   };
   // 사과매달기 함수 추후 변경
   const hangApple = () => {
-    alert('사과 매달기 API');
-    navigation.navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
+    navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
   };
+
+  const stateMessage = (nickname, state) => {
+    switch (state) {
+      case 'JOINED':
+        return nickname + '님께서 입장 하셨습니다.';
+      case 'ADDING':
+        return nickname + '님께서 사과를 생성 중입니다.';
+      case 'ADDED':
+        return nickname + '님께서 사과 생성을 완료했습니다.';
+      case 'CANCELLED':
+        return nickname + '님께서 방을 나갔습니다.';
+      case 'LEFT':
+        return nickname + '님께서 방을 나갔습니다.';
+      default:
+        break;
+    }
+  };
+  // session start
+  useEffect(() => {
+    const messageListeners = {
+      onChange: ({uidToIndex, statuses}) => {
+        //세션의 들어온 사용자의 상태 저장
+        setStatus(statuses);
+      },
+    };
+    //방에 들어가기
+    SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
+  }, [roomId]);
+
+  const disconnect = () => {
+    DisconnectIfConnected(() => {
+      navigate('Home', {screen: 'Main'});
+    });
+  };
+
+  const actAdding = () => {
+    SendIfSubscribed(`/lock-apple-room.${roomId}.adding`, {});
+  };
+
+  const actAdded = () => {
+    SendIfSubscribed(
+      `/lock-apple-room.${roomId}.added`,
+      /* {
+        nickname: '닉네무',
+        content: */ {
+        text: [
+          {
+            author: '여기는 백엔드에서 uid 로 덮어써짐',
+            content: 'This is text.',
+          },
+        ],
+      },
+      /* } */
+    );
+  };
+
+  const actCancelled = () => {
+    SendIfSubscribed(`/lock-apple-room.${roomId}.cancelled`, {});
+  };
+
+  const submit = () => {
+    SendIfSubscribed(`/lock-apple-room.${roomId}.submit`, {});
+  };
+  // session end
   return (
     <SafeAreaView style={styles.container}>
       <Image
         source={require('../assets/pictures/aegom6.png')}
-        style={{width: 111, height: 140}}
+        style={styles.image}
       />
       <Text style={styles.complete}>
         {/* 추후 변경 */}
@@ -53,30 +127,29 @@ const GroupSession = ({navigation}) => {
           </View>
         </Pressable>
         <TextInput
-          //   value={}
+          // value={status[0].nickname}
           pointerEvents="none"
           editable={false}
           autoCapitalize={'none'}
           style={styles.input}
           multiline={true}
           numberOfLines={3}
-          placeholder="00님이 참여하셨습니다."
         />
         <View style={styles.buttons}>
           {isOwner ? (
-            <Button onPress={() => hangApple()} text="추억 담기"></Button>
+            <Button onPress={() => disconnect()} text="추억 담기" />
           ) : (
             <>
               <SmallButton
                 onPress={() => hangApple()}
                 text="사과 매달기"
-                disabled={false}></SmallButton>
+                disabled={false}
+              />
               <SmallButton
-                onPress={() =>
-                  navigation.navigate('GroupCreate', {screen: 'GroupCreate'})
-                }
+                onPress={() => navigate('GroupCreate', {screen: 'GroupCreate'})}
                 text="추억 담기"
-                disabled={false}></SmallButton>
+                disabled={false}
+              />
             </>
           )}
         </View>
@@ -131,6 +204,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 10,
+  },
+  image: {
+    width: 111,
+    height: 140,
   },
 });
 
