@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -37,29 +37,32 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = date => {
-    setUnlockDate(date);
+    setUnlockDate(moment(date).format('YYYY-MM-DD'));
     onChangeText(moment(date).format('YYYY-MM-DD'));
     setDateValid(true);
     hideDatePicker();
   };
   //date picker end
   let today = new Date();
+  // useEffect(()=>{
+
+  // },[]);
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
     // api connect start
     const tempAppleDTO = {
-      title: 'test1',
+      title: title,
       creator: {
-        teamName: 'test',
+        teamName: teamName,
       },
-      unlockAt: '2022-12-13',
+      unlockAt: unlockDate,
       location: {
         lat: 37.5,
         lng: 127.5,
       },
     };
     setAppleDTO(tempAppleDTO);
-    console.log('tempAppleDTO', tempAppleDTO);
+    // console.log('tempAppleDTO', tempAppleDTO);
     makeRoomAPI(tempAppleDTO)
       .then(response => {
         console.log('makeRoom::response', response);
@@ -115,7 +118,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             value={title}
             autoCapitalize={'none'}
             style={styles.input}
-            placeholder="자율프로젝트를 기념하며"
+            placeholder="제목을 입력하세요."
             onChangeText={text => titleChangeHandler(text)}
           />
         </View>
@@ -125,7 +128,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             value={teamName}
             autoCapitalize={'none'}
             style={styles.input}
-            placeholder="떡잎방범대"
+            placeholder="팀 명을 입력하세요."
             onChangeText={text => teamNameChangeHandler(text)}
           />
         </View>
@@ -163,7 +166,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             disabled={!titleValid || !teamNameValid || !dateValid}
           />
           <SmallButton
-            onPress={() => navigate.goBack()}
+            onPress={() => navigate('Home', {screen: 'Main'})}
             text="홈으로"
             disabled={false}
           />
