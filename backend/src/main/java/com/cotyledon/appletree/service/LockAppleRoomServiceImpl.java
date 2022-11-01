@@ -4,6 +4,8 @@ import com.cotyledon.appletree.domain.dto.AppleDTO;
 import com.cotyledon.appletree.domain.dto.RoomDTO;
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
+import com.cotyledon.appletree.domain.entity.redis.RoomApple;
+import com.cotyledon.appletree.domain.event.AppleSaveEvent;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.*;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +26,12 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
     private final LockAppleRoomLogService lockAppleRoomLogService;
+    private final MultiAppleService multiAppleService;
     private final ApplicationEventPublisher eventPublisher;
 
     // reserve 이벤트 발행
     @Override
-    public RoomDTO reserveRoomAndGetRoomDTO(String hostUid, AppleDTO apple) {
+    public RoomDTO reserveRoomAndGetRoomDTO(String hostUid, AppleDTO apple, long appleId) {
 
         // 필수 속성 있는지 검사 & 다른 속성 초기화
         if (!apple.validateAndCleanWithHostUidForReservingRoom(hostUid)) {
@@ -36,36 +39,42 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         }
 
         // 룸 생성
-        LockAppleRoom room = LockAppleRoom.builder().hostUid(hostUid).build();
+        LockAppleRoom room = LockAppleRoom.builder().hostUid(hostUid).appleId(appleId).build();
         lockAppleRoomRepository.save(room);
 
         String roomId = room.getId();
 
         // Put 룸 사과
-        roomAppleRepository.putApple(roomId, apple);
+        roomAppleRepository.putRoomApple(roomId, RoomApple.of(apple));
 
         // reserve 이벤트 발행
-        eventPublisher.publishEvent(ReserveLockAppleRoomEvent.builder().roomId(roomId).build());
+        eventPublisher.publishEvent(ReserveLockAppleRoomEvent.builder().roomId(roomId).appleId(appleId).build());
 
         return RoomDTO.builder().roomId(roomId).build();
     }
 
     @Override
-    public void deleteRoomIfEmpty(String roomId) {
+    public boolean deleteRoomIfEmpty(String roomId) {
 
         if (lockAppleRoomRepository.findById(roomId).isEmpty()) {
             // 이미 룸이 없는 경우 (유저가 방 만들고 빨리 나감)
-            return;
+            return false;
         }
 
         Optional<Set<String>> group = appleRoomGroupRepository.findGroupByRoomId(roomId);
 
-        if (group.isEmpty() || group.get().isEmpty()) {
-            appleRoomGroupRepository.deleteGroupByRoomId(roomId);
-            roomAppleRepository.deleteAppleByRoomId(roomId);
-            lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
-            lockAppleRoomRepository.deleteById(roomId);
+        if (group.isPresent() && !group.get().isEmpty()) {
+            return false;
         }
+
+        appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+        roomAppleRepository.deleteRoomAppleByRoomId(roomId);
+        lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
+        lockAppleRoomRepository.deleteById(roomId);
+
+        log.info("예약된 룸 (+관련 컬렉션 전부) 을 지움");
+
+        return true;
     }
 
     // join 이벤트 발행
@@ -96,5 +105,65 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     public boolean hasRoomByRoomId(String roomId) {
         Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
         return room.isPresent();
+    }
+
+    @Override
+    public Optional<LockAppleRoom> findByRoomId(String roomId) {
+        return lockAppleRoomRepository.findById(roomId);
+    }
+
+    @Override
+    public boolean saveAppleIfHostByRoomAndUid(LockAppleRoom room, String uid) {
+
+        String hostUid = room.getHostUid();
+        if (!uid.equals(hostUid)) {
+            log.info("Unauthorized");
+            return false;
+        }
+
+        String roomId = room.getId();
+
+        Optional<RoomApple> roomAppleOptional = roomAppleRepository.findRoomAppleByRoomId(room.getId());
+        if (roomAppleOptional.isEmpty()) {
+            log.info("Room Apple Not Found");
+            return false;
+        }
+
+        RoomApple roomApple = roomAppleOptional.get();
+
+        // 추억 데이터를 담은 멤버만 모음
+        Set<String> userUids = new HashSet<>();
+
+        roomApple.getCreator().getMember().forEach(member -> userUids.add(member.getUid()));
+
+        if (userUids.isEmpty()) {
+            log.info("Creator Empty");
+            return false;
+        }
+
+        // 비어 있지 않다면 호스트는 무조건 포함
+        userUids.add(hostUid);
+
+        Long appleId = multiAppleService.saveAppleAndAppleUsersAndGetAppleId(roomApple.toAppleDTO(), userUids);
+
+        eventPublisher.publishEvent(AppleSaveEvent.builder().appleId(appleId).roomId(roomId).build());
+
+        return true;
+    }
+
+    @Override
+    public void setSavedToTrueByRoomId(String roomId) {
+
+        Optional<LockAppleRoom> roomOptional = lockAppleRoomRepository.findById(roomId);
+
+        if (roomOptional.isEmpty()) {
+            log.info("Room Not Found");
+            return;
+        }
+
+        LockAppleRoom room = roomOptional.get();
+
+        room.setSaved(true);
+        lockAppleRoomRepository.save(room);
     }
 }
