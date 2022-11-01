@@ -15,6 +15,10 @@ const getMyAppleCount = async () => {
   return await api('get', '/apple/count');
 };
 
+const getAppleDetail = async id => {
+  return await api('get', `/apple/${id}`);
+};
+
 const getLockAppleDetail = async id => {
   return await api('get', `/apple/${id}`);
 };
@@ -30,4 +34,5 @@ export {
   getMyAppleCount,
   getLockAppleDetail,
   makeRoomAPI,
+  getAppleDetail,
 };
