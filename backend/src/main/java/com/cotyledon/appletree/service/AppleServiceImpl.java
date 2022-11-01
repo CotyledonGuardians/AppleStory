@@ -1,6 +1,7 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
+import com.cotyledon.appletree.domain.dto.LocationAppleListDTO;
 import com.cotyledon.appletree.domain.dto.LockAppleDTO;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -81,5 +83,10 @@ public class AppleServiceImpl implements AppleService{
     @Override
     public int getMyAppleCount(Principal principal) throws Exception {
         return appleUserRepository.countByUid(principal.getName());
+    }
+
+    @Override
+    public List<LocationAppleListDTO> getAppleList(Principal principal) throws Exception {
+        return appleCustomRepository.findByAppleListLocation(principal.getName());
     }
 }
