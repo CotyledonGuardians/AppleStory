@@ -18,17 +18,26 @@ import {
 } from '../stomp/';
 const GroupSession = ({navigation: {navigate}, route}) => {
   // set copy text
-  const [copiedText, setCopiedText] = useState('');
+  const [copiedText, setCopiedText] = useState(null);
   // unlockGIF loading
   const [ready, setReady] = useState(true);
+  // session status
+  const [status, setStatus] = useState(null);
+  // session nickname
+  const [nickname, setNickname] = useState(null);
+  // session stage
+  const [stage, setStage] = useState(null);
+  // session total cnt
+  const [total, setTotal] = useState(null);
+  // session compelete cnt
+  const [compelete, setCompelete] = useState(null);
+
   // 방장인지체크 추후 변경
   let isOwner = false;
   // 복사할 앱 링크 추후 변경
   let sessionLink = 'https://복사한-url-키키키키';
   // room id
   const {roomId} = route.params;
-  // session status
-  const [status, setStatus] = useState([]);
 
   // 클립보드 복사
   const copyToClipboard = () => {
@@ -40,18 +49,18 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
   };
 
-  const stateMessage = (nickname, state) => {
+  const stateMessage = (nick, state) => {
     switch (state) {
       case 'JOINED':
-        return nickname + '님께서 입장 하셨습니다.';
+        return nick + '님께서 입장 하셨습니다.';
       case 'ADDING':
-        return nickname + '님께서 사과를 생성 중입니다.';
+        return nick + '님께서 사과를 생성 중입니다.';
       case 'ADDED':
-        return nickname + '님께서 사과 생성을 완료했습니다.';
+        return nick + '님께서 사과 생성을 완료했습니다.';
       case 'CANCELLED':
-        return nickname + '님께서 방을 나갔습니다.';
+        return nick + '님께서 방을 나갔습니다.';
       case 'LEFT':
-        return nickname + '님께서 방을 나갔습니다.';
+        return nick + '님께서 방을 나갔습니다.';
       default:
         break;
     }
@@ -61,7 +70,9 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     const messageListeners = {
       onChange: ({uidToIndex, statuses}) => {
         //세션의 들어온 사용자의 상태 저장
-        setStatus(statuses);
+        // setStatus(statuses);
+        setNickname(statuses[0].nickname);
+        setStage(statuses[0].stage);
       },
     };
     //방에 들어가기
@@ -79,11 +90,9 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
 
   const actAdded = () => {
-    SendIfSubscribed(
-      `/lock-apple-room.${roomId}.added`,
-      /* {
-        nickname: '닉네무',
-        content: */ {
+    SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
+      nickname: '닉네무',
+      content: {
         text: [
           {
             author: '여기는 백엔드에서 uid 로 덮어써짐',
@@ -91,8 +100,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
           },
         ],
       },
-      /* } */
-    );
+    });
   };
 
   const actCancelled = () => {
@@ -102,7 +110,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const submit = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.submit`, {});
   };
-  // session end
+
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -127,7 +135,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
           </View>
         </Pressable>
         <TextInput
-          // value={status[0].nickname}
+          value={stateMessage(nickname, stage)}
           pointerEvents="none"
           editable={false}
           autoCapitalize={'none'}
@@ -170,7 +178,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'UhBee Se_hyun',
     // textAlign: 'center',
     marginTop: 25,

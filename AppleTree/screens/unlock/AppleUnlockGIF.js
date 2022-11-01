@@ -11,7 +11,7 @@ const AppleUnlockGIF = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <Image
         source={require('../../assets/gifs/appleUnlock.gif')}
-        style={{width: 400, height: 400}}
+        style={styles.appleImage}
       />
     </SafeAreaView>
   );
@@ -23,6 +23,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4F5D8',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  appleImage: {
+    width: 400,
+    height: 400,
   },
 });
 
