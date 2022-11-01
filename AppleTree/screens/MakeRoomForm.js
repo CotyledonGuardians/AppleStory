@@ -12,11 +12,15 @@ import moment from 'moment';
 import 'moment/locale/ko';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
-const MakeRoomForm = ({navigation}) => {
+import {makeRoomAPI} from '../api/AppleAPI';
+import {UseStomp} from '../stomp';
+import GroupSession from '../sessions/GroupSession';
+const MakeRoomForm = ({navigation: {navigate}}) => {
   //inputs
   const [title, setTitle] = useState(null);
   const [teamName, setTeamName] = useState(null);
   const [unlockDate, setUnlockDate] = useState(null);
+  const [appleDTO, setAppleDTO] = useState(null);
   //datePicker
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [text, onChangeText] = useState('');
@@ -42,7 +46,42 @@ const MakeRoomForm = ({navigation}) => {
   let today = new Date();
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
-    navigation.navigate('GroupSession', {screen: 'GroupSession'});
+    // api connect start
+    const tempAppleDTO = {
+      title: 'test1',
+      creator: {
+        teamName: 'test',
+      },
+      unlockAt: '2022-12-13',
+      location: {
+        lat: 37.5,
+        lng: 127.5,
+      },
+    };
+    setAppleDTO(tempAppleDTO);
+    console.log('tempAppleDTO', tempAppleDTO);
+    makeRoomAPI(tempAppleDTO)
+      .then(response => {
+        console.log('makeRoom::response', response);
+        // console.log('makeRoom::response.data', response.data);
+        return response.data;
+      })
+      .then(({roomId}) => {
+        UseStomp(
+          () => {
+            console.log('make room succeed', roomId);
+            navigate('GroupSession', {roomId: roomId});
+          },
+          () => {
+            console.log('make room failed', roomId);
+            navigate('GroupSession');
+          },
+        );
+      })
+      .catch(error => {
+        console.log('makeRoom::error', error);
+      });
+    // api connect end
   };
   // input valid handler start
   const titleChangeHandler = text => {
@@ -61,22 +100,16 @@ const MakeRoomForm = ({navigation}) => {
     }
     setTeamName(text);
   };
+
   // inpust valid handler end
   return (
     <SafeAreaView style={styles.container}>
       <Image
         source={require('../assets/pictures/listgroup1.png')}
-        style={{width: 170, height: 170}}></Image>
+        style={styles.image}
+      />
       <View style={styles.marginTopBottom}>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          제목
-        </Text>
+        <Text style={styles.txt}>제목</Text>
         <View style={styles.form}>
           <TextInput
             value={title}
@@ -86,15 +119,7 @@ const MakeRoomForm = ({navigation}) => {
             onChangeText={text => titleChangeHandler(text)}
           />
         </View>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          팀 이름
-        </Text>
+        <Text style={styles.txt}>팀 이름</Text>
         <View style={styles.form}>
           <TextInput
             value={teamName}
@@ -104,15 +129,7 @@ const MakeRoomForm = ({navigation}) => {
             onChangeText={text => teamNameChangeHandler(text)}
           />
         </View>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          해제 날짜
-        </Text>
+        <Text style={styles.txt}>해제 날짜</Text>
         <View style={styles.form}>
           <Pressable onPress={showDatePicker}>
             <TextInput
@@ -139,14 +156,14 @@ const MakeRoomForm = ({navigation}) => {
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
         />
-        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+        <View style={styles.buttonWrap}>
           <SmallButton
             onPress={() => makeRoom()}
             text="방 만들기"
             disabled={!titleValid || !teamNameValid || !dateValid}
           />
           <SmallButton
-            onPress={() => navigation.goBack()}
+            onPress={() => navigate.goBack()}
             text="홈으로"
             disabled={false}
           />
@@ -206,6 +223,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#373043',
     paddingHorizontal: 10,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  txt: {
+    textAlign: 'left',
+    fontSize: 15,
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
+  },
+  buttonWrap: {
+    flexDirection: 'row',
     justifyContent: 'center',
   },
 });

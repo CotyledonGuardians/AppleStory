@@ -55,7 +55,10 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-tab-view": "^3.3.0",
     "react-native-video": "^5.2.1",
-    "react-query": "^3.39.2"
+    "react-query": "^3.39.2",
+    "react-stomp": "^5.1.0",
+    "sockjs-client": "^1.6.1",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
