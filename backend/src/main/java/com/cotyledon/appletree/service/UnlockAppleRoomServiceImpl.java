@@ -58,4 +58,30 @@ public class UnlockAppleRoomServiceImpl implements UnlockAppleRoomService {
 
         return true;
     }
+
+    @Override
+    public boolean hasRoomByAppleId(Long appleId) {
+        return unlockAppleRoomRepository.findById(appleId).isPresent();
+    }
+
+    @Override
+    public boolean isUserInRoom(String uid, Long appleId) {
+        Optional<Set<String>> group = unlockAppleRoomGroupRepository.findGroupByAppleId(appleId);
+
+        return group.isPresent() && group.get().contains(uid);
+    }
+
+    @Override
+    public void attack(Long appleId) {
+
+        UnlockAppleRoom room = unlockAppleRoomRepository.findById(appleId).orElseThrow();
+
+        Set<String> group = unlockAppleRoomGroupRepository.findGroupByAppleId(appleId).orElseThrow();
+
+        room.hitByPartySize(group.size());
+
+        unlockAppleRoomRepository.save(room);
+
+        unlockAppleRoomNotifier.notifyHealthChange(appleId);
+    }
 }

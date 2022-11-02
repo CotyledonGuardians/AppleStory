@@ -1,9 +1,11 @@
 package com.cotyledon.appletree.notifier;
 
 import com.cotyledon.appletree.domain.entity.redis.UnlockAppleRoom;
+import com.cotyledon.appletree.domain.event.HealthChangeEvent;
 import com.cotyledon.appletree.domain.event.PartyChangeEvent;
 import com.cotyledon.appletree.domain.repository.redis.UnlockAppleRoomGroupRepository;
 import com.cotyledon.appletree.domain.repository.redis.UnlockAppleRoomRepository;
+import com.cotyledon.appletree.domain.stomp.HealthMessageData;
 import com.cotyledon.appletree.domain.stomp.PartyMessageData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,17 @@ public class UnlockAppleRoomNotifierImpl implements UnlockAppleRoomNotifier {
         eventPublisher.publishEvent(PartyChangeEvent.builder()
                 .appleId(appleId)
                 .partyMessageData(partyMessageData)
+                .build());
+    }
+
+    @Override
+    public void notifyHealthChange(Long appleId) {
+
+        UnlockAppleRoom room = unlockAppleRoomRepository.findById(appleId).orElseThrow();
+
+        eventPublisher.publishEvent(HealthChangeEvent.builder()
+                .appleId(appleId)
+                .healthMessageData(HealthMessageData.of(room))
                 .build());
     }
 }

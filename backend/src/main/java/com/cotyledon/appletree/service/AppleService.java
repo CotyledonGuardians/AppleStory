@@ -20,4 +20,5 @@ public interface AppleService {
     boolean containsMember(Long appleId, String uid);
     int getAppleSize(Long appleId);
     double getInitHealth(Long appleId);
+    void catchToTrue(Long appleId);
 }

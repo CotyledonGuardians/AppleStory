@@ -89,7 +89,7 @@ public class SubscribeHandler implements StompCommandHandler {
         UnlockAppleRoom room = UnlockAppleRoom.builder()
                 .appleId(appleId)
                 .totalHealth(initHealth)
-                .currentHealth(0d)
+                .currentHealth(initHealth)
                 .appleSize(appleSize)
                 .build();
 

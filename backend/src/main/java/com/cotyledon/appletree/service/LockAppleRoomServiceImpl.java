@@ -167,4 +167,11 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         room.setSaved(true);
         lockAppleRoomRepository.save(room);
     }
+
+    @Override
+    public boolean isUserInRoom(String uid, String roomId) {
+        Optional<Set<String>> group = lockAppleRoomGroupRepository.findGroupByRoomId(roomId);
+
+        return group.isPresent() && group.get().contains(uid);
+    }
 }

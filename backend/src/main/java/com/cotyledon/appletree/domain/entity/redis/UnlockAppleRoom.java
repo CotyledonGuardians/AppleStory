@@ -18,4 +18,9 @@ public class UnlockAppleRoom {
     private Double totalHealth;
     private Double currentHealth;
     private Integer appleSize;
+
+    public void hitByPartySize(int partySize) {
+        // TODO: 사과 체력 알고리즘 구현
+        currentHealth -= 1d;
+    }
 }

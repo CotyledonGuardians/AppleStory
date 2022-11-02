@@ -13,6 +13,7 @@ public class Send {
 
     private RoomType roomType;
     private String roomId;
+    private Long appleId;
 
     public static Send of(StompHeaderAccessor stompHeaderAccessor, InvalidStompMessageExceptionBuilder exception) {
         String destination = stompHeaderAccessor.getDestination();
@@ -21,8 +22,9 @@ public class Send {
             throw exception.buildDefault();
         }
 
-        String roomId;
         RoomType roomType;
+        String roomId;
+        long appleId = -1L;
 
         try {
             String[] strings = destination.split("\\.");
@@ -41,6 +43,14 @@ public class Send {
             throw exception.buildDefault();
         }
 
-        return Send.builder().roomType(roomType).roomId(roomId).build();
+        if (roomType == RoomType.UNLOCK) {
+            try {
+                appleId = Long.parseLong(roomId);
+            } catch (NumberFormatException e) {
+                throw exception.buildDefault();
+            }
+        }
+
+        return Send.builder().roomType(roomType).roomId(roomId).appleId(appleId).build();
     }
 }
