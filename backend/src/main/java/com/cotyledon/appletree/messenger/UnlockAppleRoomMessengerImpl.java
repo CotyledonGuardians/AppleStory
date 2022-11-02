@@ -24,13 +24,11 @@ public class UnlockAppleRoomMessengerImpl implements UnlockAppleRoomMessenger {
 
     @Override
     @Transactional
-    public void logForJoined(Long appleId, String uid) {
+    public void logForJoined(Long appleId) {
 
         UnlockAppleRoom room = unlockAppleRoomRepository.findById(appleId).orElseThrow();
 
         Set<String> group = unlockAppleRoomGroupRepository.findGroupByAppleId(appleId).orElseThrow();
-        group.add(uid);
-        unlockAppleRoomGroupRepository.putGroup(appleId, group);
 
         PartyMessageData partyMessageData = PartyMessageData.withRoomAndPartySize(room, group.size());
 

@@ -54,7 +54,7 @@ public class UnlockAppleRoomServiceImpl implements UnlockAppleRoomService {
         unlockAppleRoomGroupRepository.putGroup(appleId, group);
 
         // party 이벤트 발행
-        unlockAppleRoomMessenger.logForJoined(appleId, uid);
+        unlockAppleRoomMessenger.logForJoined(appleId);
 
         return true;
     }

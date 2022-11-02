@@ -4,7 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash(value = "lock_apple_room")
+@RedisHash(value = "unlock_apple_room")
 @Getter
 @Setter
 @Builder
