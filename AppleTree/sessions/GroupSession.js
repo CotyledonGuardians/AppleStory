@@ -38,7 +38,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   let sessionLink = 'https://복사한-url-키키키키';
   // room id
   const {roomId} = route.params;
-
   // 클립보드 복사
   const copyToClipboard = () => {
     Clipboard.setString(sessionLink);
@@ -67,6 +66,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
   // session start
   useEffect(() => {
+    alert(roomId);
     const messageListeners = {
       onChange: ({uidToIndex, statuses}) => {
         //세션의 들어온 사용자의 상태 저장
@@ -91,11 +91,11 @@ const GroupSession = ({navigation: {navigate}, route}) => {
 
   const actAdded = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
-      nickname: '닉네무',
+      nickname: '이것이닉넴',
       content: {
         text: [
           {
-            author: '여기는 백엔드에서 uid 로 덮어써짐',
+            author: '이것은 uid로 덮어써짐',
             content: 'This is text.',
           },
         ],
@@ -154,7 +154,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
                 disabled={false}
               />
               <SmallButton
-                onPress={() => navigate('GroupCreate', {screen: 'GroupCreate'})}
+                onPress={() => navigate('GroupCreate', {roomId: roomId})}
                 text="추억 담기"
                 disabled={false}
               />

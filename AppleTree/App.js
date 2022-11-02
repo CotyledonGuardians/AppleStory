@@ -25,6 +25,7 @@ import SeedDetail from './screens/SeedDetail';
 import HitApple from './sessions/AppleHitSession';
 import LockAppleDetail from './screens/lock/LockAppleDetail';
 import auth from '@react-native-firebase/auth';
+import JoinSession from './screens/test/JoinSession';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -133,11 +134,13 @@ export default function App() {
                 name="MakeRoomForm"
                 component={MakeRoomForm}
               />
+              <CreateStack.Screen name="JoinSession" component={JoinSession} />
               <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
               <CreateStack.Screen
                 name="GroupSession"
                 component={GroupSession}
               />
+
               <CreateStack.Screen name="RecordVoice" component={RecordVoice} />
               <CreateStack.Screen
                 options={{headerShown: false}}
