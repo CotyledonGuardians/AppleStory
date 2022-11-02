@@ -125,6 +125,11 @@ export default function App() {
               <MapStack.Screen name="Map" component={Map} />
               <MapStack.Screen name="AppleDetail" component={AppleDetail} />
               <MapStack.Screen name="SeedDetail" component={SeedDetail} />
+              <MapStack.Screen name="HitApple" component={HitApple} />
+              <MapStack.Screen
+                name="LockAppleDetail"
+                component={LockAppleDetail}
+              />
             </MapStack.Navigator>
           )}
         </Tab.Screen>
@@ -178,6 +183,10 @@ export default function App() {
               <ListStack.Screen name="AppleDetail" component={AppleDetail} />
               <ListStack.Screen name="SeedDetail" component={SeedDetail} />
               <ListStack.Screen name="HitApple" component={HitApple} />
+              <ListStack.Screen
+                name="LockAppleDetail"
+                component={LockAppleDetail}
+              />
             </ListStack.Navigator>
           )}
         </Tab.Screen>

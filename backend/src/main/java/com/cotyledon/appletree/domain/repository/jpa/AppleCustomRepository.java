@@ -109,6 +109,7 @@ public class AppleCustomRepository extends QuerydslRepositorySupport {
                         .title(data.getTitle())
                         .createAt(data.getCreateAt())
                         .unlockAt(data.getUnlockAt())
+                        .isCatch(data.getIsCatch())
                         .build()
         ).collect(Collectors.toList());
     }

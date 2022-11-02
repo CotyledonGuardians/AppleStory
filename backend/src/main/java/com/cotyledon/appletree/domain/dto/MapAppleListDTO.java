@@ -16,4 +16,5 @@ public class MapAppleListDTO {
     private String title;
     private Date createAt;
     private Date unlockAt;
+    private Boolean isCatch;
 }
