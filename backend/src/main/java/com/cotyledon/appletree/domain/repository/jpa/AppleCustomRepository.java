@@ -1,7 +1,7 @@
 package com.cotyledon.appletree.domain.repository.jpa;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
-import com.cotyledon.appletree.domain.dto.LocationAppleListDTO;
+import com.cotyledon.appletree.domain.dto.MapAppleListDTO;
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import com.cotyledon.appletree.domain.entity.jpa.QApple;
 import com.cotyledon.appletree.domain.entity.jpa.QAppleUser;
@@ -90,12 +90,12 @@ public class AppleCustomRepository extends QuerydslRepositorySupport {
         return new PageImpl<>(results, pageable, totalCount);
     }
 
-    public List<LocationAppleListDTO> findByAppleListLocation(String uid){
+    public List<MapAppleListDTO> findByAppleListLocation(String uid){
         QApple apple = QApple.apple;
         QAppleUser appleUser = QAppleUser.appleUser;
 
-        List<Tuple> fetch = queryFactory
-                .select(apple.id, apple.location)
+        List<Apple> fetch = queryFactory
+                .select(apple)
                 .from(apple)
                 .innerJoin(appleUser)
                 .on(apple.id.eq(appleUser.apple.id))
@@ -103,7 +103,13 @@ public class AppleCustomRepository extends QuerydslRepositorySupport {
                 .and(apple.location.isNotNull())).fetch();
 
         return fetch.stream().map(
-                data -> LocationAppleListDTO.builder().id(data.get(apple.id)).location(data.get(apple.location)).build()
+                data -> MapAppleListDTO.builder()
+                        .id(data.getId())
+                        .location(data.getLocation())
+                        .title(data.getTitle())
+                        .createAt(data.getCreateAt())
+                        .unlockAt(data.getUnlockAt())
+                        .build()
         ).collect(Collectors.toList());
     }
 }
