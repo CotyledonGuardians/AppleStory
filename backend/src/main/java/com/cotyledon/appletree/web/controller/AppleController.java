@@ -52,6 +52,16 @@ public class AppleController {
           return BaseResponse.success(list);
      }
 
+     @ApiOperation(value = "사과 리스트")
+     @GetMapping
+     public ResponseEntity<?> getAppleList(Principal principal){
+          try {
+               return BaseResponse.success(appleService.getAppleList(principal));
+          } catch (Exception e) {
+               return BaseResponse.fail(e.getMessage());
+          }
+     }
+
      @ApiOperation(value = "사과 상세보기")
      @GetMapping("/{id}")
      public ResponseEntity<?> getAppleDetail(Principal principal, @PathVariable(value = "id") Long id){

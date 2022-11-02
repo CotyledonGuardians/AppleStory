@@ -112,23 +112,21 @@ const Main = ({navigation}) => {
   const [time, setTime] = useState();
 
   useEffect(() => {
-    getCloseAppleList(1, 0, 6)
-      .then(response => {
-        console.log('close-response', response.data);
-        setCloseApples(response.data.body.content);
-      })
-      .catch(error => {
-        console.log('error', error);
-      });
+    let getFlag = true;
+    const getApples = async () => {
+      const closeAppleList = await getCloseAppleList(1, 0, 6);
+      const openAppleList = await getOpenAppleList(1, 0, 1);
+      if (getFlag) {
+        setCloseApples(closeAppleList.data.body.content);
+        setOpenApples(openAppleList.data.body.content);
+      }
+    };
 
-    getOpenAppleList(1, 0, 1)
-      .then(response => {
-        console.log('open-response', response.data.body.content);
-        setOpenApples(response.data.body.content);
-      })
-      .catch(error => {
-        console.log('error', error);
-      });
+    getApples();
+
+    return () => {
+      getFlag = false;
+    };
   }, []);
 
   //AsyncStorage 삭제
@@ -260,7 +258,7 @@ const Main = ({navigation}) => {
               <Text style={styles.timeText}>{time}</Text>
               <View style={styles.buttonBox}>
                 <SmallButton
-                  onPress={() => setModalVisible(!modalVisible)}
+                  onPress={() => setModalVisible(false)}
                   text="닫기"
                   disabled={false}
                 />
