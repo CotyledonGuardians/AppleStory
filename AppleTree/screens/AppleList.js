@@ -31,6 +31,7 @@ const AppleList = ({navigation}) => {
   const getInitData = async sort => {
     getOpenAppleList(sort, 0, 6)
       .then(response => {
+        console.log(response.data.body);
         setOpenList(response.data.body.content);
       })
       .catch(error => {
@@ -116,7 +117,11 @@ const AppleList = ({navigation}) => {
     navigation.navigate('AppleDetail', {screen: 'AppleDetail', id: id});
   };
 
-  const Card = ({type, title, unlockAt, isOpen, index, id}: any) => {
+  const hitApple = () => {
+    navigation.navigate('HitApple');
+  };
+
+  const Card = ({type, title, unlockAt, isOpen, index, id, isCatch}: any) => {
     let lockDate = new Date(unlockAt);
     let today = new Date();
     var url = '';
@@ -142,7 +147,21 @@ const AppleList = ({navigation}) => {
         style={styles.card}
         onPress={() => {
           // Alert.alert('상세보기로 넘어가렴~');
-          appleDetail(id);
+          if (today >= lockDate) {
+            // 현재 시간보다 시간이 지나있는 경우
+            if (isCatch) {
+              navigation.navigate('AppleDetail', {
+                screen: 'AppleDetail',
+                id: id,
+              });
+            } else {
+              navigation.navigate('HitApple');
+            }
+          } else {
+            navigation.navigate('LockAppleDetail', {
+              id: id,
+            });
+          }
         }}>
         <Image
           source={url}
@@ -247,6 +266,7 @@ const AppleList = ({navigation}) => {
                   unlockAt={item.unlockAt}
                   isOpen={item.isOpen}
                   id={item.id}
+                  isCatch={item.isCatch}
                 />
               </View>
             );
@@ -306,6 +326,7 @@ const AppleList = ({navigation}) => {
                   unlockAt={item.unlockAt}
                   isOpen={item.isOpen}
                   id={item.id}
+                  isCatch={item.isCatch}
                 />
               </View>
             );

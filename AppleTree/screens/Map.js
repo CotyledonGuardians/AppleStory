@@ -71,7 +71,7 @@ const Map = ({navigation}) => {
 
     getMapAppleList()
       .then(response => {
-        // console.log(response.data.body);
+        console.log(response.data.body);
         setAppleList(response.data.body);
       })
       .catch(error => {
@@ -134,7 +134,24 @@ const Map = ({navigation}) => {
                   longitude: item.location.lng,
                 }}
                 onCalloutPress={() => {
-                  appleDetail(item.id);
+                  let lockDate = new Date(item.unlockAt);
+                  let today = new Date();
+                  if (today >= lockDate) {
+                    // 현재 시간보다 시간이 지나있는 경우
+                    if (item.isCatch) {
+                      navigation.navigate('AppleDetail', {
+                        screen: 'AppleDetail',
+                        id: item.id,
+                      });
+                    } else {
+                      navigation.navigate('HitApple');
+                    }
+                  } else {
+                    navigation.navigate('LockAppleDetail', {
+                      id: item.id,
+                    });
+                  }
+                  // appleDetail(item.id);
                 }}
                 title={item.title}
                 description={`숙성기간 ${item.createAt.split('T')[0]} ~  ${
