@@ -88,7 +88,6 @@ const AppleList = ({navigation}) => {
           }
           // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.
           const mergedData = openList.concat(fetchedData);
-          console.log('WEFWEFWEF', mergedData);
           if (fetchedData.length <= 6) {
             setLoading2(true);
           }
@@ -171,8 +170,6 @@ const AppleList = ({navigation}) => {
       ];
     }
 
-    console.log('DropdownSelect..');
-
     return (
       <SelectDropdown
         data={countries}
@@ -204,7 +201,6 @@ const AppleList = ({navigation}) => {
   }
 
   function HomeScreen() {
-    console.log('HomeScreen..');
     return (
       <View
         style={{
@@ -264,7 +260,6 @@ const AppleList = ({navigation}) => {
   }
 
   function SettingsScreen() {
-    console.log('SettingsScreen..');
     return (
       <View
         style={{
@@ -326,7 +321,6 @@ const AppleList = ({navigation}) => {
   const Tab = createMaterialTopTabNavigator();
 
   function MyTabsTwo() {
-    console.log('MyTabsTwo..');
     return (
       <NavigationContainer independent={true}>
         <Tab.Navigator
