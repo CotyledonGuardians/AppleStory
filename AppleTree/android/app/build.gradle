@@ -187,6 +187,11 @@ dependencies {
     implementation 'com.facebook.fresco:animated-gif:2.6.0'
     implementation 'com.facebook.fresco:fresco:2.6.0'
 
+    implementation "com.google.firebase:firebase-dynamic-links:19.0.0"
+    implementation "com.google.firebase:firebase-invites:17.0.0"
+
+    compile project(':react-native-audio-recorder-player')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }

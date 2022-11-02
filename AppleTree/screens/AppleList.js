@@ -113,11 +113,12 @@ const AppleList = ({navigation}) => {
     require('../assets/pictures/readyhitgroup2.png'),
   ];
 
-  const appleDetail2 = () => {
-    navigation.navigate('AppleDetail', {screen: 'AppleDetail'});
+  const appleDetail = id => {
+    console.log('id', id);
+    navigation.navigate('AppleDetail', {screen: 'AppleDetail', id: id});
   };
 
-  const Card = ({type, title, unlockAt, isOpen, index}: any) => {
+  const Card = ({type, title, unlockAt, isOpen, index, id}: any) => {
     let lockDate = new Date(unlockAt);
     let today = new Date();
     var url = '';
@@ -143,7 +144,7 @@ const AppleList = ({navigation}) => {
         style={styles.card}
         onPress={() => {
           // Alert.alert('상세보기로 넘어가렴~');
-          appleDetail2();
+          appleDetail(id);
         }}>
         <Image
           source={url}
@@ -244,6 +245,7 @@ const AppleList = ({navigation}) => {
                   type={item.type}
                   unlockAt={item.unlockAt}
                   isOpen={item.isOpen}
+                  id={item.id}
                 />
               </View>
             );
@@ -303,6 +305,7 @@ const AppleList = ({navigation}) => {
                   type={item.type}
                   unlockAt={item.unlockAt}
                   isOpen={item.isOpen}
+                  id={item.id}
                 />
               </View>
             );

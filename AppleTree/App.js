@@ -21,10 +21,10 @@ import GroupSession from './sessions/GroupSession';
 import AppleDetail from './screens/AppleDetail';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import SeedDetail from './screens/SeedDetail';
+import HitApple from './sessions/AppleHitSession';
+import LockAppleDetail from './screens/lock/LockAppleDetail';
 import auth from '@react-native-firebase/auth';
-import {setGestureState} from 'react-native-reanimated/lib/reanimated2/NativeMethods';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -40,19 +40,16 @@ const styles = StyleSheet.create({
 });
 
 export default function App() {
-  const [token, setToken] = useState(null);
-
-  // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState(false);
+  const [login, setLogin] = useState(false);
 
   auth().onAuthStateChanged(user => {
     if (user) {
-      setUser(true);
+      setLogin(true);
     } else {
-      setUser(false);
+      setLogin(false);
     }
   });
+
   function MyStacks() {
     return (
       <Stack.Navigator
@@ -89,7 +86,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/home.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}>
@@ -100,6 +97,11 @@ export default function App() {
                 tabBarStyle: {display: 'none'},
               }}>
               <HomeStack.Screen name="Main" component={Main} />
+              <HomeStack.Screen name="HitApple" component={HitApple} />
+              <HomeStack.Screen
+                name="LockAppleDetail"
+                component={LockAppleDetail}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -110,7 +112,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/map.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}
@@ -121,7 +123,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/create.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}>
@@ -164,6 +166,7 @@ export default function App() {
               <ListStack.Screen name="AppleList" component={AppleList} />
               <ListStack.Screen name="AppleDetail" component={AppleDetail} />
               <ListStack.Screen name="SeedDetail" component={SeedDetail} />
+              <ListStack.Screen name="HitApple" component={HitApple} />
             </ListStack.Navigator>
           )}
         </Tab.Screen>
@@ -174,7 +177,7 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/mypage.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
           }}
@@ -182,17 +185,18 @@ export default function App() {
       </Tab.Navigator>
     );
   }
+
   // AsyncStorage의 idToken 가져오기
-  const getToken = async () => {
-    try {
-      const savedToken = await AsyncStorage.getItem('idToken');
-      setToken(savedToken);
-      // const currentToken = savedToken;
-      // console.log('currentToken:', currentToken);
-    } catch (error) {
-      console.log('getToken error' + error);
-    }
-  };
+  // const getToken = async () => {
+  //   try {
+  //     const savedToken = await AsyncStorage.getItem('idToken');
+  //     setToken(savedToken);
+  //     // const currentToken = savedToken;
+  //     // console.log('currentToken:', currentToken);
+  //   } catch (error) {
+  //     console.log('getToken error' + error);
+  //   }
+  // };
 
   //componentDidMount할때 해줘야되는거
   GoogleSignin.configure({});
@@ -203,9 +207,7 @@ export default function App() {
         '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
     });
   };
-  useEffect(() => {
-    getToken();
-  });
+
   useEffect(() => {
     try {
       setTimeout(() => {
@@ -217,9 +219,10 @@ export default function App() {
       console.warn(e);
     }
   }, []);
+
   return (
     <NavigationContainer>
-      {user ? <MyTabs /> : <MyStacks />}
+      {login ? <MyTabs /> : <MyStacks />}
     </NavigationContainer>
   );
 }

@@ -1,6 +1,8 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
+import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
+import com.cotyledon.appletree.domain.repository.jpa.AppleRepository;
 import com.cotyledon.appletree.domain.repository.redis.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import java.util.Set;
 @Slf4j
 public class AppleRoomUserServiceImpl implements AppleRoomUserService {
 
+    private final AppleRepository appleRepository;
     private final LockAppleRoomRepository lockAppleRoomRepository;
     private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomGroupRepository appleRoomGroupRepository;
@@ -21,9 +24,9 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
     private final LockAppleRoomLogService lockAppleRoomLogService;
 
-    // TODO: roomType 에 따라 repo 호출 분기 혹은 둘 다 쓰기?
     // 이 호출에 의해 룸이 비게 되었는지의 여부를 리턴
     // leave event 발행
+    // lockRoom 에 있든 unlockRoom 에 있든 둘 다 지움
     public boolean removeRoomUserAndRoomIfEmptyByUid(String uid) {
 
         Optional<AppleRoomUser> appleRoomUser = appleRoomUserRepository.findById(uid);
@@ -75,10 +78,19 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
         return true;
     }
 
+    // TODO: unlock 에서도 지우기 추가
     private void deleteAllRelatedToRoomIdOf(String roomId) {
+
         appleRoomGroupRepository.deleteGroupByRoomId(roomId);
-        roomAppleRepository.deleteAppleByRoomId(roomId);
+        roomAppleRepository.deleteRoomAppleByRoomId(roomId);
         lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
+
+        // 예약만 되고 제출되지 않은 DB 사과가 있다면 지움
+        Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
+        if (room.isPresent() && !room.get().getSaved()) {
+            appleRepository.deleteById(room.get().getAppleId());
+        }
+
         lockAppleRoomRepository.deleteById(roomId);
     }
 }

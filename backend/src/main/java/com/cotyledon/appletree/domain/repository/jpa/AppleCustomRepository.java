@@ -1,9 +1,11 @@
 package com.cotyledon.appletree.domain.repository.jpa;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
+import com.cotyledon.appletree.domain.dto.LocationAppleListDTO;
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import com.cotyledon.appletree.domain.entity.jpa.QApple;
 import com.cotyledon.appletree.domain.entity.jpa.QAppleUser;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
@@ -85,5 +88,22 @@ public class AppleCustomRepository extends QuerydslRepositorySupport {
         List<AppleListDTO> results =  getQuerydsl().applyPagination(pageable, query).fetch();
         System.out.println(results);
         return new PageImpl<>(results, pageable, totalCount);
+    }
+
+    public List<LocationAppleListDTO> findByAppleListLocation(String uid){
+        QApple apple = QApple.apple;
+        QAppleUser appleUser = QAppleUser.appleUser;
+
+        List<Tuple> fetch = queryFactory
+                .select(apple.id, apple.location)
+                .from(apple)
+                .innerJoin(appleUser)
+                .on(apple.id.eq(appleUser.apple.id))
+                .where(appleUser.uid.eq(uid)
+                .and(apple.location.isNotNull())).fetch();
+
+        return fetch.stream().map(
+                data -> LocationAppleListDTO.builder().id(data.get(apple.id)).location(data.get(apple.location)).build()
+        ).collect(Collectors.toList());
     }
 }

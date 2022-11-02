@@ -1,9 +1,11 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
+import com.cotyledon.appletree.domain.dto.LocationAppleListDTO;
 import com.cotyledon.appletree.domain.dto.LockAppleDTO;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
+import com.cotyledon.appletree.domain.entity.jpa.AppleUser;
 import com.cotyledon.appletree.domain.repository.jpa.AppleCustomRepository;
 import com.cotyledon.appletree.domain.repository.jpa.AppleRepository;
 import com.cotyledon.appletree.domain.repository.jpa.AppleUserRepository;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -58,8 +61,8 @@ public class AppleServiceImpl implements AppleService{
         Date date = java.sql.Timestamp.valueOf(LocalDateTime.now());
         if (apple.getUnlockAt().after(date)) {
             String name = null;
-            for(Member member : apple.getCreator().getMember()){
-                if(member.getUid().equals(principal.getName())){
+            for (Member member : apple.getCreator().getMember()) {
+                if (member.getUid().equals(principal.getName())) {
                     name = member.getNickname();
                     break;
                 }
@@ -67,12 +70,23 @@ public class AppleServiceImpl implements AppleService{
             LockAppleDTO a = LockAppleDTO.of(apple);
             a.setNickName(name);
             return a;
+        }else{
+            // 읽기 처리
+            AppleUser appleUser = appleUserRepository.findByApple_Id(apple.getId()).get();
+            appleUser.setIsOpen(Boolean.TRUE);
+            appleUserRepository.save(appleUser);
+            return apple;
         }
-        return appleRepository.findById(id).orElseThrow();
+
     }
 
     @Override
     public int getMyAppleCount(Principal principal) throws Exception {
         return appleUserRepository.countByUid(principal.getName());
+    }
+
+    @Override
+    public List<LocationAppleListDTO> getAppleList(Principal principal) throws Exception {
+        return appleCustomRepository.findByAppleListLocation(principal.getName());
     }
 }

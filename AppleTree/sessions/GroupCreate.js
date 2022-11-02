@@ -13,12 +13,8 @@ const GroupCreate = ({navigation}) => {
       <ScrollView contentContainerStyle={styles.wrapper}>
         <Image
           source={require('../assets/pictures/listpersonal1.png')}
-          style={{
-            width: 180,
-            height: 170,
-            marginTop: 30,
-            marginBottom: 10,
-          }}></Image>
+          style={styles.image}
+        />
         <Text style={styles.txt}>닉네임</Text>
         <TextInput
           value={nickname}
@@ -40,7 +36,7 @@ const GroupCreate = ({navigation}) => {
           onChangeText={text => setContent(text)}
         />
         <Text style={styles.txt}>사과에 담고 싶은 파일을 넣어 보세요!</Text>
-        <View style={{flexDirection: 'row', marginBottom: 20}}>
+        <View style={styles.buttonWarp}>
           <Pressable style={styles.add}>
             <Image
               source={require('AppleTree/assets/icons/videoadd.png')}
@@ -153,6 +149,10 @@ const styles = StyleSheet.create({
   button: {
     color: '#4C4036',
     fontFamily: 'UhBee Se_hyun',
+  },
+  buttonWarp: {
+    flexDirection: 'row',
+    marginBottom: 20,
   },
 });
 

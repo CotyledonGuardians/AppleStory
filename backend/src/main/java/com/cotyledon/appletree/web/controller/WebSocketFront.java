@@ -3,6 +3,7 @@ package com.cotyledon.appletree.web.controller;
 import com.cotyledon.appletree.domain.dto.AppleDTO;
 import com.cotyledon.appletree.domain.dto.RoomDTO;
 import com.cotyledon.appletree.service.LockAppleRoomService;
+import com.cotyledon.appletree.service.MultiAppleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.security.Principal;
 public class WebSocketFront {
 
     private final LockAppleRoomService lockAppleRoomService;
+    private final MultiAppleService multiAppleService;
 
     @GetMapping("/knock")
     public ResponseEntity<?> knock() {
@@ -29,7 +31,9 @@ public class WebSocketFront {
     @PostMapping("/lock-apple-room")
     public ResponseEntity<?> reserveLockAppleRoom(Principal principal, @RequestBody AppleDTO apple) {
 
-        RoomDTO roomDTO = lockAppleRoomService.reserveRoomAndGetRoomDTO(principal.getName(), apple);
+        long appleId = multiAppleService.reserveAppleAndGetId();
+
+        RoomDTO roomDTO = lockAppleRoomService.reserveRoomAndGetRoomDTO(principal.getName(), apple, appleId);
 
         return ResponseEntity.ok(roomDTO);
     }
