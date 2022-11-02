@@ -15,4 +15,5 @@ public interface LockAppleRoomService {
     Optional<LockAppleRoom> findByRoomId(String roomId);
     boolean saveAppleIfHostByRoomAndUid(LockAppleRoom room, String uid);
     void setSavedToTrueByRoomId(String roomId);
+    boolean isUserInRoom(String uid, String roomId);
 }

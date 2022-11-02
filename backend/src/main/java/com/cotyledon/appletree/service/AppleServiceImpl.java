@@ -20,11 +20,13 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AppleServiceImpl implements AppleService{
+
     private final AppleRepository appleRepository;
     private final AppleUserRepository appleUserRepository;
     private final AppleCustomRepository appleCustomRepository;
@@ -88,5 +90,44 @@ public class AppleServiceImpl implements AppleService{
     @Override
     public List<LocationAppleListDTO> getAppleList(Principal principal) throws Exception {
         return appleCustomRepository.findByAppleListLocation(principal.getName());
+    }
+
+    @Override
+    public Optional<Apple> findById(Long appleId) {
+        return appleRepository.findById(appleId);
+    }
+
+    @Override
+    public boolean caught(Long appleId) {
+        return findById(appleId).orElseThrow().getIsCatch();
+    }
+
+    @Override
+    public boolean containsMember(Long appleId, String uid) {
+        boolean isMember = false;
+        List<Member> members = findById(appleId).orElseThrow().getCreator().getMember();
+        for (Member member : members) {
+            if (member.getUid().equals(uid)) {
+                isMember = true;
+                break;
+            }
+        }
+        return isMember;
+    }
+
+    @Override
+    public int getAppleSize(Long appleId) {
+        return findById(appleId).orElseThrow().getCreator().getMember().size();
+    }
+
+    @Override
+    public double getInitHealth(Long appleId) {
+        // TODO: Health 관련 알고리즘 구현
+        return getAppleSize(appleId) * 10;
+    }
+
+    @Override
+    public void catchToTrue(Long appleId) {
+        findById(appleId).orElseThrow().setIsCatch(true);
     }
 }
