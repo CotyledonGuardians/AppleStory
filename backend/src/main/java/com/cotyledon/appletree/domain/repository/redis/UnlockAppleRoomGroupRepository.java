@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface UnlockAppleRoomGroupRepository {
 
-    void putGroup(Long appleId, Set<String> member);
+    void putGroup(Long appleId, Set<String> group);
     Optional<Set<String>> findGroupByAppleId(Long appleId);
     void deleteGroupByRoomId(Long appleId);
 }

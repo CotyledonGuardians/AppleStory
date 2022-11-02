@@ -1,9 +1,9 @@
-package com.cotyledon.appletree.service;
+package com.cotyledon.appletree.messenger;
 
 import com.cotyledon.appletree.domain.dto.Content;
 import com.cotyledon.appletree.domain.dto.Member;
 
-public interface LockAppleRoomLogService {
+public interface LockAppleRoomMessenger {
 
     void logForJoined(String roomId, String uid);
     void logForAdding(String roomId, String uid);

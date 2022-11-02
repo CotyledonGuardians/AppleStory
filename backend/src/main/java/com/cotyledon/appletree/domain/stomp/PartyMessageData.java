@@ -1,5 +1,6 @@
 package com.cotyledon.appletree.domain.stomp;
 
+import com.cotyledon.appletree.domain.entity.redis.UnlockAppleRoom;
 import lombok.*;
 
 @Builder
@@ -11,12 +12,14 @@ import lombok.*;
 public class PartyMessageData {
 
     private Double totalHealth;
-    private Double currentHealth;
     private Integer appleSize;
     private Integer partySize;
 
-    public static PartyMessageData of() {
-        // TODO: 구현
-        return PartyMessageData.builder().build();
+    public static PartyMessageData withRoomAndPartySize(UnlockAppleRoom room, int partySize) {
+        return PartyMessageData.builder()
+                .totalHealth(room.getTotalHealth())
+                .appleSize(room.getAppleSize())
+                .partySize(partySize)
+                .build();
     }
 }

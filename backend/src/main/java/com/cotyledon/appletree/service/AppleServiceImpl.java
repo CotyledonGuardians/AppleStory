@@ -109,8 +109,13 @@ public class AppleServiceImpl implements AppleService{
     }
 
     @Override
+    public int getAppleSize(Long appleId) {
+        return findById(appleId).orElseThrow().getCreator().getMember().size();
+    }
+
+    // TODO: Health 관련 알고리즘 구현
+    @Override
     public double getInitHealth(Long appleId) {
-        int size = findById(appleId).orElseThrow().getCreator().getMember().size();
-        return size * 150;
+        return getAppleSize(appleId) * 150;
     }
 }

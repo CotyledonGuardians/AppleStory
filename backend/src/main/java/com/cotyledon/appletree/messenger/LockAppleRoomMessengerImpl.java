@@ -1,6 +1,5 @@
-package com.cotyledon.appletree.service;
+package com.cotyledon.appletree.messenger;
 
-import com.cotyledon.appletree.domain.dto.AppleDTO;
 import com.cotyledon.appletree.domain.dto.Content;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.redis.RoomApple;
@@ -13,17 +12,17 @@ import com.cotyledon.appletree.domain.stomp.LockAppleRoomUserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 @Slf4j
-public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
+public class LockAppleRoomMessengerImpl implements LockAppleRoomMessenger {
 
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
     private final RoomAppleRepository roomAppleRepository;

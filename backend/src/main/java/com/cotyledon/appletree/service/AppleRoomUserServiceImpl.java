@@ -4,6 +4,7 @@ import com.cotyledon.appletree.domain.entity.redis.AppleRoomUser;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
 import com.cotyledon.appletree.domain.repository.jpa.AppleRepository;
 import com.cotyledon.appletree.domain.repository.redis.*;
+import com.cotyledon.appletree.messenger.LockAppleRoomMessenger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
     private final LockAppleRoomGroupRepository lockAppleRoomGroupRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
-    private final LockAppleRoomLogService lockAppleRoomLogService;
+    private final LockAppleRoomMessenger lockAppleRoomMessenger;
 
     // 이 호출에 의해 룸이 비게 되었는지의 여부를 리턴
     // leave event 발행
@@ -63,7 +64,7 @@ public class AppleRoomUserServiceImpl implements AppleRoomUserService {
         group.remove(uid);
 
         // change 이벤트 발행
-        lockAppleRoomLogService.logForLeft(roomId, uid);
+        lockAppleRoomMessenger.logForLeft(roomId, uid);
 
         if (!group.isEmpty()) {
             // 그룹이 비어 있지 않다면 그룹을 업데이트

@@ -14,13 +14,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class LockAppleRoomEventListener {
 
+    private static final String PREFIX = "lock-apple-room";
     private final LockAppleRoomService lockAppleRoomService;
     private final MultiAppleService multiAppleService;
     private final SimpMessagingTemplate simpMessagingTemplate;
@@ -54,7 +53,7 @@ public class LockAppleRoomEventListener {
             log.trace("", e);
         }
 
-        simpMessagingTemplate.convertAndSend(DestinationBuilder.build("lock-apple-room", event.getRoomId()),
+        simpMessagingTemplate.convertAndSend(DestinationBuilder.build(PREFIX, event.getRoomId()),
                 BaseMessage.withCommandAndData("onChange", event.getChangeMessageData()));
 
         log.info("Message sent: {}", event.getChangeMessageData());
@@ -67,7 +66,7 @@ public class LockAppleRoomEventListener {
 
         lockAppleRoomService.setSavedToTrueByRoomId(event.getRoomId());
 
-        simpMessagingTemplate.convertAndSend(DestinationBuilder.build("lock-apple-room", event.getRoomId()),
+        simpMessagingTemplate.convertAndSend(DestinationBuilder.build(PREFIX, event.getRoomId()),
                 BaseMessage.withCommandAndData("onSave", event.getAppleId()));
 
         log.info("사과 저장 완료 메시지 전송됨 appleId: {}", event.getAppleId());

@@ -18,17 +18,17 @@ public class UnlockAppleRoomGroupRepositoryImpl implements UnlockAppleRoomGroupR
 
     @Override
     public void putGroup(Long appleId, Set<String> group) {
-        redisTemplate.opsForHash().put(KEY, appleId, group);
+        redisTemplate.opsForHash().put(KEY, appleId.toString(), group);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Optional<Set<String>> findGroupByAppleId(Long appleId) {
-        return Optional.ofNullable((Set<String>) redisTemplate.opsForHash().get(KEY, appleId));
+        return Optional.ofNullable((Set<String>) redisTemplate.opsForHash().get(KEY, appleId.toString()));
     }
 
     @Override
     public void deleteGroupByRoomId(Long appleId) {
-        redisTemplate.opsForHash().delete(KEY, appleId);
+        redisTemplate.opsForHash().delete(KEY, appleId.toString());
     }
 }

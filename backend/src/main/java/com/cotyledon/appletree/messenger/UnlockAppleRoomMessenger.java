@@ -1,6 +1,6 @@
-package com.cotyledon.appletree.service;
+package com.cotyledon.appletree.messenger;
 
-public interface UnlockAppleRoomLogService {
+public interface UnlockAppleRoomMessenger {
 
     void logForJoined(Long appleId, String uid);
     void logForLeft(Long appleId, String uid);

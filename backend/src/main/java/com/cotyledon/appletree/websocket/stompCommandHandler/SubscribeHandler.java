@@ -31,6 +31,8 @@ public class SubscribeHandler implements StompCommandHandler {
     @Override
     public void handle(StompHeaderAccessor stompHeaderAccessor) {
 
+        log.info("SUBSCRIBE header: {}", stompHeaderAccessor);
+
         String sid = stompHeaderAccessor.getSessionId();
 
         // Auth
@@ -66,14 +68,14 @@ public class SubscribeHandler implements StompCommandHandler {
                     throw exception.buildWithReleasing(sid);
                 }
 
-                saveRoomAndSetHealthIfAbsent(appleId);
+                saveAndSetRoomIfAbsent(appleId);
                 return unlockAppleRoomService.enterRoomAndSaveRoomUser(uid, appleId);
             default:
                 throw exception.buildWithReleasing(sid);
         }
     }
 
-    private void saveRoomAndSetHealthIfAbsent(Long appleId) {
+    private void saveAndSetRoomIfAbsent(Long appleId) {
 
         Optional<UnlockAppleRoom> roomOptional = unlockAppleRoomService.findById(appleId);
 
@@ -81,9 +83,15 @@ public class SubscribeHandler implements StompCommandHandler {
             return;
         }
 
+        int appleSize = appleService.getAppleSize(appleId);
         double initHealth = appleService.getInitHealth(appleId);
 
-        UnlockAppleRoom room = UnlockAppleRoom.builder().appleId(appleId).health(initHealth).build();
+        UnlockAppleRoom room = UnlockAppleRoom.builder()
+                .appleId(appleId)
+                .totalHealth(initHealth)
+                .currentHealth(0d)
+                .appleSize(appleSize)
+                .build();
 
         unlockAppleRoomService.save(room);
     }

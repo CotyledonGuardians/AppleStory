@@ -15,5 +15,7 @@ public class UnlockAppleRoom {
 
     @Id
     private Long appleId;
-    private Double health;
+    private Double totalHealth;
+    private Double currentHealth;
+    private Integer appleSize;
 }

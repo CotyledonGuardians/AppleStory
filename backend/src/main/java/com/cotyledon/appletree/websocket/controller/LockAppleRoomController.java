@@ -4,7 +4,7 @@ import com.cotyledon.appletree.domain.dto.Content;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.redis.LockAppleRoom;
 import com.cotyledon.appletree.domain.stomp.ContentPayload;
-import com.cotyledon.appletree.service.LockAppleRoomLogService;
+import com.cotyledon.appletree.messenger.LockAppleRoomMessenger;
 import com.cotyledon.appletree.service.LockAppleRoomService;
 import com.cotyledon.appletree.service.RoomAppleService;
 import com.cotyledon.appletree.service.StompUserService;
@@ -25,7 +25,7 @@ public class LockAppleRoomController {
 
     private final RoomAppleService roomAppleService;
     private final LockAppleRoomService lockAppleRoomService;
-    private final LockAppleRoomLogService lockAppleRoomLogService;
+    private final LockAppleRoomMessenger lockAppleRoomMessenger;
     private final StompUserService stompUserService;
 
     @MessageMapping("{roomId}.adding")
@@ -38,7 +38,7 @@ public class LockAppleRoomController {
             return;
         }
 
-        lockAppleRoomLogService.logForAdding(roomId, uid.get());
+        lockAppleRoomMessenger.logForAdding(roomId, uid.get());
     }
 
     @MessageMapping("{roomId}.added")
@@ -83,7 +83,7 @@ public class LockAppleRoomController {
             return;
         }
 
-        lockAppleRoomLogService.logForCancelled(roomId, uid.get());
+        lockAppleRoomMessenger.logForCancelled(roomId, uid.get());
     }
 
     @MessageMapping("{roomId}.submit")
