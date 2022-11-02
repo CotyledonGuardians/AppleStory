@@ -30,6 +30,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 const CreateStack = createStackNavigator();
 const HomeStack = createStackNavigator();
+const MapStack = createStackNavigator();
 const ListStack = createStackNavigator();
 
 const styles = StyleSheet.create({
@@ -106,8 +107,7 @@ export default function App() {
           )}
         </Tab.Screen>
         <Tab.Screen
-          name="Map"
-          component={Map}
+          name="MapNavi"
           options={{
             tabBarIcon: () => (
               <Image
@@ -115,8 +115,19 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
-          }}
-        />
+          }}>
+          {() => (
+            <MapStack.Navigator
+              screenOptions={{
+                headerShown: false,
+                tabBarStyle: {display: 'none'},
+              }}>
+              <MapStack.Screen name="Map" component={Map} />
+              <MapStack.Screen name="AppleDetail" component={AppleDetail} />
+              <MapStack.Screen name="SeedDetail" component={SeedDetail} />
+            </MapStack.Navigator>
+          )}
+        </Tab.Screen>
         <Tab.Screen
           name="MakeRoom"
           options={{
