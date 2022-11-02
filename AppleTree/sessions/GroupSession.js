@@ -1,13 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   View,
   Text,
   Image,
-  TextInput,
+  ScrollView,
   Pressable,
-  BackHandler,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {SmallButton, Button} from '../components/Button';
@@ -21,8 +20,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const [copiedText, setCopiedText] = useState(null);
   // unlockGIF loading
   const [ready, setReady] = useState(true);
-  // session status
-  const [status, setStatus] = useState(null);
   // session nickname
   const [nickname, setNickname] = useState(null);
   // session stage
@@ -31,7 +28,10 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const [total, setTotal] = useState(null);
   // session compelete cnt
   const [compelete, setCompelete] = useState(null);
-
+  // session message
+  const [message, setMessage] = useState([
+    {idx: 1, nickname: 'nickname', stage: 'JOINED'},
+  ]);
   // 방장인지체크 추후 변경
   let isOwner = false;
   // 복사할 앱 링크 추후 변경
@@ -47,7 +47,8 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const hangApple = () => {
     navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
   };
-
+  // 자동 스크롤밑으로
+  const scrollViewRef = useRef();
   const stateMessage = (nick, state) => {
     switch (state) {
       case 'JOINED':
@@ -134,15 +135,20 @@ const GroupSession = ({navigation: {navigate}, route}) => {
             </Text>
           </View>
         </Pressable>
-        <TextInput
-          value={stateMessage(nickname, stage)}
-          pointerEvents="none"
-          editable={false}
-          autoCapitalize={'none'}
-          style={styles.input}
-          multiline={true}
-          numberOfLines={3}
-        />
+        <View style={styles.view}>
+          <ScrollView
+            style={styles.ScrollView}
+            ref={scrollViewRef}
+            onContentSizeChange={() =>
+              scrollViewRef.current.scrollToEnd({animated: true})
+            }>
+            {message.map(item => (
+              <Text key={item.idx}>
+                {stateMessage(item.nickname, item.stage)}
+              </Text>
+            ))}
+          </ScrollView>
+        </View>
         <View style={styles.buttons}>
           {isOwner ? (
             <Button onPress={() => disconnect()} text="추억 담기" />
@@ -174,18 +180,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
   },
-  input: {
+  view: {
     justifyContent: 'center',
-    backgroundColor: '#ECE5E0',
-    color: '#4C4036',
-    fontSize: 12,
-    fontFamily: 'UhBee Se_hyun',
-    // textAlign: 'center',
     marginTop: 25,
     padding: 25,
     width: 300,
     height: 250,
     borderRadius: 10,
+  },
+  ScrollView: {
+    justifyContent: 'center',
+    backgroundColor: '#ECE5E0',
+    color: '#4C4036',
+    fontSize: 12,
+    fontFamily: 'UhBee Se_hyun',
   },
   complete: {
     fontSize: 16,
