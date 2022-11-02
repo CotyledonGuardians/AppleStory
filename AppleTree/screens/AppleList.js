@@ -12,12 +12,11 @@ import {useEffect, useState, useRef} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import SelectDropdown from 'react-native-select-dropdown';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {getCloseAppleList, getOpenAppleList} from '../api/AppleAPI';
 
 const AppleList = ({navigation}) => {
   const [route, setRoute] = useState('열린 사과');
-  const [routeSort, setRouteSort] = useState('최신순');
+  const [routeSort, setRouteSort] = useState('오래된 순');
 
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
@@ -159,12 +158,18 @@ const AppleList = ({navigation}) => {
   };
 
   function DropdownSelect() {
-    const countries = [
-      '최신순',
-      '오래된 순',
-      '적게 남은 시간 순',
-      '많이 남은 시간 순',
-    ];
+    let countries = [];
+
+    if (route === '열린 사과') {
+      countries = ['오래된 순', '최신순'];
+    } else if (route === '잠긴 사과') {
+      countries = [
+        '오래된 순',
+        '최신순',
+        '적게 남은 시간 순',
+        '많이 남은 시간 순',
+      ];
+    }
 
     console.log('DropdownSelect..');
 
@@ -337,8 +342,24 @@ const AppleList = ({navigation}) => {
               height: 5,
             },
           }}>
-          <Tab.Screen name="열린 사과" component={SettingsScreen} />
-          <Tab.Screen name="잠긴 사과" component={HomeScreen} />
+          <Tab.Screen
+            name="열린 사과"
+            component={SettingsScreen}
+            listeners={{
+              tabPress: e => {
+                setRoute('열린 사과');
+              },
+            }}
+          />
+          <Tab.Screen
+            name="잠긴 사과"
+            component={HomeScreen}
+            listeners={{
+              tabPress: e => {
+                setRoute('잠긴 사과');
+              },
+            }}
+          />
         </Tab.Navigator>
       </NavigationContainer>
     );
