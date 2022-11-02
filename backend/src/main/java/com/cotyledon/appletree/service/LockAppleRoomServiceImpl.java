@@ -8,7 +8,7 @@ import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 import com.cotyledon.appletree.domain.event.AppleSaveEvent;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.*;
-import com.cotyledon.appletree.messenger.LockAppleRoomMessenger;
+import com.cotyledon.appletree.notifier.LockAppleRoomNotifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,7 +26,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
-    private final LockAppleRoomMessenger lockAppleRoomMessenger;
+    private final LockAppleRoomNotifier lockAppleRoomNotifier;
     private final MultiAppleService multiAppleService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -97,7 +97,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         lockAppleRoomGroupRepository.putGroup(roomId, group);
 
         // change 이벤트 발행
-        lockAppleRoomMessenger.logForJoined(roomId, uid);
+        lockAppleRoomNotifier.notifyForJoined(roomId, uid);
 
         return true;
     }

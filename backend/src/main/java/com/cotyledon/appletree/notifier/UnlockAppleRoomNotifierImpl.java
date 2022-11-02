@@ -1,4 +1,4 @@
-package com.cotyledon.appletree.messenger;
+package com.cotyledon.appletree.notifier;
 
 import com.cotyledon.appletree.domain.entity.redis.UnlockAppleRoom;
 import com.cotyledon.appletree.domain.event.PartyChangeEvent;
@@ -16,7 +16,7 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class UnlockAppleRoomMessengerImpl implements UnlockAppleRoomMessenger {
+public class UnlockAppleRoomNotifierImpl implements UnlockAppleRoomNotifier {
 
     private final ApplicationEventPublisher eventPublisher;
     private final UnlockAppleRoomRepository unlockAppleRoomRepository;
@@ -24,7 +24,7 @@ public class UnlockAppleRoomMessengerImpl implements UnlockAppleRoomMessenger {
 
     @Override
     @Transactional
-    public void logForJoined(Long appleId) {
+    public void notifyPartyChange(Long appleId) {
 
         UnlockAppleRoom room = unlockAppleRoomRepository.findById(appleId).orElseThrow();
 
@@ -36,10 +36,5 @@ public class UnlockAppleRoomMessengerImpl implements UnlockAppleRoomMessenger {
                 .appleId(appleId)
                 .partyMessageData(partyMessageData)
                 .build());
-    }
-
-    @Override
-    @Transactional
-    public void logForLeft(Long appleId, String uid) {
     }
 }

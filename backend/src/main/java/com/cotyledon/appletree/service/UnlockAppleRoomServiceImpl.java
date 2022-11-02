@@ -5,7 +5,7 @@ import com.cotyledon.appletree.domain.entity.redis.UnlockAppleRoom;
 import com.cotyledon.appletree.domain.repository.redis.AppleRoomUserRepository;
 import com.cotyledon.appletree.domain.repository.redis.UnlockAppleRoomGroupRepository;
 import com.cotyledon.appletree.domain.repository.redis.UnlockAppleRoomRepository;
-import com.cotyledon.appletree.messenger.UnlockAppleRoomMessenger;
+import com.cotyledon.appletree.notifier.UnlockAppleRoomNotifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class UnlockAppleRoomServiceImpl implements UnlockAppleRoomService {
 
     private final UnlockAppleRoomRepository unlockAppleRoomRepository;
     private final UnlockAppleRoomGroupRepository unlockAppleRoomGroupRepository;
-    private final UnlockAppleRoomMessenger unlockAppleRoomMessenger;
+    private final UnlockAppleRoomNotifier unlockAppleRoomNotifier;
     private final AppleRoomUserRepository appleRoomUserRepository;
 
     @Override
@@ -54,7 +54,7 @@ public class UnlockAppleRoomServiceImpl implements UnlockAppleRoomService {
         unlockAppleRoomGroupRepository.putGroup(appleId, group);
 
         // party 이벤트 발행
-        unlockAppleRoomMessenger.logForJoined(appleId);
+        unlockAppleRoomNotifier.notifyPartyChange(appleId);
 
         return true;
     }

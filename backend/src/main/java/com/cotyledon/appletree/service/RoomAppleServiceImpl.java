@@ -3,7 +3,7 @@ package com.cotyledon.appletree.service;
 import com.cotyledon.appletree.domain.dto.*;
 import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 import com.cotyledon.appletree.domain.repository.redis.RoomAppleRepository;
-import com.cotyledon.appletree.messenger.LockAppleRoomMessenger;
+import com.cotyledon.appletree.notifier.LockAppleRoomNotifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 public class RoomAppleServiceImpl implements RoomAppleService {
 
     private final RoomAppleRepository roomAppleRepository;
-    private final LockAppleRoomMessenger lockAppleRoomMessenger;
+    private final LockAppleRoomNotifier lockAppleRoomNotifier;
 
     @Override
     public void addMemberAndContentToAppleByRoomId(String roomId, Member member, Content content) {
@@ -45,7 +45,7 @@ public class RoomAppleServiceImpl implements RoomAppleService {
         roomAppleRepository.putRoomApple(roomId, apple);
 
         // change 이벤트 발행
-        lockAppleRoomMessenger.logForAdded(roomId, member, content);
+        lockAppleRoomNotifier.notifyForAdded(roomId, member, content);
     }
 
     @SuppressWarnings("unchecked")

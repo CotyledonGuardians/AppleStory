@@ -13,7 +13,7 @@ import java.util.Optional;
 @Slf4j
 public class RoomAppleRepositoryImpl implements RoomAppleRepository {
 
-    private static final String KEY = "apple";
+    private static final String KEY = "room_apple";
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
