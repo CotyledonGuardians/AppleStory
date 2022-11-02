@@ -1,6 +1,5 @@
-package com.cotyledon.appletree.service;
+package com.cotyledon.appletree.notifier;
 
-import com.cotyledon.appletree.domain.dto.AppleDTO;
 import com.cotyledon.appletree.domain.dto.Content;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.redis.RoomApple;
@@ -13,17 +12,17 @@ import com.cotyledon.appletree.domain.stomp.LockAppleRoomUserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 @Slf4j
-public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
+public class LockAppleRoomNotifierImpl implements LockAppleRoomNotifier {
 
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
     private final RoomAppleRepository roomAppleRepository;
@@ -31,7 +30,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
 
     @Override
     @Transactional
-    public void logForJoined(String roomId, String uid) {
+    public void notifyForJoined(String roomId, String uid) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
                 .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
@@ -59,7 +58,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
 
     @Override
     @Transactional
-    public void logForAdding(String roomId, String uid) {
+    public void notifyForAdding(String roomId, String uid) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
                 .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
@@ -87,7 +86,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
 
     @Override
     @Transactional
-    public void logForAdded(String roomId, Member member, Content content) {
+    public void notifyForAdded(String roomId, Member member, Content content) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
                 .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
@@ -117,7 +116,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
 
     @Override
     @Transactional
-    public void logForCancelled(String roomId, String uid) {
+    public void notifyForCancelled(String roomId, String uid) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
                 .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
@@ -145,28 +144,28 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
 
     @Override
     @Transactional
-    public void logForLeft(String roomId, String uid) {
+    public void notifyForLeft(String roomId, String uid) {
 
-        Optional<RoomApple> apple = roomAppleRepository.findRoomAppleByRoomId(roomId);
+        Optional<RoomApple> roomApple = roomAppleRepository.findRoomAppleByRoomId(roomId);
 
-        if (apple.isEmpty()) {
+        if (roomApple.isEmpty()) {
             return;
         }
 
-        List<Member> members = apple.get().getCreator().getMember();
+        List<Member> members = roomApple.get().getCreator().getMember();
 
         for (Member member : members) {
             if (member.getUid().equals(uid)) {
-                logForLeftWithMember(roomId, member);
+                notifyForLeftWithMember(roomId, member);
 
                 return;
             }
         }
 
-        logForLeftWithUid(roomId, uid);
+        notifyForLeftWithUid(roomId, uid);
     }
 
-    private void logForLeftWithMember(String roomId, Member member) {
+    private void notifyForLeftWithMember(String roomId, Member member) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
                 .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
@@ -199,7 +198,7 @@ public class LockAppleRoomLogServiceImpl implements LockAppleRoomLogService {
                 .build());
     }
 
-    private void logForLeftWithUid(String roomId, String uid) {
+    private void notifyForLeftWithUid(String roomId, String uid) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
                 .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
