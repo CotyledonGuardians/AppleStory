@@ -53,7 +53,6 @@ const RefreshToken = async () => {
  */
 const api = async (method, url, body) => {
   const accessToken = await AsyncStorage.getItem('idToken');
-  console.log(accessToken);
   if (!accessToken || accessToken === '') {
     throw {no_access_token: true};
   }

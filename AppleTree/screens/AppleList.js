@@ -31,7 +31,6 @@ const AppleList = ({navigation}) => {
   const getInitData = async sort => {
     getOpenAppleList(sort, 0, 6)
       .then(response => {
-        console.log(response.data.body);
         setOpenList(response.data.body.content);
       })
       .catch(error => {
@@ -113,7 +112,6 @@ const AppleList = ({navigation}) => {
   ];
 
   const appleDetail = id => {
-    console.log('id', id);
     navigation.navigate('AppleDetail', {screen: 'AppleDetail', id: id});
   };
 
@@ -201,7 +199,7 @@ const AppleList = ({navigation}) => {
           setPage2(1);
           setSort2(index);
           setLoading2(false);
-          console.log(selectedItem, index);
+          // console.log(selectedItem, index);
           setRouteSort(countries[index]);
         }}
         buttonTextAfterSelection={(selectedItem, index) => {

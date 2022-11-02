@@ -29,7 +29,6 @@ const AppleDetail = ({navigation, route}) => {
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(response => {
-        console.log(response.data);
         setAppleDetail(response.data.body);
       })
       .catch(error => {
