@@ -9,11 +9,11 @@ import {
   TouchableOpacity,
   Alert,
   Button,
+  Slider,
   Platform,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
-import Slider from '@react-native-community/slider';
 
 const img_speaker = require('../assets/icons/mic.png');
 const img_pause = require('../assets/icons/mic.png');
@@ -33,8 +33,6 @@ export default class PlayerScreen extends React.Component {
       playState: 'paused', //playing, paused
       playSeconds: 0,
       duration: 0,
-      audio:
-        'https://raw.githubusercontent.com/zmxv/react-native-sound-demo/master/advertising.mp3',
       nickname: props.route.params.nickname,
       text: '',
       image: '',
