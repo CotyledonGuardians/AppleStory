@@ -29,6 +29,7 @@ const AppleDetail = ({navigation, route}) => {
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(response => {
+        console.log(response.data.body);
         setAppleDetail(response.data.body);
       })
       .catch(error => {
@@ -86,30 +87,34 @@ const AppleDetail = ({navigation, route}) => {
                 이 사과에 기록된 데이터
               </Text>
               <View style={styles.iconBox}>
-                {appleDetail.content.text.length != 0 && (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../assets/icons/text.png')}
-                  />
-                )}
-                {appleDetail.content.photo.length != 0 && (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../assets/icons/photo.png')}
-                  />
-                )}
-                {appleDetail.content.audio.length != 0 && (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../assets/icons/mic.png')}
-                  />
-                )}
-                {appleDetail.content.video.length != 0 && (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../assets/icons/video.png')}
-                  />
-                )}
+                {appleDetail.content.text != null &&
+                  appleDetail.content.text.length != 0 && (
+                    <Image
+                      style={styles.contentIcon}
+                      source={require('../assets/icons/text.png')}
+                    />
+                  )}
+                {appleDetail.content.photo != null &&
+                  appleDetail.content.photo.length != 0 && (
+                    <Image
+                      style={styles.contentIcon}
+                      source={require('../assets/icons/photo.png')}
+                    />
+                  )}
+                {appleDetail.content.audio != null &&
+                  appleDetail.content.audio.length != 0 && (
+                    <Image
+                      style={styles.contentIcon}
+                      source={require('../assets/icons/mic.png')}
+                    />
+                  )}
+                {appleDetail.content.video != null &&
+                  appleDetail.content.video.length != 0 && (
+                    <Image
+                      style={styles.contentIcon}
+                      source={require('../assets/icons/video.png')}
+                    />
+                  )}
                 {appleDetail.location != null && (
                   <Image
                     style={styles.contentIcon}
@@ -219,8 +224,10 @@ const AppleDetail = ({navigation, route}) => {
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header />
           <ContentSeed />
-          {appleDetail.content.photo.length != 0 && <Photo />}
-          {appleDetail.content.video.length != 0 && <VideoRecord />}
+          {appleDetail.content.photo != null &&
+            appleDetail.content.photo.length != 0 && <Photo />}
+          {appleDetail.content.video != null &&
+            appleDetail.content.video.length != 0 && <VideoRecord />}
         </ScrollView>
       )}
     </SafeAreaView>
