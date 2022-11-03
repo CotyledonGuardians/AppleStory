@@ -1,7 +1,8 @@
 apply plugin: "com.android.application"
 apply plugin: 'com.google.gms.google-services'
 import com.android.build.OutputFile
-
+//빌드환경설정
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
  * and bundleReleaseJsAndAssets).
@@ -80,7 +81,15 @@ import com.android.build.OutputFile
 project.ext.react = [
     enableHermes: false,  // clean and rebuild if changing
 ]
-
+//빌드환경설정
+project.ext.envConfigFiles = [
+   productiondebug: ".env.production",
+   productionrelease: ".env.production",
+   developmentrelease: ".env.development",
+   developmentdebug: ".env.development",
+   stagingrelease: ".env.staging",
+   stagingdebug: ".env.staging"
+ ]
 apply from: "../../node_modules/react-native/react.gradle"
 
 /**
@@ -151,6 +160,8 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            //빌드환경설정
+            matchingFallbacks = ['debug', 'release']
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -160,7 +171,15 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
-
+    //빌드환경설정
+    flavorDimensions "default"
+    productFlavors {
+        production {}
+        staging {
+        // 여기서 빌드별 구성을 할 수 있습니다.
+        }
+        development {}
+    }
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
