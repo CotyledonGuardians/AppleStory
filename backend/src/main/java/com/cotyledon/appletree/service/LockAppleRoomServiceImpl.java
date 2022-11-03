@@ -8,6 +8,7 @@ import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 import com.cotyledon.appletree.domain.event.AppleSaveEvent;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.*;
+import com.cotyledon.appletree.notifier.LockAppleRoomNotifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -21,11 +22,11 @@ import java.util.*;
 public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
     private final LockAppleRoomRepository lockAppleRoomRepository;
-    private final AppleRoomGroupRepository appleRoomGroupRepository;
+    private final LockAppleRoomGroupRepository lockAppleRoomGroupRepository;
     private final RoomAppleRepository roomAppleRepository;
     private final AppleRoomUserRepository appleRoomUserRepository;
     private final LockAppleRoomLogRepository lockAppleRoomLogRepository;
-    private final LockAppleRoomLogService lockAppleRoomLogService;
+    private final LockAppleRoomNotifier lockAppleRoomNotifier;
     private final MultiAppleService multiAppleService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -61,13 +62,13 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
             return false;
         }
 
-        Optional<Set<String>> group = appleRoomGroupRepository.findGroupByRoomId(roomId);
+        Optional<Set<String>> group = lockAppleRoomGroupRepository.findGroupByRoomId(roomId);
 
         if (group.isPresent() && !group.get().isEmpty()) {
             return false;
         }
 
-        appleRoomGroupRepository.deleteGroupByRoomId(roomId);
+        lockAppleRoomGroupRepository.deleteGroupByRoomId(roomId);
         roomAppleRepository.deleteRoomAppleByRoomId(roomId);
         lockAppleRoomLogRepository.deleteLogByRoomId(roomId);
         lockAppleRoomRepository.deleteById(roomId);
@@ -91,12 +92,12 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         AppleRoomUser user = AppleRoomUser.builder().uid(uid).roomId(roomId).build();
         appleRoomUserRepository.save(user);
 
-        Set<String> group = appleRoomGroupRepository.findGroupByRoomId(roomId).orElse(new HashSet<>());
+        Set<String> group = lockAppleRoomGroupRepository.findGroupByRoomId(roomId).orElse(new HashSet<>());
         group.add(uid);
-        appleRoomGroupRepository.putGroup(roomId, group);
+        lockAppleRoomGroupRepository.putGroup(roomId, group);
 
         // change 이벤트 발행
-        lockAppleRoomLogService.logForJoined(roomId, uid);
+        lockAppleRoomNotifier.notifyForJoined(roomId, uid);
 
         return true;
     }
@@ -165,5 +166,12 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
 
         room.setSaved(true);
         lockAppleRoomRepository.save(room);
+    }
+
+    @Override
+    public boolean isUserInRoom(String uid, String roomId) {
+        Optional<Set<String>> group = lockAppleRoomGroupRepository.findGroupByRoomId(roomId);
+
+        return group.isPresent() && group.get().contains(uid);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class InvalidStompHeaderExceptionBuilder {
+public class InvalidStompMessageExceptionBuilder {
 
     private final StompUserDAO stompUserDAO;
 
@@ -17,6 +17,6 @@ public class InvalidStompHeaderExceptionBuilder {
     }
 
     public IllegalArgumentException buildDefault() {
-        return new IllegalArgumentException("Invalid Stomp Header");
+        return new IllegalArgumentException("Not Allowed");
     }
 }

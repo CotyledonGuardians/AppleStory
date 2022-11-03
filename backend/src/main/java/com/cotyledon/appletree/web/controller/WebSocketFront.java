@@ -21,6 +21,8 @@ public class WebSocketFront {
     private final LockAppleRoomService lockAppleRoomService;
     private final MultiAppleService multiAppleService;
 
+    // 토큰 리프레시용
+    // connect, subscribe 전에 사용, send 시에는 사용하지 않음
     @GetMapping("/knock")
     public ResponseEntity<?> knock() {
         return ResponseEntity.ok().build();

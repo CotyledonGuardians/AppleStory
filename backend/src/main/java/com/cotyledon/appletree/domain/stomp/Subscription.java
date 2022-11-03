@@ -2,7 +2,7 @@ package com.cotyledon.appletree.domain.stomp;
 
 import com.cotyledon.appletree.configuration.WebSocketConfiguration;
 import com.cotyledon.appletree.domain.enums.RoomType;
-import com.cotyledon.appletree.exception.InvalidStompHeaderExceptionBuilder;
+import com.cotyledon.appletree.exception.InvalidStompMessageExceptionBuilder;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -15,8 +15,9 @@ public class Subscription {
 
     private RoomType roomType;
     private String roomId;
+    private Long appleId;
 
-    public static Subscription of(StompHeaderAccessor stompHeaderAccessor, InvalidStompHeaderExceptionBuilder exception) {
+    public static Subscription of(StompHeaderAccessor stompHeaderAccessor, InvalidStompMessageExceptionBuilder exception) {
         String sid = stompHeaderAccessor.getSessionId();
 
         String destination = stompHeaderAccessor.getDestination();
@@ -25,8 +26,9 @@ public class Subscription {
             throw exception.buildWithReleasing(sid);
         }
 
-        String roomId;
         RoomType roomType;
+        String roomId;
+        Long appleId = null;
 
         try {
             String[] strings = destination.split("\\.");
@@ -45,6 +47,14 @@ public class Subscription {
             throw exception.buildWithReleasing(sid);
         }
 
-        return Subscription.builder().roomType(roomType).roomId(roomId).build();
+        if (roomType == RoomType.UNLOCK) {
+            try {
+                appleId = Long.parseLong(roomId);
+            } catch (NumberFormatException e) {
+                throw exception.buildWithReleasing(sid);
+            }
+        }
+
+        return Subscription.builder().roomType(roomType).roomId(roomId).appleId(appleId).build();
     }
 }
