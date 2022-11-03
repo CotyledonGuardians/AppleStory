@@ -21,9 +21,9 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   // unlockGIF loading
   const [ready, setReady] = useState(true);
   // session total cnt
-  const [total, setTotal] = useState(null);
+  const [total, setTotal] = useState(0);
   // session compelete cnt
-  const [compelete, setCompelete] = useState(null);
+  const [compelete, setCompelete] = useState(0);
   // session message
   const [message, setMessage] = useState([]);
   // 방장인지체크 추후 변경
@@ -72,11 +72,21 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     // alert(roomId);
     const messageListeners = {
       onChange: ({uidToIndex, statuses}) => {
+        let length = statuses.length;
+        let hasUpload = 0;
         for (let i = 0; i < statuses.length; i++) {
           if (statuses[i].nickname === '하드코딩된 닉네임') {
             statuses[i].nickname = 'user' + (i + 1);
           }
+          if (statuses[i].stage === 'LEFT' && statuses[i].hasUpload === false) {
+            length = length - 1;
+          }
+          if (statuses[i].hasUpload === true) {
+            hasUpload = hasUpload + 1;
+          }
         }
+        setTotal(length);
+        setCompelete(hasUpload);
         // 배열을 계속 갈아끼워줌(닉네임과 상태에 따라)
         const newMessage = statuses.map((item, idx) => ({
           idx: idx,
@@ -131,7 +141,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
       <Text style={styles.complete}>
         {/* 추후 변경 */}
         {/* {}명 중 {}명 완료 */}
-        3명 중 2명 완료
+        {total}명 중 {compelete}명 완료
       </Text>
       <View style={styles.form}>
         <Pressable onPress={() => copyToClipboard()}>
