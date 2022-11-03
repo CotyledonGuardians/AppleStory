@@ -21,13 +21,11 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   // unlockGIF loading
   const [ready, setReady] = useState(true);
   // session total cnt
-  const [total, setTotal] = useState(null);
+  const [total, setTotal] = useState(0);
   // session compelete cnt
-  const [compelete, setCompelete] = useState(null);
+  const [compelete, setCompelete] = useState(0);
   // session message
-  const [message, setMessage] = useState([
-    {idx: 1, nickname: 'nickname', stage: 'JOINED'},
-  ]);
+  const [message, setMessage] = useState([]);
   // 방장인지체크 추후 변경
   let isOwner = false;
   // 복사할 앱 링크 추후 변경
@@ -47,6 +45,8 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const scrollViewRef = useRef();
   // 메세지 컨버터
   const stateMessage = (nick, state) => {
+    console.log('stateMessage');
+    console.log(nick);
     switch (state) {
       case 'JOINED':
         return nick + '님께서 입장 하셨습니다.';
@@ -69,22 +69,36 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
   // session start
   useEffect(() => {
-    alert(roomId);
+    // alert(roomId);
     const messageListeners = {
       onChange: ({uidToIndex, statuses}) => {
-        //제일 마지막에 들어온 사람의 nickname과 stage를 message에 add
-        setMessage([
-          ...message,
-          {
-            nickname: statuses[statuses.length - 1].nickname,
-            stage: statuses[statuses.length - 1].stage,
-          },
-        ]);
+        let length = statuses.length;
+        let hasUpload = 0;
+        for (let i = 0; i < statuses.length; i++) {
+          if (statuses[i].nickname === '하드코딩된 닉네임') {
+            statuses[i].nickname = 'user' + (i + 1);
+          }
+          if (statuses[i].stage === 'LEFT' && statuses[i].hasUpload === false) {
+            length = length - 1;
+          }
+          if (statuses[i].hasUpload === true) {
+            hasUpload = hasUpload + 1;
+          }
+        }
+        setTotal(length);
+        setCompelete(hasUpload);
+        // 배열을 계속 갈아끼워줌(닉네임과 상태에 따라)
+        const newMessage = statuses.map((item, idx) => ({
+          idx: idx,
+          nickname: item.nickname,
+          stage: item.stage,
+        }));
+        setMessage([...newMessage]);
       },
     };
     //방에 들어가기
     SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
-  }, [roomId, message]);
+  }, [roomId]);
 
   const disconnect = () => {
     DisconnectIfConnected(() => {
@@ -127,7 +141,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
       <Text style={styles.complete}>
         {/* 추후 변경 */}
         {/* {}명 중 {}명 완료 */}
-        3명 중 2명 완료
+        {total}명 중 {compelete}명 완료
       </Text>
       <View style={styles.form}>
         <Pressable onPress={() => copyToClipboard()}>
@@ -149,7 +163,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               scrollViewRef.current.scrollToEnd({animated: true})
             }>
             {message.map(item => (
-              <Text key={item.idx}>
+              <Text key={item.idx} style={styles.txt}>
                 {stateMessage(item.nickname, item.stage)}
               </Text>
             ))}
@@ -189,15 +203,15 @@ const styles = StyleSheet.create({
   view: {
     marginTop: 25,
     padding: 25,
-    width: 300,
+    width: 370,
     height: 250,
-    borderRadius: 10,
+    fontSize: 12,
+    fontFamily: 'UhBee Se_hyun',
   },
   ScrollView: {
     backgroundColor: '#ECE5E0',
+    borderRadius: 10,
     color: '#4C4036',
-    fontSize: 12,
-    fontFamily: 'UhBee Se_hyun',
   },
   complete: {
     fontSize: 16,
@@ -228,6 +242,15 @@ const styles = StyleSheet.create({
   image: {
     width: 111,
     height: 140,
+  },
+  txt: {
+    marginLeft: 15,
+    marginRight: 15,
+    marginBottom: 5,
+    marginTop: 5,
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: 13,
+    color: '#4c4036',
   },
 });
 
