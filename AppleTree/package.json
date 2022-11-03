@@ -7,7 +7,13 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "android:staging": "react-native run-android --variant=stagingdebug",
+    "android:staging-release": "react-native run-android --variant=stagingrelease",
+    "android:dev": "react-native run-android --variant=developmentdebug",
+    "android:dev-release": "react-native run-android --variant=developmentrelease",
+    "android:prod": "react-native run-android --variant=productiondebug",
+    "android:prod-release": "react-native run-android --variant=productionrelease"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.10",
@@ -53,7 +59,9 @@
     "react-native-sound": "^0.11.2",
     "react-native-sound-player": "^0.13.2",
     "react-native-splash-screen": "^3.3.0",
+    "react-native-svg": "^13.4.0",
     "react-native-tab-view": "^3.3.0",
+    "react-native-vector-icons": "^9.2.0",
     "react-native-video": "^5.2.1",
     "react-query": "^3.39.2",
     "react-stomp": "^5.1.0",

@@ -144,7 +144,6 @@ const AppleList = ({navigation}) => {
       <TouchableOpacity
         style={styles.card}
         onPress={() => {
-          // Alert.alert('상세보기로 넘어가렴~');
           if (today >= lockDate) {
             // 현재 시간보다 시간이 지나있는 경우
             if (isCatch) {

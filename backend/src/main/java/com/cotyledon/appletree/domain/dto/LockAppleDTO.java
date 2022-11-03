@@ -43,13 +43,13 @@ public class LockAppleDTO {
 
     private static List<String> contentType(Content content, boolean useSpace){
         List<String> list = new ArrayList<>();
-        if(content.getAudio().size()!=0)
+        if(content.getAudio() != null && content.getAudio().size()!=0)
             list.add("audio");
-        if(content.getPhoto().size()!=0)
+        if(content.getPhoto() != null && content.getPhoto().size()!=0)
             list.add("photo");
-        if(content.getText().size()!=0)
+        if(content.getText() != null && content.getText().size()!=0)
             list.add("text");
-        if(content.getVideo().size()!=0)
+        if(content.getVideo() != null && content.getVideo().size()!=0)
             list.add("video");
         if(useSpace)
             list.add("space");

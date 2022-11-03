@@ -6,3 +6,6 @@ project(':react-native-config').projectDir = new File(rootProject.projectDir, '.
 
 include ':react-native-audio-recorder-player'
 project(':react-native-audio-recorder-player').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-audio-recorder-player/android')
+//빌드환경
+include ':react-native-config'
+project(':react-native-config').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-config/android')
