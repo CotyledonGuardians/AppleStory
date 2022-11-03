@@ -74,7 +74,7 @@ public class AppleServiceImpl implements AppleService{
                 return null;
             }
             // 읽기 처리
-            AppleUser appleUser = appleUserRepository.findByApple_IdaAndUid(apple.getId(), principal.getName()).get();
+            AppleUser appleUser = appleUserRepository.findByApple_IdAndUid(apple.getId(), principal.getName()).get();
             appleUser.setIsOpen(Boolean.TRUE);
             appleUserRepository.save(appleUser);
             return apple;

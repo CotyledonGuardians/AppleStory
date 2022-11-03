@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface AppleUserRepository extends JpaRepository<AppleUser, Long> {
     public Optional<AppleUser> findTopByAppleAndUid(Apple apple,String uid);
-    Optional<AppleUser> findByApple_IdaAndUid(Long id, String uid);
+    Optional<AppleUser> findByApple_IdAndUid(Long id, String uid);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE AppleUser au \n" +
