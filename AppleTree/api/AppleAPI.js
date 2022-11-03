@@ -23,6 +23,10 @@ const getLockAppleDetail = async id => {
   return await api('get', `/apple/${id}`);
 };
 
+const getMapAppleList = async () => {
+  return await api('get', '/apple');
+};
+
 //방만들기
 const makeRoomAPI = async appleDTO => {
   return api('post', '/ws-front/lock-apple-room', appleDTO);
@@ -35,4 +39,5 @@ export {
   getLockAppleDetail,
   makeRoomAPI,
   getAppleDetail,
+  getMapAppleList,
 };

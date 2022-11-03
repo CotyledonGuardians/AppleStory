@@ -1,7 +1,7 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
-import com.cotyledon.appletree.domain.dto.LocationAppleListDTO;
+import com.cotyledon.appletree.domain.dto.MapAppleListDTO;
 import com.cotyledon.appletree.domain.dto.LockAppleDTO;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
@@ -56,9 +56,6 @@ public class AppleServiceImpl implements AppleService{
 
     public Object getAppleDetail(Principal principal, Long id) throws Exception {
         Apple apple = appleRepository.findById(id).orElseThrow();
-        if(!apple.getIsCatch()){
-            return null;
-        }
 
         Date date = java.sql.Timestamp.valueOf(LocalDateTime.now());
         if (apple.getUnlockAt().after(date)) {
@@ -73,8 +70,11 @@ public class AppleServiceImpl implements AppleService{
             a.setNickName(name);
             return a;
         }else{
+            if(!apple.getIsCatch()){
+                return null;
+            }
             // 읽기 처리
-            AppleUser appleUser = appleUserRepository.findByApple_Id(apple.getId()).get();
+            AppleUser appleUser = appleUserRepository.findByApple_IdaAndUid(apple.getId(), principal.getName()).get();
             appleUser.setIsOpen(Boolean.TRUE);
             appleUserRepository.save(appleUser);
             return apple;
@@ -88,7 +88,7 @@ public class AppleServiceImpl implements AppleService{
     }
 
     @Override
-    public List<LocationAppleListDTO> getAppleList(Principal principal) throws Exception {
+    public List<MapAppleListDTO> getAppleList(Principal principal) throws Exception {
         return appleCustomRepository.findByAppleListLocation(principal.getName());
     }
 
