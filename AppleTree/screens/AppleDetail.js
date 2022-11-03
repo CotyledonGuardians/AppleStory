@@ -13,6 +13,8 @@ import {DataTable} from 'react-native-paper';
 import Video from 'react-native-video';
 import {get} from 'react-native/Libraries/Utilities/PixelRatio';
 import {getAppleDetail} from '../api/AppleAPI';
+import {getAddress} from '../api/GeocodingAPI';
+import axios from 'axios';
 
 var randomImages = [
   require('../assets/pictures/aegom1.png'),
@@ -26,11 +28,16 @@ var randomImages = [
 
 const AppleDetail = ({navigation, route}) => {
   const [appleDetail, setAppleDetail] = useState();
+  const [address, setAddress] = useState();
+
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(response => {
         console.log(response.data.body);
         setAppleDetail(response.data.body);
+        if (response.data.body.location != null) {
+          getAddressLatLng(response.data.body.location);
+        }
       })
       .catch(error => {
         console.log('error', error);
@@ -45,6 +52,21 @@ const AppleDetail = ({navigation, route}) => {
       data: appleDetail,
     });
   };
+
+  const getAddressLatLng = location => {
+    console.log('location', location);
+    getAddress(36.134, 127.343).then(response => {
+      if (response.data.status === 'OK') {
+        console.log(response.data.results[0].formatted_address);
+        setAddress(response.data.results[0].formatted_address);
+      } else {
+        console.log(response.data.status);
+        console.log(response.data.plus_code.compound_code);
+        setAddress(response.data.plus_code.compound_code);
+      }
+    });
+  };
+  // https://maps.googleapis.com/maps/api/geocode/json?latlng=36.714224,127.961452&key=AIzaSyBiZDXU8pWZOqKW7MR5hD6ZQ5wquvImSbg&language=ko&result_type=street_address
 
   function Header() {
     return (
@@ -77,10 +99,7 @@ const AppleDetail = ({navigation, route}) => {
               </View>
             </View>
             <View style={styles.nameBox}>
-              <Text style={[styles.textFont, styles.smallText]}>
-                {/* 위치 받아서 변경필요 */}
-                위치: 대전광역시 유성구 덕명동 29-10
-              </Text>
+              <Text style={[styles.textFont, styles.smallText]}>{address}</Text>
             </View>
             <View style={styles.contentBox}>
               <Text style={[styles.textFont, styles.smallText]}>
