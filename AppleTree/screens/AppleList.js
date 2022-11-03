@@ -31,6 +31,7 @@ const AppleList = ({navigation}) => {
   const getInitData = async sort => {
     getOpenAppleList(sort, 0, 6)
       .then(response => {
+        console.log('요깄다 데이터', response.data.body);
         setOpenList(response.data.body.content);
       })
       .catch(error => {
@@ -39,6 +40,7 @@ const AppleList = ({navigation}) => {
 
     getCloseAppleList(sort, 0, 6)
       .then(response => {
+        console.log('요깄다 데이터', response.data.body);
         setCloseList(response.data.body.content);
       })
       .catch(error => {
@@ -144,7 +146,6 @@ const AppleList = ({navigation}) => {
       <TouchableOpacity
         style={styles.card}
         onPress={() => {
-          // Alert.alert('상세보기로 넘어가렴~');
           if (today >= lockDate) {
             // 현재 시간보다 시간이 지나있는 경우
             if (isCatch) {
