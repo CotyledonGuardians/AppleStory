@@ -20,10 +20,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const [copiedText, setCopiedText] = useState(null);
   // unlockGIF loading
   const [ready, setReady] = useState(true);
-  // session nickname
-  const [nickname, setNickname] = useState(null);
-  // session stage
-  const [stage, setStage] = useState(null);
   // session total cnt
   const [total, setTotal] = useState(null);
   // session compelete cnt
@@ -49,6 +45,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
   // 자동 스크롤밑으로
   const scrollViewRef = useRef();
+  // 메세지 컨버터
   const stateMessage = (nick, state) => {
     switch (state) {
       case 'JOINED':
@@ -65,20 +62,29 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         break;
     }
   };
+  //~명 중 ~명 을 계산해주는 함수
+  const appleState = () => {
+    //총 인원:statuses.length - ( left&&hasUpload===false )
+    //완료한 인원:hasUpload가 true인 인원
+  };
   // session start
   useEffect(() => {
     alert(roomId);
     const messageListeners = {
       onChange: ({uidToIndex, statuses}) => {
-        //세션의 들어온 사용자의 상태 저장
-        // setStatus(statuses);
-        setNickname(statuses[0].nickname);
-        setStage(statuses[0].stage);
+        //제일 마지막에 들어온 사람의 nickname과 stage를 message에 add
+        setMessage([
+          ...message,
+          {
+            nickname: statuses[statuses.length - 1].nickname,
+            stage: statuses[statuses.length - 1].stage,
+          },
+        ]);
       },
     };
     //방에 들어가기
     SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
-  }, [roomId]);
+  }, [roomId, message]);
 
   const disconnect = () => {
     DisconnectIfConnected(() => {
@@ -181,7 +187,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   view: {
-    justifyContent: 'center',
     marginTop: 25,
     padding: 25,
     width: 300,
@@ -189,7 +194,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   ScrollView: {
-    justifyContent: 'center',
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
     fontSize: 12,
