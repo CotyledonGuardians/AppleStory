@@ -15,6 +15,7 @@ import {SmallButton} from '../components/Button';
 import {makeRoomAPI} from '../api/AppleAPI';
 import {UseStomp} from '../stomp';
 import GroupSession from '../sessions/GroupSession';
+import JoinSession from './test/JoinSession';
 const MakeRoomForm = ({navigation: {navigate}}) => {
   //inputs
   const [title, setTitle] = useState(null);
@@ -49,6 +50,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   // },[]);
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
+    console.log('makeRoom:::');
     // api connect start
     const tempAppleDTO = {
       title: title,
@@ -168,6 +170,11 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
           <SmallButton
             onPress={() => navigate('Home', {screen: 'Main'})}
             text="홈으로"
+            disabled={false}
+          />
+          <SmallButton
+            onPress={() => navigate('JoinSession')}
+            text="세션참여"
             disabled={false}
           />
         </View>
