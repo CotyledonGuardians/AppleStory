@@ -11,9 +11,9 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class AppleRoomGroupRepositoryImpl implements AppleRoomGroupRepository {
+public class LockAppleRoomGroupRepositoryImpl implements LockAppleRoomGroupRepository {
 
-    private static final String KEY = "group";
+    private static final String KEY = "lock_group";
     private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
@@ -21,6 +21,7 @@ public class AppleRoomGroupRepositoryImpl implements AppleRoomGroupRepository {
         redisTemplate.opsForHash().put(KEY, roomId, group);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<Set<String>> findGroupByRoomId(String roomId) {
         return Optional.ofNullable((Set<String>) redisTemplate.opsForHash().get(KEY, roomId));
