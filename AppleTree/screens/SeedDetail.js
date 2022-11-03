@@ -9,11 +9,11 @@ import {
   TouchableOpacity,
   Alert,
   Button,
-  Slider,
   Platform,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
+import Slider from '@react-native-community/slider';
 
 const img_speaker = require('../assets/icons/mic.png');
 const img_pause = require('../assets/icons/mic.png');
@@ -27,14 +27,48 @@ export default class PlayerScreen extends React.Component {
   //   nickname: props.navigation.state.params,
   // });
 
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       playState: 'paused', //playing, paused
       playSeconds: 0,
       duration: 0,
+      audio:
+        'https://raw.githubusercontent.com/zmxv/react-native-sound-demo/master/advertising.mp3',
+      nickname: props.route.params.nickname,
+      text: '',
+      image: '',
+      video: '',
+      audio: '',
     };
     this.sliderEditing = false;
+    let uid = props.route.params.uid;
+    let data = props.route.params.data;
+    for (let i = 0; i < data.content.text.length; i++) {
+      if (data.content.text[i].author === uid) {
+        this.text = data.content.text[i].content;
+        break;
+      }
+    }
+    for (let i = 0; i < data.content.photo.length; i++) {
+      if (data.content.photo[i].author === uid) {
+        this.image = data.content.photo[i].content;
+        break;
+      }
+    }
+    for (let i = 0; i < data.content.video.length; i++) {
+      if (data.content.video[i].author === uid) {
+        this.video = data.content.video[i].content;
+        break;
+      }
+    }
+    for (let i = 0; i < data.content.audio.length; i++) {
+      if (data.content.audio[i].author === uid) {
+        this.audio = data.content.audio[i].content;
+        break;
+      }
+    }
+    console.log(this.video, 'this.video');
   }
 
   componentDidMount() {
@@ -76,15 +110,13 @@ export default class PlayerScreen extends React.Component {
     }
   };
 
-  play = async () => {
+  play = () => {
     if (this.sound) {
       this.sound.play(this.playComplete);
       this.setState({playState: 'playing'});
     } else {
-      const filepath = require('./vancouver.mp3');
-      console.log('[Play]', filepath);
-
-      this.sound = new Sound(filepath, (error, _sound) => {
+      const filepath = this.audio;
+      this.sound = new Sound(filepath, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
           Alert.alert('Notice', 'audio file error. (Error code : 1)');
@@ -146,47 +178,15 @@ export default class PlayerScreen extends React.Component {
   }
 
   render() {
-    let nickname = this.props.route.params.nickname;
-    let uid = this.props.route.params.uid;
-    let data = this.props.route.params.data;
-    // let nickname = this.props.navigation.state.params;
-    let text = '';
-    let image = '';
-    let video = '';
-    let audio = '';
-    for (let i = 0; i < data.content.text.length; i++) {
-      if (data.content.text[i].author === uid) {
-        text = data.content.text[i].content;
-        break;
-      }
-    }
-    for (let i = 0; i < data.content.photo.length; i++) {
-      if (data.content.photo[i].author === uid) {
-        image = data.content.photo[i].content;
-        break;
-      }
-    }
-    for (let i = 0; i < data.content.video.length; i++) {
-      if (data.content.video[i].author === uid) {
-        video = data.content.video[i].content;
-        break;
-      }
-    }
-    for (let i = 0; i < data.content.audio.length; i++) {
-      if (data.content.audio[i].author === uid) {
-        audio = data.content.audio[i].content;
-        break;
-      }
-    }
     const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
     const durationString = this.getAudioTimeString(this.state.duration);
-
+    // this.setState({audio: audio});
     return (
       <SafeAreaView style={styles.container}>
         <Text style={[styles.textFontBold, styles.header]}>
-          {nickname}님의 기록
+          {this.state.nickname}님의 기록
         </Text>
-        {text === '' && image === '' && video === '' && audio === '' && (
+        {!this.text && !this.image && !this.video && !this.audio && (
           <View style={styles.emptyData}>
             <Image
               source={require('../assets/pictures/aegom3.png')}
@@ -196,25 +196,25 @@ export default class PlayerScreen extends React.Component {
           </View>
         )}
         <ScrollView showsVerticalScrollIndicator={false}>
-          {text !== '' && (
+          {this.text && (
             <View style={styles.textBox}>
-              <Text style={styles.textFont}>{text}</Text>
+              <Text style={styles.textFont}>{this.text}</Text>
             </View>
           )}
-          {image !== '' && (
+          {this.image && (
             <View style={styles.imageBox}>
               <Image
                 style={{width: '100%', height: 200}}
                 source={{
-                  uri: image,
+                  uri: this.image,
                 }}
               />
             </View>
           )}
-          {video !== '' && (
+          {this.video && (
             <Video
               source={{
-                uri: video,
+                uri: this.video,
               }}
               style={{width: '100%', height: 200, marginTop: '5%'}}
               paused={false} // 재생/중지 여부
@@ -224,7 +224,7 @@ export default class PlayerScreen extends React.Component {
               onAnimatedValueUpdate={() => {}}
             />
           )}
-          {audio !== '' && (
+          {this.audio && (
             <View style={styles.audioBox}>
               <View style={{flex: 1, justifyContent: 'center'}}>
                 <View
@@ -281,10 +281,7 @@ export default class PlayerScreen extends React.Component {
                   <Text style={styles.textFontTime}>{currentTimeString}</Text>
                   <Slider
                     onTouchStart={this.onSliderEditStart}
-                    // onTouchMove={() => console.log('onTouchMove')}
                     onTouchEnd={this.onSliderEditEnd}
-                    // onTouchEndCapture={() => console.log('onTouchEndCapture')}
-                    // onTouchCancel={() => console.log('onTouchCancel')}
                     onValueChange={this.onSliderEditing}
                     value={this.state.playSeconds}
                     maximumValue={this.state.duration}
