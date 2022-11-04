@@ -105,6 +105,8 @@ export default function App() {
                 name="LockAppleDetail"
                 component={LockAppleDetail}
               />
+              <HomeStack.Screen name="AppleDetail" component={AppleDetail} />
+              <HomeStack.Screen name="SeedDetail" component={SeedDetail} />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>

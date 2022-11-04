@@ -1,24 +1,38 @@
-import React, { useState } from 'react';
-import {SafeAreaView, View, StyleSheet, ScrollView, PermissionsAndroid, Platform, ImageBackground, TouchableOpacity, Modal} from 'react-native';
-import {Text, TextInput, Image} from 'react-native';
-import {Pressable} from 'react-native';
+import React, {useState} from 'react';
+import {
+  SafeAreaView,
+  View,
+  StyleSheet,
+  ScrollView,
+  PermissionsAndroid,
+  Platform,
+  ImageBackground,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  Text,
+  TextInput,
+  Image,
+  Alert,
+} from 'react-native';
 import {Button} from '../components/Button';
 import RecordVoice from '../screens/RecordVoice';
-import { launchImageLibrary } from 'react-native-image-picker';
+import {launchImageLibrary} from 'react-native-image-picker';
 import auth from '@react-native-firebase/auth';
 import storage from '@react-native-firebase/storage';
 import RNFS from 'react-native-fs';
 import RNFetchBlob from 'rn-fetch-blob';
-
+import {SendIfSubscribed} from '../stomp';
+import {DisconnectIfConnected} from '../stomp';
 // define enum for asset type
 const AssetType = {
-  IMAGE: "image",
-  VIDEO: "video",
-  AUDIO: "audio"
+  IMAGE: 'image',
+  VIDEO: 'video',
+  AUDIO: 'audio',
 };
 Object.freeze(AssetType);
 
-const GroupCreate = ({}) => {
+const GroupCreate = ({navigation, route}) => {
   // 녹음기 모달//
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -38,19 +52,56 @@ const GroupCreate = ({}) => {
   let videoPathOnStorage = null;
   let audioPathOnStorage = null;
 
-  const getPathForFirebaseStorage = async (uri) => {
+  // GroupCreate에서 넘겨준 room id
+  const {roomId} = route.params;
+  // GroupCreate에서 넘겨준 isHost
+  const {isHost} = route.params;
+  // console.log('isHost:::::', isHost);
+  const actAdded = () => {
+    console.log('actAdded');
+    SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
+      nickname: nickname,
+      content: {
+        text: [
+          {
+            author: nickname,
+            content: content,
+          },
+        ],
+        image: [
+          {
+            author: nickname,
+            content: imagePathOnStorage,
+          },
+        ],
+        audio: [
+          {
+            author: nickname,
+            content: audioPathOnStorage,
+          },
+        ],
+        video: [
+          {
+            author: nickname,
+            content: videoPathOnStorage,
+          },
+        ],
+      },
+    });
+  };
+  const getPathForFirebaseStorage = async uri => {
     // console.log(uri, "asdfasdfasdfasdf");
-    if(Platform.OS === 'ios') {
+    if (Platform.OS === 'ios') {
       return uri;
     }
-  
+
     if (!uri.includes('content://com.google')) {
       return uri;
     }
-  
+
     const stat = await RNFetchBlob.fs.stat(uri);
-    return ('file://' + stat.path);
-  }
+    return 'file://' + stat.path;
+  };
 
   const getPermission = async () => {
     //권한 설정
@@ -58,14 +109,16 @@ const GroupCreate = ({}) => {
       try {
         const grants = await PermissionsAndroid.requestMultiple([
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         ]);
 
         console.log('write external stroage', grants);
 
         if (
-          grants['android.permission.WRITE_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED &&
-          grants['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED
+          grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.READ_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED
         ) {
           console.log('permissions granted');
         } else {
@@ -79,71 +132,68 @@ const GroupCreate = ({}) => {
 
       return true;
     }
-  }
+  };
 
-  const addAsset = async (type) => {
+  const addAsset = async type => {
     const permission = await getPermission();
 
-    if(!permission) {
+    if (!permission) {
       return;
     }
 
-    await pickAssetFromLibrary(type)
-    .catch((err) => {
+    await pickAssetFromLibrary(type).catch(err => {
       console.log('Error in pickAssetFromLibrary: ', err.message);
-    })
-  }
+    });
+  };
 
-  const removeAsset = async (type) => {
-    if(type === AssetType.IMAGE) {
+  const removeAsset = async type => {
+    if (type === AssetType.IMAGE) {
       setImage(null);
       setImagePathOnDevice(null);
       setImageIsPicked(false);
-    } else if(type === AssetType.VIDEO) {
+    } else if (type === AssetType.VIDEO) {
       setVideo(null);
       setVideoPathOnDevice(null);
       setVideoIsPicked(false);
-    } else if(type === AssetType.AUDIO) {
+    } else if (type === AssetType.AUDIO) {
       await RNFS.unlink(audioPathOnDevice)
-      .then(() => {
-        console.log(`Delete ${audioPathOnDevice}`);
-        setAudioPathOnDevice(null);
-        setAudioIsPicked(false);
-      })
-      .catch((err) => {
-        console.log(err.message);
-      })
+        .then(() => {
+          console.log(`Delete ${audioPathOnDevice}`);
+          setAudioPathOnDevice(null);
+          setAudioIsPicked(false);
+        })
+        .catch(err => {
+          console.log(err.message);
+        });
     }
-  }
+  };
 
-  const pickAssetFromLibrary = async (type) => {
+  const pickAssetFromLibrary = async type => {
     // Asset type check
-    if(!type || (type !== AssetType.IMAGE && type !== AssetType.VIDEO)) {
+    if (!type || (type !== AssetType.IMAGE && type !== AssetType.VIDEO)) {
       console.log('type is invalid.');
       return;
     }
 
     // Set image picker option according to asset type
     let option = null;
-    if(type === AssetType.IMAGE) {
+    if (type === AssetType.IMAGE) {
       option = {
-        mediaType: "photo",
+        mediaType: 'photo',
         selectionLimit: 1,
         includeBase64: Platform.OS === 'android',
       };
     } else if (type === AssetType.VIDEO) {
       option = {
-        mediaType: "video",
+        mediaType: 'video',
         selectionLimit: 1,
       };
     }
 
     // pick asset from library and set the asset into state
-    await launchImageLibrary(
-      option,
-      (response) => {
-      if(!response) return;
-      if(response.didCancel) {
+    await launchImageLibrary(option, response => {
+      if (!response) return;
+      if (response.didCancel) {
         console.log('User cancelled asset picking');
         return;
       } else if (response.error) {
@@ -154,7 +204,7 @@ const GroupCreate = ({}) => {
         return;
       } else {
         const asset = response.assets[0];
-        if(type === AssetType.IMAGE) {
+        if (type === AssetType.IMAGE) {
           setImage(asset);
           setImagePathOnDevice(asset.uri);
           setImageIsPicked(true);
@@ -164,137 +214,167 @@ const GroupCreate = ({}) => {
           setVideoIsPicked(true);
         }
       }
-      },
-    ).catch((err) => {
+    }).catch(err => {
       console.log('Error in launchImageLibrary: ', err);
-    })
-  }
+    });
+  };
 
-  const imageUpload = async (asset) => {
+  const imageUpload = async asset => {
     const currentUid = auth().currentUser['uid'];
 
-    if(asset && currentUid) {
+    if (asset && currentUid) {
       const reference = storage().ref(`/test/images/${currentUid}`);
-      
-      if(Platform.OS === 'android') {
-        const result = await reference.putString(asset.base64, "base64", {
-          contentType: asset.type
-        }).catch((err) => {
-          throw err;
-        })
+
+      if (Platform.OS === 'android') {
+        const result = await reference
+          .putString(asset.base64, 'base64', {
+            contentType: asset.type,
+          })
+          .catch(err => {
+            throw err;
+          });
         return result;
-      }
-      else if(Platform.OS === 'ios') {
-        return await reference.putFile(asset.uri)
-        .catch((err) => {
+      } else if (Platform.OS === 'ios') {
+        return await reference.putFile(asset.uri).catch(err => {
           throw err;
         });
       }
     }
-  }
+  };
 
-  const videoUpload = async (asset) => {
+  const videoUpload = async asset => {
     const currentUid = auth().currentUser['uid'];
 
-    if(asset && currentUid) {
+    if (asset && currentUid) {
       const reference = storage().ref(`/test/videos/${currentUid}`);
-      const staticUrl = await getPathForFirebaseStorage(asset.uri)
-      .catch((err) => {
-        throw err;
-      });
-      return reference.putFile(staticUrl, {
-        contentType: asset.type
-      })
-      .catch((err) => {
-        throw err;
-      })
+      const staticUrl = await getPathForFirebaseStorage(asset.uri).catch(
+        err => {
+          throw err;
+        },
+      );
+      return reference
+        .putFile(staticUrl, {
+          contentType: asset.type,
+        })
+        .catch(err => {
+          throw err;
+        });
     }
-  }
+  };
 
-  const audioUpload = async (audioPathOnDevice) => {
+  const audioUpload = async audioPathOnDevice => {
     const currentUid = auth().currentUser['uid'];
 
-    if(audioPathOnDevice && currentUid) {
+    if (audioPathOnDevice && currentUid) {
       const reference = storage().ref(`/test/audios/${currentUid}`);
-      return reference.putFile(audioPathOnDevice, {
-        contentType: 'audio/mp4'
-      })
-      .catch((err) => {
-        throw err;
-      })
+      return reference
+        .putFile(audioPathOnDevice, {
+          contentType: 'audio/mp4',
+        })
+        .catch(err => {
+          throw err;
+        });
     }
-  }
+  };
 
-  const setUploadContent = (results) => {
+  const setUploadContent = results => {
     let audioFlag = false;
     let imageFlag = false;
     let videoFlag = false;
-    results.forEach((result) => {
+    results.forEach(result => {
       console.log(result);
-      if(!result) {
+      if (!result) {
         return;
       }
       const contentType = new String(result['metadata'].contentType);
       const indexOfSlash = contentType.indexOf('/');
       const assetType = contentType.slice(0, indexOfSlash).trim();
       console.log(`.${assetType}.`);
-      if(assetType === AssetType.AUDIO) {
+      if (assetType === AssetType.AUDIO) {
         audioPathOnStorage = result['metadata'].fullPath;
         audioFlag = true;
         console.log('Audio: ', audioPathOnStorage);
-      } else if(assetType === AssetType.IMAGE) {
+      } else if (assetType === AssetType.IMAGE) {
         imagePathOnStorage = result['metadata'].fullPath;
         imageFlag = true;
         console.log('Image: ', imagePathOnStorage);
-      } else if(assetType === AssetType.VIDEO) {
+      } else if (assetType === AssetType.VIDEO) {
         videoPathOnStorage = result['metadata'].fullPath;
         videoFlag = true;
         console.log('Video: ', videoPathOnStorage);
       }
-    })
-    if(!audioFlag) {
+    });
+    if (!audioFlag) {
       audioPathOnStorage = null;
     }
-    if(!imageFlag) {
+    if (!imageFlag) {
       imagePathOnStorage = null;
     }
-    if(!videoFlag) {
+    if (!videoFlag) {
       videoPathOnStorage = null;
     }
-  }
+  };
 
   const onSubmit = () => {
     console.log(videoPathOnDevice);
-    Promise.all([imageUpload(image), videoUpload(video, videoPathOnDevice), audioUpload(audioPathOnDevice)])
-    .then((res) => {
-      setUploadContent(res);
-    })
-    .catch((err) => {
-      deleteAllUploaded().catch((err) => {
-        console.log(err);
+    Promise.all([
+      imageUpload(image),
+      videoUpload(video, videoPathOnDevice),
+      audioUpload(audioPathOnDevice),
+    ])
+      .then(res => {
+        setUploadContent(res);
+      })
+      .then(() => {
+        actAdded();
+      })
+      .then(() => {
+        // console.log('isHost?', isHost);
+        if (isHost) {
+          Alert.alert('추억담기 완료!', '다시 세션으로 돌아갑니다.');
+          navigation.pop();
+        } else {
+          Alert.alert(
+            '추억담기 완료!',
+            '방장이 사과를 매달때까지 기다려주세요.',
+          );
+          disconnect();
+          navigation.navigate('Home', {screen: 'Main'});
+        }
+      })
+      .catch(err => {
+        deleteAllUploaded().catch(err => {
+          console.log(err);
+        });
       });
-    })
   };
 
   const deleteAllUploaded = async () => {
-    const uri = [`test/audios/${auth().currentUser.uid}`, `test/images/${auth().currentUser.uid}`, `test/videos/${auth().currentUser.uid}`];
-    uri.forEach((contentUri) => {
+    const uri = [
+      `test/audios/${auth().currentUser.uid}`,
+      `test/images/${auth().currentUser.uid}`,
+      `test/videos/${auth().currentUser.uid}`,
+    ];
+    uri.forEach(contentUri => {
       const reference = storage().ref(contentUri);
-      reference.delete()
-      .catch((err) => {
-        switch(err.code) {
-          case "storage/object-no-found":
+      reference.delete().catch(err => {
+        switch (err.code) {
+          case 'storage/object-no-found':
             break;
           default:
             throw err;
         }
       });
-    })
-  } 
-
+    });
+  };
+  const disconnect = () => {
+    DisconnectIfConnected(() => {
+      navigation.navigate('Home', {screen: 'Main'});
+    });
+  };
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.wrapper}>
+    <ScrollView contentContainerStyle={styles.wrapper}>
+      <SafeAreaView style={styles.container}>
         <Image
           source={require('../assets/pictures/listpersonal1.png')}
           style={{
@@ -325,78 +405,68 @@ const GroupCreate = ({}) => {
         />
         <Text style={styles.txt}>사과에 담고 싶은 파일을 넣어 보세요!</Text>
         <View style={{flexDirection: 'row', marginBottom: 20}}>
-          {(videoIsPicked) ?
-            (
-              <View>
-              <Pressable 
-                style={styles.add}
-              >
+          {videoIsPicked ? (
+            <View>
+              <Pressable style={styles.add}>
                 <ImageBackground
                   source={{
                     uri: videoPathOnDevice,
                   }}
                   style={styles.preview}
-                  imageStyle={{ borderRadius: 10}}
-                >
-                </ImageBackground>  
+                  imageStyle={{borderRadius: 10}}
+                />
               </Pressable>
               <TouchableOpacity
                 style={styles.removeBtn}
-                onPress={()=>{
-                  removeAsset(AssetType.VIDEO).catch((err) => {
+                onPress={() => {
+                  removeAsset(AssetType.VIDEO).catch(err => {
                     console.log('Error in removeAsset: ', err.message);
                   });
                 }}>
                 <Text style={styles.removeText}>삭제</Text>
               </TouchableOpacity>
-              </View>
-            ) : (
-              <Pressable 
-                style={styles.add}
-                onPress={() => {
-                  addAsset(AssetType.VIDEO).catch((err) => {
-                    console.log('Error in addAsset: ', err.message);
-                  })
-              }}>
-                <Image
-                  source={require('AppleTree/assets/icons/videoadd.png')}
-                  style={styles.icon}
-                />
-                <Text style={styles.button}>추가하기</Text>
-              </Pressable>
-            )
-          }
-          {(imageIsPicked) ?
-            (
-              <View>
-                <Pressable 
-                style={styles.add}
-                >
-                <ImageBackground
-                    source={{
-                      uri: imagePathOnDevice,
-                    }}
-                    imageStyle={{ borderRadius: 10}}
-                    style={styles.preview}
-                  >
-                  </ImageBackground>  
-                </Pressable>
-                <TouchableOpacity
-                  style={styles.removeBtn}
-                  onPress={() => {
-                    removeAsset(AssetType.IMAGE).catch((err) => {
-                      console.log('Error in removeAsset: ', err.message);
-                    });
-                  }}>
-                  <Text style={styles.removeText}>삭제</Text>
-                </TouchableOpacity>
-              </View>
-            ) :
-            (
-              <Pressable 
+            </View>
+          ) : (
+            <Pressable
               style={styles.add}
               onPress={() => {
-                addAsset(AssetType.IMAGE).catch((err) => {
+                addAsset(AssetType.VIDEO).catch(err => {
+                  console.log('Error in addAsset: ', err.message);
+                });
+              }}>
+              <Image
+                source={require('AppleTree/assets/icons/videoadd.png')}
+                style={styles.icon}
+              />
+              <Text style={styles.button}>추가하기</Text>
+            </Pressable>
+          )}
+          {imageIsPicked ? (
+            <View>
+              <Pressable style={styles.add}>
+                <ImageBackground
+                  source={{
+                    uri: imagePathOnDevice,
+                  }}
+                  imageStyle={{borderRadius: 10}}
+                  style={styles.preview}
+                />
+              </Pressable>
+              <TouchableOpacity
+                style={styles.removeBtn}
+                onPress={() => {
+                  removeAsset(AssetType.IMAGE).catch(err => {
+                    console.log('Error in removeAsset: ', err.message);
+                  });
+                }}>
+                <Text style={styles.removeText}>삭제</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <Pressable
+              style={styles.add}
+              onPress={() => {
+                addAsset(AssetType.IMAGE).catch(err => {
                   console.log('Error in addAsset: ', err.message);
                 });
               }}>
@@ -405,14 +475,11 @@ const GroupCreate = ({}) => {
                 style={styles.icon}
               />
               <Text style={styles.button}>추가하기</Text>
-              </Pressable>
-            )
-          }
-          {(audioIsPicked) ? (
+            </Pressable>
+          )}
+          {audioIsPicked ? (
             <View>
-              <View
-              style={styles.add}
-              >
+              <View style={styles.add}>
                 <Image
                   source={require('AppleTree/assets/icons/mic.png')}
                   style={styles.icon}
@@ -420,55 +487,54 @@ const GroupCreate = ({}) => {
                 <Text style={styles.button}>{recordedTime}</Text>
               </View>
               <TouchableOpacity
-              style={styles.removeBtn}
-              onPress={() => {
-                removeAsset(AssetType.AUDIO).catch((err) => {
-                  console.log('Error in removeAsset: ', err.message);
-                });
-              }}>
-              <Text style={styles.removeText}>삭제</Text>
+                style={styles.removeBtn}
+                onPress={() => {
+                  removeAsset(AssetType.AUDIO).catch(err => {
+                    console.log('Error in removeAsset: ', err.message);
+                  });
+                }}>
+                <Text style={styles.removeText}>삭제</Text>
               </TouchableOpacity>
             </View>
-            ) : (
-              <Pressable
-                style={styles.add}
-                onPress={() =>
-                  setModalVisible(true)
+          ) : (
+            <Pressable
+              style={styles.add}
+              onPress={
+                () => setModalVisible(true)
                 // navigation.navigate('RecordVoice', {screen: 'RecordVoice'})
               }>
               <Image
                 source={require('AppleTree/assets/icons/mic.png')}
                 style={styles.icon}
-                />
+              />
               <Text style={styles.button}>녹음하기</Text>
-              </Pressable>
-            )
-          }
+            </Pressable>
+          )}
         </View>
         <Button onPress={onSubmit} text="추억 만들기" />
         {/* 녹음기 모달 start */}
         <View style={styles.centeredView}>
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={modalVisible}
-            >
-            <View style={(modalVisible) ? styles.modalOpenCenteredView : styles.centeredView}>
+          <Modal animationType="fade" transparent={true} visible={modalVisible}>
+            <View
+              style={
+                modalVisible
+                  ? styles.modalOpenCenteredView
+                  : styles.centeredView
+              }>
               <View style={styles.modalView}>
                 <RecordVoice
                   setModalVisible={setModalVisible}
                   setAudioPathOnDevice={setAudioPathOnDevice}
                   setAudioIsPicked={setAudioIsPicked}
                   setRecordedTime={setRecordedTime}
-                >
-                </RecordVoice>
+                />
               </View>
             </View>
           </Modal>
         </View>
         {/* 녹음기 모달 end */}
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -551,7 +617,7 @@ const styles = StyleSheet.create({
     margin: 8,
     width: 90,
     height: 95,
-    opacity: 0.9
+    opacity: 0.9,
   },
   image: {
     resizeMode: 'contain',
@@ -566,33 +632,33 @@ const styles = StyleSheet.create({
   iconOnImage: {
     padding: 5,
     width: 26,
-    height: 26
+    height: 26,
   },
-  removeBtn: { 
+  removeBtn: {
     justifyContent: 'center',
-    alignItems: 'center', 
-    textAlign: 'center', 
+    alignItems: 'center',
+    textAlign: 'center',
     width: 100,
-    height: 20
+    height: 20,
   },
   removeText: {
     textAlign: 'center',
     color: '#4C4036',
     fontSize: 14,
-    fontFamily: 'UhBee Se_hyun'
+    fontFamily: 'UhBee Se_hyun',
   },
   //모달 스타일 start
   centeredView: {
-    flex:0.8,
+    flex: 0.8,
     justifyContent: 'center',
     alignItems: 'center',
     // marginTop: '30%'
   },
   modalOpenCenteredView: {
-    flex:0.8,
+    flex: 0.8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: '30%'
+    marginTop: '30%',
   },
   modalView: {
     fontFamily: 'UhBee Se_hyun Bold',
