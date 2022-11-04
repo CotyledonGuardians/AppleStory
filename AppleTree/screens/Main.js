@@ -48,7 +48,7 @@ const Apple = ({
     return (
       <TouchableOpacity
         style={appleStyle[index]}
-        onPress={() => navigation.navigate('HitApple')}>
+        onPress={() => navigation.navigate('HitApple', {id: apple.id})}>
         <Image style={styles.apple} source={imgUrl[3]} />
       </TouchableOpacity>
     );
@@ -59,7 +59,7 @@ const Apple = ({
         <TouchableOpacity
           style={appleStyle[index]}
           onPress={() => {
-            navigation.navigate('HitApple');
+            navigation.navigate('HitApple', {id: apple.id});
           }}>
           <Image style={styles.apple} source={imgUrl[3]} />
         </TouchableOpacity>
@@ -221,7 +221,7 @@ const Main = ({navigation}) => {
           {openApples.length > 0 ? (
             <TouchableOpacity
               style={styles.basketTouch}
-              onPress={() => navigation.navigate('List')}>
+              onPress={() => navigation.navigate('AppleList')}>
               <Image
                 style={styles.basket}
                 source={require('../assets/pictures/basketfull.png')}
@@ -265,9 +265,7 @@ const Main = ({navigation}) => {
                 <SmallButton
                   onPress={() => {
                     setModalVisible(false);
-                    navigation.navigate('LockAppleDetail', {
-                      id: apple.id,
-                    });
+                    navigation.navigate('LockAppleDetail', {id: apple.id});
                   }}
                   text="자세히 보기"
                   disabled={false}

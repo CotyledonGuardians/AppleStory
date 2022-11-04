@@ -79,7 +79,9 @@ const LockAppleDetail = ({route, navigation}) => {
               </Text>
               <Button
                 onPress={() => {
-                  navigation.navigate('HitApple');
+                  navigation.navigate('HitApple', {
+                    id: apple.id,
+                  });
                 }}
                 text="사과 때리러 가기"
               />
