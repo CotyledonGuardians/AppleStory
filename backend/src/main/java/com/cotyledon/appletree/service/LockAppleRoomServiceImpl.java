@@ -52,7 +52,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         // reserve 이벤트 발행
         eventPublisher.publishEvent(ReserveLockAppleRoomEvent.builder().roomId(roomId).appleId(appleId).build());
 
-        return RoomDTO.builder().roomId(roomId).build();
+        return RoomDTO.builder().roomId(roomId).appleId(appleId).build();
     }
 
     @Override
