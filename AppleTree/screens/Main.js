@@ -15,7 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
-import {UseStomp} from '../stomp';
+import {UseStomp, DisconnectIfConnected} from '../stomp';
 
 // 남은 시간에 따라 사과 사진 변경
 const imgUrl = [
@@ -50,28 +50,7 @@ const Apple = ({
       <TouchableOpacity
         style={appleStyle[index]}
         onPress={() => {
-          UseStomp(
-            () => {
-              console.log('make room succeed', apple.id);
-              navigation.navigate('HitApple', {
-                id: apple.id,
-              });
-            },
-            () => {
-              console.log('make room failed', apple.id);
-            },
-          );
-        }}>
-        <Image style={styles.apple} source={imgUrl[3]} />
-      </TouchableOpacity>
-    );
-  } else {
-    const diff = Math.ceil((unlockDay - today - 32400) / (1000 * 60 * 60 * 24));
-    if (diff === 0) {
-      return (
-        <TouchableOpacity
-          style={appleStyle[index]}
-          onPress={() => {
+          const connect = () => {
             UseStomp(
               () => {
                 console.log('make room succeed', apple.id);
@@ -83,6 +62,33 @@ const Apple = ({
                 console.log('make room failed', apple.id);
               },
             );
+          };
+          DisconnectIfConnected(connect, {}, connect);
+        }}>
+        <Image style={styles.apple} source={imgUrl[3]} />
+      </TouchableOpacity>
+    );
+  } else {
+    const diff = Math.ceil((unlockDay - today - 32400) / (1000 * 60 * 60 * 24));
+    if (diff === 0) {
+      return (
+        <TouchableOpacity
+          style={appleStyle[index]}
+          onPress={() => {
+            const connect = () => {
+              UseStomp(
+                () => {
+                  console.log('make room succeed', apple.id);
+                  navigation.navigate('HitApple', {
+                    id: apple.id,
+                  });
+                },
+                () => {
+                  console.log('make room failed', apple.id);
+                },
+              );
+            };
+            DisconnectIfConnected(connect, {}, connect);
           }}>
           <Image style={styles.apple} source={imgUrl[3]} />
         </TouchableOpacity>
@@ -137,6 +143,7 @@ const Main = ({navigation}) => {
   useEffect(() => {
     let getFlag = true;
     const getApples = async () => {
+      console.log('getFlag');
       const closeAppleList = await getCloseAppleList(1, 0, 6);
       const openAppleList = await getOpenAppleList(1, 0, 1);
       if (getFlag) {
