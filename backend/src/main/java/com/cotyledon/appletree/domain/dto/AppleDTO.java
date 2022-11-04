@@ -84,6 +84,19 @@ public class AppleDTO {
                 .build();
     }
 
+    public void translateInto(Apple apple) {
+        apple.setType(this.type);
+        apple.setTitle(this.title);
+        apple.setCreator(this.creator);
+        apple.setCreateAt(this.createAt);
+        apple.setUnlockAt(this.unlockAt);
+        apple.setCreateScene(this.createScene);
+        apple.setContent(this.content);
+        apple.setLocation(this.location);
+        apple.setUseSpace(this.useSpace);
+        apple.setIsCatch(this.isCatch);
+    }
+
     public boolean validateAndCleanWithHostUidForReservingRoom(String hostUid) {
 
         if (this.title == null ||
