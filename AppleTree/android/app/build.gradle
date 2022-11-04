@@ -211,6 +211,8 @@ dependencies {
 
     compile project(':react-native-audio-recorder-player')
 
+    implementation project(':react-native-fs')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
