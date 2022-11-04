@@ -1,107 +1,191 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView, Image, Text, View, StyleSheet} from 'react-native';
-import {log} from 'react-native-reanimated';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {getLockAppleDetail} from '../../api/AppleAPI';
 import useInterval from '../../config/useInterval';
+import {Button} from '../../components/Button';
+import {UseStomp} from '../../stomp';
 
-// 0시간 0분 0초가 되었을 때 바로 사과때리기로 이동할건가?
-
-const LockAppleDetail = () => {
+const LockAppleDetail = ({route, navigation}) => {
+  const {id} = route.params;
+  const [apple, setApple] = useState();
   const [time, setTime] = useState('0일 0시간 0분');
+  const [openFlag, setOpenFlag] = useState(false);
 
-  const setTimeOut = () => {
-    const openTime = new Date(2022, 9, 28); // month는 1 적은 값
+  useEffect(() => {
+    const initTimeSet = unlockTime => {
+      const unlockDay = unlockTime.split('T')[0].split('-');
+      const openTime = new Date(
+        Number(unlockDay[0]),
+        Number(unlockDay[1]) - 1,
+        Number(unlockDay[2]),
+      ); // month는 1 적은 값
+      const todayTime = new Date();
+      const diff = openTime - todayTime;
+      const diffDay = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const diffHour = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const diffMin = Math.ceil((diff / (1000 * 60)) % 60);
+      setTime(diffDay + '일 ' + diffHour + '시간 ' + diffMin + '분');
+    };
+
+    getLockAppleDetail(id)
+      .then(response => {
+        console.log('lock apple detail', response.data);
+        setApple(response.data.body);
+        initTimeSet(response.data.body.unlockAt);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [id]);
+
+  const timeCheck = () => {
+    const unlockDay = apple.unlockAt.split('T')[0].split('-');
+    const openTime = new Date(
+      Number(unlockDay[0]),
+      Number(unlockDay[1]) - 1,
+      Number(unlockDay[2]),
+    ); // month는 1 적은 값
     const todayTime = new Date();
     const diff = openTime - todayTime;
+    if (!openFlag) {
+      diff > 0 ? setTimeOut(diff) : setOpenFlag(true);
+    }
+  };
+
+  const setTimeOut = diff => {
     const diffDay = Math.floor(diff / (1000 * 60 * 60 * 24));
     const diffHour = Math.floor((diff / (1000 * 60 * 60)) % 24);
     const diffMin = Math.ceil((diff / (1000 * 60)) % 60);
     setTime(diffDay + '일 ' + diffHour + '시간 ' + diffMin + '분');
   };
 
-  // useEffect(() => {
-  //   setTimeOut();
-  // });
-
   useInterval(() => {
-    // 1초 마다 설정 해야할까? 시간 설정 고민!
-    setTimeOut();
+    timeCheck();
   }, 1000);
 
-  let createTime = '2022/10/17';
-  let title = '자율 프로젝트를 기념하며';
-  let name = '떡잎방범대';
-  let people = 6;
-
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.aegomBox}>
-        <Image
-          style={styles.aegom}
-          source={require('../../assets/pictures/aegomkeydetail.png')}
-        />
-      </View>
-      <View style={styles.detailBox}>
-        <View style={styles.OneBox}>
-          <Text style={[styles.textFont, styles.defaultText]}>
-            애곰이는 아직 사과를 줄 생각이 없어요
-          </Text>
-        </View>
-        <View style={styles.timeBox}>
-          <Text style={[styles.textFont, styles.timeText]}>{time}</Text>
-        </View>
-        <View style={styles.oneBox}>
-          <Text style={[styles.textFont, styles.defaultText]}>{title}</Text>
-        </View>
-        <View style={styles.nameBox}>
-          <Text style={[styles.textFont, styles.defaultText]}>{name}</Text>
-          <View style={styles.countBox}>
+    <SafeAreaView style={styles.screen}>
+      {apple && time ? (
+        <SafeAreaView style={styles.container}>
+          <View style={styles.aegomBox}>
             <Image
-              style={styles.countIcon}
-              source={require('../../assets/icons/usercount.png')}
-            />
-            <Text>{people}</Text>
-          </View>
-        </View>
-        <View style={styles.contentBox}>
-          <Text style={[styles.textFont, styles.smallText]}>
-            이 사과에 기록된 데이터
-          </Text>
-          <View style={styles.iconBox}>
-            <Image
-              style={styles.contentIcon}
-              source={require('../../assets/icons/text.png')}
-            />
-            <Image
-              style={styles.contentIcon}
-              source={require('../../assets/icons/mic.png')}
-            />
-            <Image
-              style={styles.contentIcon}
-              source={require('../../assets/icons/photo.png')}
-            />
-            <Image
-              style={styles.contentIcon}
-              source={require('../../assets/icons/video.png')}
-            />
-            <Image
-              style={styles.contentIcon}
-              source={require('../../assets/icons/gps.png')}
+              style={styles.aegom}
+              source={require('../../assets/pictures/aegomkeydetail.png')}
             />
           </View>
-          <Text style={[styles.textFont, styles.smallText]}>
-            생성일 : {createTime}
-          </Text>
-        </View>
-      </View>
+          {openFlag ? (
+            <View style={styles.detailBox}>
+              <Text style={[styles.textFont, styles.defaultText]}>
+                애곰이가 사과를 준대요!
+              </Text>
+              <Button
+                onPress={() => {
+                  UseStomp(
+                    () => {
+                      console.log('make room succeed', apple.id);
+                      navigation.navigate('HitApple', {
+                        id: apple.id,
+                      });
+                    },
+                    () => {
+                      console.log('make room failed', apple.id);
+                    },
+                  );
+                }}
+                text="사과 때리러 가기"
+              />
+            </View>
+          ) : (
+            <View style={styles.detailBox}>
+              <Text style={[styles.textFont, styles.defaultText]}>
+                애곰이는 아직 사과를 줄 생각이 없어요
+              </Text>
+              <Text style={[styles.textFont, styles.timeText]}>{time}</Text>
+            </View>
+          )}
+
+          <View style={styles.appleDetailBox}>
+            <View style={styles.oneBox}>
+              <Text style={[styles.textFont, styles.nameText]}>
+                {apple.title}
+              </Text>
+            </View>
+            <View style={styles.nameBox}>
+              <Text style={[styles.textFont, styles.nameText]}>
+                {apple.teamName}
+              </Text>
+              <View style={styles.countBox}>
+                <Image
+                  style={styles.countIcon}
+                  source={require('../../assets/icons/usercount.png')}
+                />
+                <Text>{apple.number}</Text>
+              </View>
+            </View>
+            <View style={styles.contentBox}>
+              <Text style={[styles.textFont, styles.smallText]}>
+                이 사과에 기록된 데이터
+              </Text>
+              <View style={styles.iconBox}>
+                {apple.content.includes('text') ? (
+                  <Image
+                    style={styles.contentIcon}
+                    source={require('../../assets/icons/text.png')}
+                  />
+                ) : (
+                  <></>
+                )}
+                {apple.content.includes('audio') ? (
+                  <Image
+                    style={styles.contentIcon}
+                    source={require('../../assets/icons/mic.png')}
+                  />
+                ) : (
+                  <></>
+                )}
+                {apple.content.includes('photo') ? (
+                  <Image
+                    style={styles.contentIcon}
+                    source={require('../../assets/icons/photo.png')}
+                  />
+                ) : (
+                  <></>
+                )}
+                {apple.content.includes('video') ? (
+                  <Image
+                    style={styles.contentIcon}
+                    source={require('../../assets/icons/video.png')}
+                  />
+                ) : (
+                  <></>
+                )}
+                {apple.content.includes('space') ? (
+                  <Image
+                    style={styles.contentIcon}
+                    source={require('../../assets/icons/gps.png')}
+                  />
+                ) : (
+                  <></>
+                )}
+              </View>
+              <Text style={[styles.textFont, styles.secondText]}>
+                생성일 : {apple.createAt.split('T')[0]}
+              </Text>
+            </View>
+          </View>
+        </SafeAreaView>
+      ) : (
+        <Text>Loading</Text>
+      )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    height: '100%',
+    width: '100%',
+  },
   container: {
     flex: 16,
     backgroundColor: '#FBF8F6',
@@ -111,24 +195,38 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'center',
+    marginBottom: '2%',
   },
   aegom: {
     width: '60%',
     height: '90%',
   },
   detailBox: {
-    flex: 8,
+    flex: 2,
     alignItems: 'center',
   },
   oneBox: {
     flex: 1,
     justifyContent: 'center',
   },
+  appleDetailBox: {
+    flex: 5,
+    alignItems: 'center',
+    padding: '2%',
+  },
   textFont: {
     fontFamily: 'UhBee Se_hyun',
   },
   defaultText: {
-    fontSize: 17,
+    fontSize: 20,
+    color: '#4C4036',
+  },
+  nameText: {
+    fontSize: 18,
+    color: '#4C4036',
+  },
+  secondText: {
+    fontSize: 15,
     color: '#4C4036',
   },
   timeBox: {
@@ -140,16 +238,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   smallText: {
-    fontSize: 10,
+    fontSize: 12,
     color: '#AAA19B',
   },
   contentBox: {
-    flex: 2.5,
+    flex: 2,
     alignItems: 'center',
   },
   iconBox: {
     marginTop: 5,
-    marginBottom: 20,
+    marginBottom: 15,
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -173,8 +271,8 @@ const styles = StyleSheet.create({
     height: 12,
   },
   contentIcon: {
-    width: 20,
-    height: 20,
+    width: 28,
+    height: 28,
     marginRight: 3,
     marginLeft: 3,
   },

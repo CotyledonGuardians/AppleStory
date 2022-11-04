@@ -16,4 +16,5 @@ public class AppleRoomUser {
     @Id
     private String uid;
     private String roomId;
+    private Long appleId;
 }

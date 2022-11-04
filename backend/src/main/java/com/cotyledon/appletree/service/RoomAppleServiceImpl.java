@@ -1,13 +1,14 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.dto.*;
+import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 import com.cotyledon.appletree.domain.repository.redis.RoomAppleRepository;
+import com.cotyledon.appletree.notifier.LockAppleRoomNotifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
@@ -17,12 +18,15 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 public class RoomAppleServiceImpl implements RoomAppleService {
 
     private final RoomAppleRepository roomAppleRepository;
-    private final LockAppleRoomLogService lockAppleRoomLogService;
+    private final LockAppleRoomNotifier lockAppleRoomNotifier;
 
     @Override
     public void addMemberAndContentToAppleByRoomId(String roomId, Member member, Content content) {
-        AppleDTO apple = roomAppleRepository.findAppleByRoomId(roomId)
+        RoomApple apple = roomAppleRepository.findRoomAppleByRoomId(roomId)
                 .orElseThrow(IllegalArgumentException::new);
+
+        // 이미 담았다면 기존의 내용을 버림
+        removeExistingMemberAndContentByMember(apple, member);
 
         Content contents = apple.getContent();
         contents.getText().addAll(content.getText());
@@ -37,20 +41,20 @@ public class RoomAppleServiceImpl implements RoomAppleService {
         creator.setMember(members);
         apple.setCreator(creator);
 
-        roomAppleRepository.putApple(roomId, apple);
+        roomAppleRepository.putRoomApple(roomId, apple);
 
         // change 이벤트 발행
-        lockAppleRoomLogService.logForAdded(roomId, member, content);
+        lockAppleRoomNotifier.notifyForAdded(roomId, member, content);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public boolean validateAndCleanContent(Content content) {
+    public boolean validateAndCleanContent(Content content, String uid) {
         List<ContentDescription>[] lists = new List[]{
-                orEmpty(content.getText()),
-                orEmpty(content.getPhoto()),
-                orEmpty(content.getAudio()),
-                orEmpty(content.getVideo())};
+                ofNotNullListWithAuthor(content.getText(), uid),
+                ofNotNullListWithAuthor(content.getPhoto(), uid),
+                ofNotNullListWithAuthor(content.getAudio(), uid),
+                ofNotNullListWithAuthor(content.getVideo(), uid)};
 
         content.setText(lists[0]);
         content.setPhoto(lists[1]);
@@ -60,14 +64,26 @@ public class RoomAppleServiceImpl implements RoomAppleService {
         return !allEmpty(lists) && !anyBlank(lists);
     }
 
-    @Override
-    public String getAnyAuthorFromContent(Content content) {
-        return Stream.of(content.getText(), content.getPhoto(), content.getAudio(), content.getVideo())
-                .flatMap(Collection::stream).findAny().orElse(ContentDescription.DUMMY).getAuthor();
+    private void removeExistingMemberAndContentByMember(RoomApple apple, Member member) {
+        apple.getCreator().getMember().removeIf(m -> m.getUid().equals(member.getUid()));
+
+        Content content = apple.getContent();
+
+        content.getText().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
+        content.getPhoto().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
+        content.getAudio().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
+        content.getVideo().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
     }
 
-    private List<ContentDescription> orEmpty(List<ContentDescription> list) {
-        return Optional.ofNullable(list).orElse(Collections.emptyList());
+    private List<ContentDescription> ofNotNullListWithAuthor(List<ContentDescription> list, String uid) {
+
+        List<ContentDescription> notNullList = Optional.ofNullable(list).orElse(Collections.emptyList());
+
+        notNullList.removeIf(cd -> cd == null || cd.getContent() == null || cd.getContent().isBlank());
+
+        notNullList.forEach(cd -> cd.setAuthor(uid));
+
+        return notNullList;
     }
 
     private boolean allEmpty(List<ContentDescription>[] lists) {

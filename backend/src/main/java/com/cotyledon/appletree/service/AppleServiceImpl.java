@@ -1,9 +1,11 @@
 package com.cotyledon.appletree.service;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
+import com.cotyledon.appletree.domain.dto.MapAppleListDTO;
 import com.cotyledon.appletree.domain.dto.LockAppleDTO;
 import com.cotyledon.appletree.domain.dto.Member;
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
+import com.cotyledon.appletree.domain.entity.jpa.AppleUser;
 import com.cotyledon.appletree.domain.repository.jpa.AppleCustomRepository;
 import com.cotyledon.appletree.domain.repository.jpa.AppleRepository;
 import com.cotyledon.appletree.domain.repository.jpa.AppleUserRepository;
@@ -17,14 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AppleServiceImpl implements AppleService{
+
     private final AppleRepository appleRepository;
     private final AppleUserRepository appleUserRepository;
     private final AppleCustomRepository appleCustomRepository;
+
+    private final FirebaseAuthService firebaseAuthService;
 
     @Override
     public Page<AppleListDTO> getOpenAppleList(String uid, int sort, Pageable pageable) {
@@ -51,15 +58,12 @@ public class AppleServiceImpl implements AppleService{
 
     public Object getAppleDetail(Principal principal, Long id) throws Exception {
         Apple apple = appleRepository.findById(id).orElseThrow();
-        if(!apple.getIsCatch()){
-            return null;
-        }
 
         Date date = java.sql.Timestamp.valueOf(LocalDateTime.now());
         if (apple.getUnlockAt().after(date)) {
             String name = null;
-            for(Member member : apple.getCreator().getMember()){
-                if(member.getUid().equals(principal.getName())){
+            for (Member member : apple.getCreator().getMember()) {
+                if (member.getUid().equals(principal.getName())) {
                     name = member.getNickname();
                     break;
                 }
@@ -67,12 +71,70 @@ public class AppleServiceImpl implements AppleService{
             LockAppleDTO a = LockAppleDTO.of(apple);
             a.setNickName(name);
             return a;
+        }else{
+            if(!apple.getIsCatch()){
+                return null;
+            }
+            // 읽기 처리
+            AppleUser appleUser = appleUserRepository.findByApple_IdAndUid(apple.getId(), principal.getName()).get();
+            appleUser.setIsOpen(Boolean.TRUE);
+            appleUserRepository.save(appleUser);
+
+            // 해당 멤버에 자원 접근을 위한 custom claim 부여(getDownloadUrl())
+            firebaseAuthService.setClaimToAppleId(principal.getName(), id);
+            return apple;
         }
-        return appleRepository.findById(id).orElseThrow();
+
     }
 
     @Override
     public int getMyAppleCount(Principal principal) throws Exception {
         return appleUserRepository.countByUid(principal.getName());
+    }
+
+    @Override
+    public List<MapAppleListDTO> getAppleList(Principal principal) throws Exception {
+        return appleCustomRepository.findByAppleListLocation(principal.getName());
+    }
+
+    @Override
+    public Optional<Apple> findById(Long appleId) {
+        return appleRepository.findById(appleId);
+    }
+
+    @Override
+    public boolean caught(Long appleId) {
+        return findById(appleId).orElseThrow().getIsCatch();
+    }
+
+    @Override
+    public boolean containsMember(Long appleId, String uid) {
+        boolean isMember = false;
+        List<Member> members = findById(appleId).orElseThrow().getCreator().getMember();
+        for (Member member : members) {
+            if (member.getUid().equals(uid)) {
+                isMember = true;
+                break;
+            }
+        }
+        return isMember;
+    }
+
+    @Override
+    public int getAppleSize(Long appleId) {
+        return findById(appleId).orElseThrow().getCreator().getMember().size();
+    }
+
+    @Override
+    public double getInitHealth(Long appleId) {
+        // TODO: Health 관련 알고리즘 구현
+        return getAppleSize(appleId) * 10;
+    }
+
+    @Override
+    public void catchToTrue(Long appleId) {
+        Apple apple = findById(appleId).orElseThrow();
+        apple.setIsCatch(true);
+        appleRepository.save(apple);
     }
 }

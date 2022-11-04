@@ -1,9 +1,11 @@
 package com.cotyledon.appletree.domain.repository.jpa;
 
 import com.cotyledon.appletree.domain.dto.AppleListDTO;
+import com.cotyledon.appletree.domain.dto.MapAppleListDTO;
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import com.cotyledon.appletree.domain.entity.jpa.QApple;
 import com.cotyledon.appletree.domain.entity.jpa.QAppleUser;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
@@ -46,6 +49,7 @@ public class AppleCustomRepository extends QuerydslRepositorySupport {
 
         long totalCount = query.fetchCount();
         List<AppleListDTO> results = getQuerydsl().applyPagination(pageable, query).fetch();
+        System.out.println(results);
         return new PageImpl<>(results, pageable, totalCount);
     }
 
@@ -82,6 +86,31 @@ public class AppleCustomRepository extends QuerydslRepositorySupport {
 
         long totalCount = query.fetchCount();
         List<AppleListDTO> results =  getQuerydsl().applyPagination(pageable, query).fetch();
+        System.out.println(results);
         return new PageImpl<>(results, pageable, totalCount);
+    }
+
+    public List<MapAppleListDTO> findByAppleListLocation(String uid){
+        QApple apple = QApple.apple;
+        QAppleUser appleUser = QAppleUser.appleUser;
+
+        List<Apple> fetch = queryFactory
+                .select(apple)
+                .from(apple)
+                .innerJoin(appleUser)
+                .on(apple.id.eq(appleUser.apple.id))
+                .where(appleUser.uid.eq(uid)
+                .and(apple.location.isNotNull())).fetch();
+
+        return fetch.stream().map(
+                data -> MapAppleListDTO.builder()
+                        .id(data.getId())
+                        .location(data.getLocation())
+                        .title(data.getTitle())
+                        .createAt(data.getCreateAt())
+                        .unlockAt(data.getUnlockAt())
+                        .isCatch(data.getIsCatch())
+                        .build()
+        ).collect(Collectors.toList());
     }
 }

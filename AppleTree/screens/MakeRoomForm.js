@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -12,11 +12,17 @@ import moment from 'moment';
 import 'moment/locale/ko';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
-const MakeRoomForm = ({navigation}) => {
+import {makeRoomAPI} from '../api/AppleAPI';
+import {UseStomp, DisconnectIfConnected} from '../stomp';
+import GroupSession from '../sessions/GroupSession';
+import JoinSession from './test/JoinSession';
+import {ScrollView} from 'react-native-gesture-handler';
+const MakeRoomForm = ({navigation: {navigate}}) => {
   //inputs
   const [title, setTitle] = useState(null);
   const [teamName, setTeamName] = useState(null);
   const [unlockDate, setUnlockDate] = useState(null);
+  const [appleDTO, setAppleDTO] = useState(null);
   //datePicker
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [text, onChangeText] = useState('');
@@ -33,16 +39,58 @@ const MakeRoomForm = ({navigation}) => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = date => {
-    setUnlockDate(date);
+    setUnlockDate(moment(date).format('YYYY-MM-DD'));
     onChangeText(moment(date).format('YYYY-MM-DD'));
     setDateValid(true);
     hideDatePicker();
   };
   //date picker end
   let today = new Date();
+  // useEffect(()=>{
+
+  // },[]);
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
-    navigation.navigate('GroupSession', {screen: 'GroupSession'});
+    console.log('makeRoom:::');
+    // api connect start
+    const tempAppleDTO = {
+      title: title,
+      creator: {
+        teamName: teamName,
+      },
+      unlockAt: unlockDate,
+      location: {
+        lat: 37.5,
+        lng: 127.5,
+      },
+    };
+    setAppleDTO(tempAppleDTO);
+    // console.log('tempAppleDTO', tempAppleDTO);
+    makeRoomAPI(tempAppleDTO)
+      .then(response => {
+        console.log('makeRoom::response', response);
+        // console.log('makeRoom::response.data', response.data);
+        return response.data;
+      })
+      .then(({roomId}) => {
+        const connect = () => {
+          UseStomp(
+            () => {
+              console.log('make room succeed', roomId);
+              navigate('GroupSession', {roomId: roomId});
+            },
+            () => {
+              console.log('make room failed', roomId);
+              navigate('GroupSession');
+            },
+          );
+        };
+        DisconnectIfConnected(connect, {}, connect);
+      })
+      .catch(error => {
+        console.log('makeRoom::error', error);
+      });
+    // api connect end
   };
   // input valid handler start
   const titleChangeHandler = text => {
@@ -61,98 +109,78 @@ const MakeRoomForm = ({navigation}) => {
     }
     setTeamName(text);
   };
+
   // inpust valid handler end
   return (
-    <SafeAreaView style={styles.container}>
-      <Image
-        source={require('../assets/pictures/listgroup1.png')}
-        style={{width: 170, height: 170}}></Image>
-      <View style={styles.marginTopBottom}>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          제목
-        </Text>
-        <View style={styles.form}>
-          <TextInput
-            value={title}
-            autoCapitalize={'none'}
-            style={styles.input}
-            placeholder="자율프로젝트를 기념하며"
-            onChangeText={text => titleChangeHandler(text)}
-          />
-        </View>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          팀 이름
-        </Text>
-        <View style={styles.form}>
-          <TextInput
-            value={teamName}
-            autoCapitalize={'none'}
-            style={styles.input}
-            placeholder="떡잎방범대"
-            onChangeText={text => teamNameChangeHandler(text)}
-          />
-        </View>
-        <Text
-          style={{
-            textAlign: 'left',
-            fontSize: 15,
-            fontFamily: 'UhBee Se_hyun Bold',
-            color: '#4C4036',
-          }}>
-          해제 날짜
-        </Text>
-        <View style={styles.form}>
-          <Pressable onPress={showDatePicker}>
-            <TextInput
-              pointerEvents="none"
-              style={styles.input}
-              placeholder={placeholder}
-              underlineColorAndroid="transparent"
-              editable={false}
-              value={text}
-            />
-            <DateTimePickerModal
-              headerTextIOS={placeholder}
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-            />
-          </Pressable>
-        </View>
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="date"
-          minimumDate={today}
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
+    <ScrollView>
+      <SafeAreaView style={styles.container}>
+        <Image
+          source={require('../assets/pictures/listgroup1.png')}
+          style={styles.image}
         />
-        <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-          <SmallButton
-            onPress={() => makeRoom()}
-            text="방 만들기"
-            disabled={!titleValid || !teamNameValid || !dateValid}
+        <View style={styles.marginTopBottom}>
+          <Text style={styles.txt}>제목</Text>
+          <View style={styles.form}>
+            <TextInput
+              value={title}
+              autoCapitalize={'none'}
+              style={styles.input}
+              placeholder="제목을 입력하세요."
+              onChangeText={text => titleChangeHandler(text)}
+            />
+          </View>
+          <Text style={styles.txt}>팀 이름</Text>
+          <View style={styles.form}>
+            <TextInput
+              value={teamName}
+              autoCapitalize={'none'}
+              style={styles.input}
+              placeholder="팀 명을 입력하세요."
+              onChangeText={text => teamNameChangeHandler(text)}
+            />
+          </View>
+          <Text style={styles.txt}>해제 날짜</Text>
+          <View style={styles.form}>
+            <Pressable onPress={showDatePicker}>
+              <TextInput
+                pointerEvents="none"
+                style={styles.input}
+                placeholder={placeholder}
+                underlineColorAndroid="transparent"
+                editable={false}
+                value={text}
+              />
+              <DateTimePickerModal
+                headerTextIOS={placeholder}
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleConfirm}
+                onCancel={hideDatePicker}
+              />
+            </Pressable>
+          </View>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            minimumDate={today}
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
           />
-          <SmallButton
-            onPress={() => navigation.goBack()}
-            text="홈으로"
-            disabled={false}
-          />
+          <View style={styles.buttonWrap}>
+            <SmallButton
+              onPress={() => makeRoom()}
+              text="방 만들기"
+              disabled={!titleValid || !teamNameValid || !dateValid}
+            />
+            <SmallButton
+              onPress={() => navigate('JoinSession')}
+              text="입장하기"
+              disabled={false}
+            />
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -206,6 +234,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#373043',
     paddingHorizontal: 10,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  txt: {
+    textAlign: 'left',
+    fontSize: 15,
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
+  },
+  buttonWrap: {
+    flexDirection: 'row',
     justifyContent: 'center',
   },
 });

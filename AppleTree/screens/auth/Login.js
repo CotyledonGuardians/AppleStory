@@ -1,13 +1,10 @@
-import React, {useState} from 'react';
-import {SafeAreaView, View, StyleSheet} from 'react-native';
-import {Text, TextInput, Image, Pressable} from 'react-native';
-import Main from '../Main';
-import {Button} from '../../components/Button';
+import React from 'react';
+import {SafeAreaView, View, StyleSheet, Image} from 'react-native';
+// import {Text, TextInput, Pressable} from 'react-native';
+// import {Button} from '../../components/Button';
 import GoogleLogin from '../../components/firebase/GoogleLogin';
 
 const Login = ({navigation}) => {
-  const [email] = useState(null);
-
   //하위컴포넌트(GoogleLogin)=>상위컴포넌트(Login)으로 props 전달하기 위한 함수
   const getLoginState = isLogin => {
     console.log('Login:isLogin: ', isLogin);
@@ -22,7 +19,7 @@ const Login = ({navigation}) => {
         source={require('AppleTree/assets/pictures/aegoms.png')}
         style={styles.image}
       />
-      <View style={styles.marginTopBottom}>
+      {/* <View style={styles.marginTopBottom}>
         <View style={styles.email}>
           <Text style={styles.txt}>이메일</Text>
           <TextInput
@@ -33,18 +30,18 @@ const Login = ({navigation}) => {
           />
         </View>
         <Button onPress={onLogin} text="로그인" />
-      </View>
+      </View> */}
       <View style={styles.marginTopBottom}>
-        <Pressable onPress={() => navigation.navigate('Register')}></Pressable>
-        <GoogleLogin propFunction={getLoginState}></GoogleLogin>
+        {/* <Pressable onPress={() => navigation.navigate('Register')} /> */}
+        <GoogleLogin propFunction={getLoginState} />
       </View>
     </SafeAreaView>
   );
 };
 
-const onLogin = () => {
-  alert('로긘');
-};
+// const onLogin = () => {
+//   alert('로긘');
+// };
 
 const styles = StyleSheet.create({
   container: {
