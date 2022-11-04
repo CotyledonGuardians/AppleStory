@@ -83,7 +83,6 @@ const AppleList = ({navigation}) => {
 
           if (fetchedData.length === 0) {
             setLoading2(true);
-            console.log('데이터 없음');
             return;
           }
           // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.

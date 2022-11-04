@@ -9,10 +9,12 @@ import {
   TouchableOpacity,
   Alert,
   Button,
+  // Slider,
   Platform,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
+import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 import Slider from '@react-native-community/slider';
 
 const img_speaker = require('../assets/icons/mic.png');
@@ -22,24 +24,27 @@ const img_playjumpleft = require('../assets/icons/mic.png');
 const img_playjumpright = require('../assets/icons/mic.png');
 
 export default class PlayerScreen extends React.Component {
-  // static navigationOptions = props => ({
-  //   // title: props.navigation.state.params.title,
-  //   nickname: props.navigation.state.params,
-  // });
+  videoPlayer;
 
   constructor(props) {
     super();
     this.state = {
       playState: 'paused', //playing, paused
       playSeconds: 0,
-      duration: 0,
-      audio:
-        'https://raw.githubusercontent.com/zmxv/react-native-sound-demo/master/advertising.mp3',
+      duration2: 0,
       nickname: props.route.params.nickname,
       text: '',
       image: '',
       video: '',
       audio: '',
+
+      currentTime: 0,
+      duration: 0,
+      isFullScreen: true,
+      isLoading: true,
+      paused: true,
+      playerState: PLAYER_STATES.PAUSED,
+      screenType: 'cover',
     };
     this.sliderEditing = false;
     let uid = props.route.params.uid;
@@ -68,12 +73,9 @@ export default class PlayerScreen extends React.Component {
         break;
       }
     }
-    console.log(this.video, 'this.video');
   }
 
   componentDidMount() {
-    // this.play();
-
     this.timeout = setInterval(() => {
       if (
         this.sound &&
@@ -119,12 +121,12 @@ export default class PlayerScreen extends React.Component {
       this.sound = new Sound(filepath, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
-          Alert.alert('Notice', 'audio file error. (Error code : 1)');
+          // Alert.alert('Notice', 'audio file error. (Error code : 1)');
           this.setState({playState: 'paused'});
         } else {
           this.setState({
             playState: 'playing',
-            duration: this.sound.getDuration(),
+            duration2: this.sound.getDuration(),
           });
           this.sound.play(this.playComplete);
         }
@@ -137,7 +139,7 @@ export default class PlayerScreen extends React.Component {
         console.log('successfully finished playing');
       } else {
         console.log('playback failed due to audio decoding errors');
-        Alert.alert('Notice', 'audio file error. (Error code : 2)');
+        // Alert.alert('Notice', 'audio file error. (Error code : 2)');
       }
       this.setState({playState: 'paused', playSeconds: 0});
       this.sound.setCurrentTime(0);
@@ -163,7 +165,8 @@ export default class PlayerScreen extends React.Component {
       this.sound.getCurrentTime((secs, isPlaying) => {
         let nextSecs = secs + secsDelta;
         if (nextSecs < 0) nextSecs = 0;
-        else if (nextSecs > this.state.duration) nextSecs = this.state.duration;
+        else if (nextSecs > this.state.duration2)
+          nextSecs = this.state.duration2;
         this.sound.setCurrentTime(nextSecs);
         this.setState({playSeconds: nextSecs});
       });
@@ -177,9 +180,66 @@ export default class PlayerScreen extends React.Component {
     return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
   }
 
+  //Handler for change in seekbar
+  onSeek = seek => {
+    this.videoPlayer.seek(seek);
+  };
+
+  //Handler for Video Pause
+  onPaused = playerState => {
+    this.setState({
+      paused: !this.state.paused,
+      playerState,
+    });
+  };
+
+  //Handler for Replay
+  onReplay = () => {
+    this.setState({playerState: PLAYER_STATES.PLAYING});
+    this.videoPlayer.seek(0);
+  };
+
+  // Video Player will continue progress even if the video already ended
+  onProgress = data => {
+    const {isLoading, playerState} = this.state;
+
+    if (!isLoading && playerState !== PLAYER_STATES.ENDED) {
+      this.setState({currentTime: data.currentTime});
+    }
+  };
+
+  onLoad = data => this.setState({duration: data.duration, isLoading: false});
+
+  onLoadStart = data => this.setState({isLoading: true});
+
+  onEnd = () => this.setState({playerState: PLAYER_STATES.ENDED});
+
+  onError = () => alert('Something Wrong!! ', error);
+
+  exitFullScreen = () => {
+    alert('Exit full screen');
+  };
+
+  enterFullScreen = () => {
+    alert('entered full screen');
+  };
+
+  onFullScreen = () => {
+    if (this.state.screenType == 'contain')
+      this.setState({screenType: 'cover'});
+    else this.setState({screenType: 'contain'});
+  };
+  renderToolbar = () => (
+    <View>
+      <Text>Video Streaming Example </Text>
+    </View>
+  );
+
+  onSeeking = currentTime => this.setState({currentTime});
+
   render() {
     const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
-    const durationString = this.getAudioTimeString(this.state.duration);
+    const durationString = this.getAudioTimeString(this.state.duration2);
     // this.setState({audio: audio});
     return (
       <SafeAreaView style={styles.container}>
@@ -204,7 +264,14 @@ export default class PlayerScreen extends React.Component {
           {this.image && (
             <View style={styles.imageBox}>
               <Image
-                style={{width: '100%', height: 200}}
+                style={{
+                  margin: 3,
+                  height: '100%',
+                  aspectRatio: 1.6,
+                  flex: 1,
+                  width: '100%',
+                  resizeMode: 'contain',
+                }}
                 source={{
                   uri: this.image,
                 }}
@@ -212,17 +279,36 @@ export default class PlayerScreen extends React.Component {
             </View>
           )}
           {this.video && (
-            <Video
-              source={{
-                uri: this.video,
-              }}
-              style={{width: '100%', height: 200, marginTop: '5%'}}
-              paused={false} // 재생/중지 여부
-              resizeMode={'cover'} // 프레임이 비디오 크기와 일치하지 않을 때 비디오 크기를 조정하는 방법을 결정합니다. cover : 비디오의 크기를 유지하면서 최대한 맞게
-              onLoad={e => console.log(e)} // 미디어가 로드되고 재생할 준비가 되면 호출되는 콜백 함수입니다.
-              repeat={true} // video가 끝나면 다시 재생할 지 여부
-              onAnimatedValueUpdate={() => {}}
-            />
+            <View style={{width: '100%', height: 200, marginTop: '5%'}}>
+              <Video
+                style={styles.mediaPlayer}
+                onEnd={this.onEnd}
+                onLoad={this.onLoad}
+                onLoadStart={this.onLoadStart}
+                onProgress={this.onProgress}
+                paused={this.state.paused}
+                ref={videoPlayer => (this.videoPlayer = videoPlayer)}
+                resizeMode={this.state.screenType}
+                onFullScreen={this.state.isFullScreen}
+                source={{uri: this.video}}
+                repeat={false}
+                controls={false}
+                volume={10}
+              />
+              <MediaControls
+                duration={this.state.duration}
+                isLoading={this.state.isLoading}
+                mainColor="#333"
+                onFullScreen={this.onFullScreen}
+                onPaused={this.onPaused}
+                onReplay={this.onReplay}
+                onSeek={this.onSeek}
+                onSeeking={this.onSeeking}
+                playerState={this.state.playerState}
+                progress={this.state.currentTime}
+                toolbar={this.renderToolbar()}
+              />
+            </View>
           )}
           {this.audio && (
             <View style={styles.audioBox}>
@@ -284,7 +370,7 @@ export default class PlayerScreen extends React.Component {
                     onTouchEnd={this.onSliderEditEnd}
                     onValueChange={this.onSliderEditing}
                     value={this.state.playSeconds}
-                    maximumValue={this.state.duration}
+                    maximumValue={this.state.duration2}
                     maximumTrackTintColor="gray"
                     minimumTrackTintColor="#4C4036"
                     thumbTintColor="#4C4036"
@@ -310,6 +396,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FBF8F6',
     padding: '6%',
+  },
+  toolbar: {
+    marginTop: 30,
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+  },
+  mediaPlayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'black',
   },
   header: {
     marginBottom: '5%',
