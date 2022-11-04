@@ -13,7 +13,7 @@ import 'moment/locale/ko';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
 import {makeRoomAPI} from '../api/AppleAPI';
-import {UseStomp} from '../stomp';
+import {UseStomp, DisconnectIfConnected} from '../stomp';
 import GroupSession from '../sessions/GroupSession';
 import JoinSession from './test/JoinSession';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -73,16 +73,19 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
         return response.data;
       })
       .then(({roomId}) => {
-        UseStomp(
-          () => {
-            console.log('make room succeed', roomId);
-            navigate('GroupSession', {roomId: roomId});
-          },
-          () => {
-            console.log('make room failed', roomId);
-            navigate('GroupSession');
-          },
-        );
+        const connect = () => {
+          UseStomp(
+            () => {
+              console.log('make room succeed', roomId);
+              navigate('GroupSession', {roomId: roomId});
+            },
+            () => {
+              console.log('make room failed', roomId);
+              navigate('GroupSession');
+            },
+          );
+        };
+        DisconnectIfConnected(connect, {}, connect);
       })
       .catch(error => {
         console.log('makeRoom::error', error);
