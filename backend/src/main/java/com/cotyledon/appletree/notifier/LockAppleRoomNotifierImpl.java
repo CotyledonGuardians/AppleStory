@@ -30,10 +30,10 @@ public class LockAppleRoomNotifierImpl implements LockAppleRoomNotifier {
 
     @Override
     @Transactional
-    public void notifyForJoined(String roomId, String uid) {
+    public void notifyForJoined(String roomId, String uid, ChangeMessageData defaultMessage) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
-                .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
+                .findLogByRoomId(roomId).orElse(defaultMessage);
 
         List<LockAppleRoomUserStatus> statuses = changeMessageData.getStatuses();
         Map<String, Integer> uidToIndex = changeMessageData.getUidToIndex();
@@ -61,7 +61,7 @@ public class LockAppleRoomNotifierImpl implements LockAppleRoomNotifier {
     public void notifyForAdding(String roomId, String uid) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
-                .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
+                .findLogByRoomId(roomId).orElseThrow();
 
         List<LockAppleRoomUserStatus> statuses = changeMessageData.getStatuses();
         Map<String, Integer> uidToIndex = changeMessageData.getUidToIndex();
@@ -89,7 +89,7 @@ public class LockAppleRoomNotifierImpl implements LockAppleRoomNotifier {
     public void notifyForAdded(String roomId, Member member, Content content) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
-                .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
+                .findLogByRoomId(roomId).orElseThrow();
 
         List<LockAppleRoomUserStatus> statuses = changeMessageData.getStatuses();
         Map<String, Integer> uidToIndex = changeMessageData.getUidToIndex();
@@ -119,7 +119,7 @@ public class LockAppleRoomNotifierImpl implements LockAppleRoomNotifier {
     public void notifyForCancelled(String roomId, String uid) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
-                .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
+                .findLogByRoomId(roomId).orElseThrow();
 
         List<LockAppleRoomUserStatus> statuses = changeMessageData.getStatuses();
         Map<String, Integer> uidToIndex = changeMessageData.getUidToIndex();
@@ -168,7 +168,7 @@ public class LockAppleRoomNotifierImpl implements LockAppleRoomNotifier {
     private void notifyForLeftWithMember(String roomId, Member member) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
-                .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
+                .findLogByRoomId(roomId).orElseThrow();
 
         List<LockAppleRoomUserStatus> statuses = changeMessageData.getStatuses();
         Map<String, Integer> uidToIndex = changeMessageData.getUidToIndex();
@@ -201,7 +201,7 @@ public class LockAppleRoomNotifierImpl implements LockAppleRoomNotifier {
     private void notifyForLeftWithUid(String roomId, String uid) {
 
         ChangeMessageData changeMessageData = lockAppleRoomLogRepository
-                .findLogByRoomId(roomId).orElse(ChangeMessageData.newDefault());
+                .findLogByRoomId(roomId).orElseThrow();
 
         List<LockAppleRoomUserStatus> statuses = changeMessageData.getStatuses();
         Map<String, Integer> uidToIndex = changeMessageData.getUidToIndex();
