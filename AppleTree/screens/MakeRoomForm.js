@@ -16,6 +16,7 @@ import {makeRoomAPI} from '../api/AppleAPI';
 import {UseStomp} from '../stomp';
 import GroupSession from '../sessions/GroupSession';
 import JoinSession from './test/JoinSession';
+import {ScrollView} from 'react-native-gesture-handler';
 const MakeRoomForm = ({navigation: {navigate}}) => {
   //inputs
   const [title, setTitle] = useState(null);
@@ -108,78 +109,75 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
 
   // inpust valid handler end
   return (
-    <SafeAreaView style={styles.container}>
-      <Image
-        source={require('../assets/pictures/listgroup1.png')}
-        style={styles.image}
-      />
-      <View style={styles.marginTopBottom}>
-        <Text style={styles.txt}>제목</Text>
-        <View style={styles.form}>
-          <TextInput
-            value={title}
-            autoCapitalize={'none'}
-            style={styles.input}
-            placeholder="제목을 입력하세요."
-            onChangeText={text => titleChangeHandler(text)}
-          />
-        </View>
-        <Text style={styles.txt}>팀 이름</Text>
-        <View style={styles.form}>
-          <TextInput
-            value={teamName}
-            autoCapitalize={'none'}
-            style={styles.input}
-            placeholder="팀 명을 입력하세요."
-            onChangeText={text => teamNameChangeHandler(text)}
-          />
-        </View>
-        <Text style={styles.txt}>해제 날짜</Text>
-        <View style={styles.form}>
-          <Pressable onPress={showDatePicker}>
-            <TextInput
-              pointerEvents="none"
-              style={styles.input}
-              placeholder={placeholder}
-              underlineColorAndroid="transparent"
-              editable={false}
-              value={text}
-            />
-            <DateTimePickerModal
-              headerTextIOS={placeholder}
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-            />
-          </Pressable>
-        </View>
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="date"
-          minimumDate={today}
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
+    <ScrollView>
+      <SafeAreaView style={styles.container}>
+        <Image
+          source={require('../assets/pictures/listgroup1.png')}
+          style={styles.image}
         />
-        <View style={styles.buttonWrap}>
-          <SmallButton
-            onPress={() => makeRoom()}
-            text="방 만들기"
-            disabled={!titleValid || !teamNameValid || !dateValid}
+        <View style={styles.marginTopBottom}>
+          <Text style={styles.txt}>제목</Text>
+          <View style={styles.form}>
+            <TextInput
+              value={title}
+              autoCapitalize={'none'}
+              style={styles.input}
+              placeholder="제목을 입력하세요."
+              onChangeText={text => titleChangeHandler(text)}
+            />
+          </View>
+          <Text style={styles.txt}>팀 이름</Text>
+          <View style={styles.form}>
+            <TextInput
+              value={teamName}
+              autoCapitalize={'none'}
+              style={styles.input}
+              placeholder="팀 명을 입력하세요."
+              onChangeText={text => teamNameChangeHandler(text)}
+            />
+          </View>
+          <Text style={styles.txt}>해제 날짜</Text>
+          <View style={styles.form}>
+            <Pressable onPress={showDatePicker}>
+              <TextInput
+                pointerEvents="none"
+                style={styles.input}
+                placeholder={placeholder}
+                underlineColorAndroid="transparent"
+                editable={false}
+                value={text}
+              />
+              <DateTimePickerModal
+                headerTextIOS={placeholder}
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleConfirm}
+                onCancel={hideDatePicker}
+              />
+            </Pressable>
+          </View>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            minimumDate={today}
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
           />
-          <SmallButton
-            onPress={() => navigate('Home', {screen: 'Main'})}
-            text="홈으로"
-            disabled={false}
-          />
-          <SmallButton
-            onPress={() => navigate('JoinSession')}
-            text="세션참여"
-            disabled={false}
-          />
+          <View style={styles.buttonWrap}>
+            <SmallButton
+              onPress={() => makeRoom()}
+              text="방 만들기"
+              disabled={!titleValid || !teamNameValid || !dateValid}
+            />
+            <SmallButton
+              onPress={() => navigate('JoinSession')}
+              text="입장하기"
+              disabled={false}
+            />
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
