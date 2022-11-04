@@ -49,28 +49,39 @@ export default class PlayerScreen extends React.Component {
     this.sliderEditing = false;
     let uid = props.route.params.uid;
     let data = props.route.params.data;
-    for (let i = 0; i < data.content.text.length; i++) {
-      if (data.content.text[i].author === uid) {
-        this.text = data.content.text[i].content;
-        break;
+    if (data.content.text != null) {
+      for (let i = 0; i < data.content.text.length; i++) {
+        if (data.content.text[i].author === uid) {
+          this.text = data.content.text[i].content;
+          break;
+        }
       }
     }
-    for (let i = 0; i < data.content.photo.length; i++) {
-      if (data.content.photo[i].author === uid) {
-        this.image = data.content.photo[i].content;
-        break;
+
+    if (data.content.photo != null) {
+      for (let i = 0; i < data.content.photo.length; i++) {
+        if (data.content.photo[i].author === uid) {
+          this.image = data.content.photo[i].content;
+          break;
+        }
       }
     }
-    for (let i = 0; i < data.content.video.length; i++) {
-      if (data.content.video[i].author === uid) {
-        this.video = data.content.video[i].content;
-        break;
+
+    if (data.content.video != null) {
+      for (let i = 0; i < data.content.video.length; i++) {
+        if (data.content.video[i].author === uid) {
+          this.video = data.content.video[i].content;
+          break;
+        }
       }
     }
-    for (let i = 0; i < data.content.audio.length; i++) {
-      if (data.content.audio[i].author === uid) {
-        this.audio = data.content.audio[i].content;
-        break;
+
+    if (data.content.audio != null) {
+      for (let i = 0; i < data.content.audio.length; i++) {
+        if (data.content.audio[i].author === uid) {
+          this.audio = data.content.audio[i].content;
+          break;
+        }
       }
     }
   }
