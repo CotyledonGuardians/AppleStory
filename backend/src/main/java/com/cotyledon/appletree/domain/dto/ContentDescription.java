@@ -12,9 +12,4 @@ public class ContentDescription {
 
     private String author;
     private String content;
-
-    public static final ContentDescription DUMMY = ContentDescription.builder()
-                .author("UNKNOWN")
-                .content("NO_CONTENT")
-                .build();
 }

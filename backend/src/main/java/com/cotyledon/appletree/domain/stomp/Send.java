@@ -2,7 +2,7 @@ package com.cotyledon.appletree.domain.stomp;
 
 import com.cotyledon.appletree.configuration.WebSocketConfiguration;
 import com.cotyledon.appletree.domain.enums.RoomType;
-import com.cotyledon.appletree.exception.InvalidStompHeaderExceptionBuilder;
+import com.cotyledon.appletree.exception.InvalidStompMessageExceptionBuilder;
 import lombok.*;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 
@@ -13,16 +13,18 @@ public class Send {
 
     private RoomType roomType;
     private String roomId;
+    private Long appleId;
 
-    public static Send of(StompHeaderAccessor stompHeaderAccessor, InvalidStompHeaderExceptionBuilder exception) {
+    public static Send of(StompHeaderAccessor stompHeaderAccessor, InvalidStompMessageExceptionBuilder exception) {
         String destination = stompHeaderAccessor.getDestination();
 
         if (destination == null) {
             throw exception.buildDefault();
         }
 
-        String roomId;
         RoomType roomType;
+        String roomId;
+        long appleId = -1L;
 
         try {
             String[] strings = destination.split("\\.");
@@ -41,6 +43,19 @@ public class Send {
             throw exception.buildDefault();
         }
 
-        return Send.builder().roomType(roomType).roomId(roomId).build();
+        switch (roomType) {
+            case LOCK:
+                roomId = roomId.toUpperCase();
+                break;
+            case UNLOCK:
+                try {
+                    appleId = Long.parseLong(roomId);
+                } catch (NumberFormatException e) {
+                    throw exception.buildDefault();
+                }
+                break;
+        }
+
+        return Send.builder().roomType(roomType).roomId(roomId).appleId(appleId).build();
     }
 }

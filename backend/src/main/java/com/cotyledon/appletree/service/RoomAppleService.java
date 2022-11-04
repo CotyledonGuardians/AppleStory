@@ -6,6 +6,5 @@ import com.cotyledon.appletree.domain.dto.Member;
 public interface RoomAppleService {
 
     void addMemberAndContentToAppleByRoomId(String roomId, Member member, Content content);
-    boolean validateAndCleanContent(Content content);
-    String getAnyAuthorFromContent(Content content);
+    boolean validateAndCleanContent(Content content, String uid);
 }

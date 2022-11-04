@@ -63,6 +63,10 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	systemProperty 'spring.profiles.active', findProperty('profile') ?: 'development'
+	systemProperty 'com.cotyledon.appletree.dev-dep.host', findProperty('dev-dep.host') ?: 'song7216.iptime.org'
+	systemProperty 'com.cotyledon.appletree.dev-dep.password', findProperty('dev-dep.password') ?: 'ssafy'
+
 }
 
 tasks.named('bootRun') {

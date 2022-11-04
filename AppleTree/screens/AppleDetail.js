@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -11,177 +11,200 @@ import {
 } from 'react-native';
 import {DataTable} from 'react-native-paper';
 import Video from 'react-native-video';
+import {get} from 'react-native/Libraries/Utilities/PixelRatio';
+import {getAppleDetail} from '../api/AppleAPI';
+import {getAddress} from '../api/GeocodingAPI';
+import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 
-const data = {
-  id: 1,
-  type: false,
-  title: '자율 프로젝트를 기념하며',
-  creator: {
-    teamName: '떡잎방범대',
-    hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-    member: [
-      {
-        nickname: '영제',
-        uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      },
-      {
-        nickname: '낙낙',
-        uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      },
-      {
-        nickname: '짤리',
-        uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      },
-      {
-        nickname: '옌',
-        uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      },
-      {
-        nickname: '연다',
-        uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      },
-      {
-        nickname: '잠송',
-        uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-      },
-    ],
-  },
-  createAt: '2022-10-18T00:00:00.000+00:00',
-  unlockAt: '2022-10-20T00:00:00.000+00:00',
-  createScene: 'https://www.google.com',
-  content: {
-    text: [
-      {
-        author: '제영',
-        content: 'fefefefef',
-      },
-      {
-        author: '낙현',
-        content: 'fefefefef',
-      },
-    ],
-    photo: [
-      {
-        author: '제영',
-        content:
-          'https://item.kakaocdn.net/do/c620e34ce78db64b44ff1e422a35e2787154249a3890514a43687a85e6b6cc82',
-      },
-      {
-        author: '낙현',
-        content:
-          'https://image.tving.com/upload/cms/caip/CAIP0400/P000388342.jpg/dims/resize/1280',
-      },
-      {
-        author: '선아',
-        content:
-          'https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201706/23/b71449f8-e830-45a0-bb4d-7b1a328e19f2.jpg',
-      },
-      {
-        author: '예은',
-        content:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSw7NBmuS7MRpit86BM2UdjvossRlpKvjU2yw&usqp=CAU',
-      },
-      {
-        author: '다연',
-        content: 'https://i.ytimg.com/vi/1rc2OJCPZ-c/sddefault.jpg',
-      },
-      {
-        author: '송희',
-        content: 'https://i.ytimg.com/vi/vGAb_gmZ6RI/mqdefault.jpg',
-      },
-    ],
-    audio: [
-      {
-        author: '짤리',
-        content: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-      },
-      {
-        author: '옌',
-        content:
-          'https://firebasestorage.googleapis.com/v0/b/apple-tree-7f863.appspot.com/o/apple-id%2Fsimplescreenrecorder-2022-10-04_16.40.32_Trim.mp4?alt=media&token=705b0813-da0d-4049-acdc-1a9cf0b4441d',
-      },
-    ],
-    video: [
-      {
-        author: '짤리',
-        content: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-      },
-      {
-        author: '옌',
-        content:
-          'https://firebasestorage.googleapis.com/v0/b/apple-tree-7f863.appspot.com/o/apple-id%2Fsimplescreenrecorder-2022-10-04_16.40.32_Trim.mp4?alt=media&token=705b0813-da0d-4049-acdc-1a9cf0b4441d',
-      },
-    ],
-  },
-  location: null,
-  useSpace: false,
-  isCatch: true,
-};
+var randomImages = [
+  require('../assets/pictures/aegom1.png'),
+  require('../assets/pictures/aegom2.png'),
+  require('../assets/pictures/aegom4.png'),
+  require('../assets/pictures/aegom5.png'),
+  require('../assets/pictures/aegom6.png'),
+  require('../assets/pictures/aegom7.png'),
+  require('../assets/pictures/aegom8.png'),
+];
 
-const AppleDetail = () => {
-  let time = '0일 0시간 0분';
-  let createTime = '2022/10/17';
-  let title = '자율 프로젝트를 기념하며';
-  let name = '떡잎방범대';
-  let people = 6;
+const AppleDetail = ({navigation, route}) => {
+  const [appleDetail, setAppleDetail] = useState();
+  const [address, setAddress] = useState();
+  const videoPlayer = useRef(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [paused, setPaused] = useState(false);
+  const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
+  const [screenType, setScreenType] = useState('content');
+
+  const onSeek = seek => {
+    //Handler for change in seekbar
+    videoPlayer.current.seek(seek);
+  };
+
+  const onPaused = playerState => {
+    //Handler for Video Pause
+    setPaused(!paused);
+    setPlayerState(playerState);
+  };
+
+  const onReplay = () => {
+    //Handler for Replay
+    setPlayerState(PLAYER_STATES.PLAYING);
+    videoPlayer.current.seek(0);
+  };
+
+  const onProgress = data => {
+    // Video Player will progress continue even if it ends
+    if (!isLoading && playerState !== PLAYER_STATES.ENDED) {
+      setCurrentTime(data.currentTime);
+    }
+  };
+
+  const onLoad = data => {
+    setDuration(data.duration);
+    setIsLoading(false);
+  };
+
+  const onLoadStart = data => setIsLoading(true);
+
+  const onEnd = () => setPlayerState(PLAYER_STATES.ENDED);
+
+  const onError = () => alert('Oh! ', error);
+
+  const exitFullScreen = () => {
+    alert('Exit full screen');
+  };
+
+  const enterFullScreen = () => {};
+
+  const onFullScreen = () => {
+    setIsFullScreen(isFullScreen);
+    if (screenType == 'content') setScreenType('cover');
+    else setScreenType('content');
+  };
+
+  const renderToolbar = () => (
+    <View>
+      <Text style={styles.toolbar}> toolbar </Text>
+    </View>
+  );
+
+  const onSeeking = currentTime => setCurrentTime(currentTime);
+
+  useEffect(() => {
+    getAppleDetail(route.params.id)
+      .then(response => {
+        setAppleDetail(response.data.body);
+        if (response.data.body.location != null) {
+          getAddressLatLng(response.data.body.location);
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  }, []);
+
+  const seedDetail = (nickname, uid) => {
+    navigation.navigate('SeedDetail', {
+      screen: 'SeedDetail',
+      nickname: nickname,
+      uid: uid,
+      data: appleDetail,
+    });
+  };
+
+  const getAddressLatLng = location => {
+    getAddress(location.lat, location.lng).then(response => {
+      if (response.data.status === 'OK') {
+        setAddress(response.data.results[0].formatted_address);
+      } else {
+        setAddress(response.data.plus_code.compound_code);
+      }
+    });
+  };
 
   function Header() {
     return (
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Image
-            source={require('../assets/pictures/aegom7.png')}
-            style={{marginLeft: 20, marginTop: 15, width: 140, height: 170}}
+            source={
+              randomImages[Math.floor(Math.random() * randomImages.length)]
+            }
+            style={{marginLeft: 20, marginTop: 10, width: '80%', height: '90%'}}
           />
         </View>
         <View style={styles.headerRight}>
           <View style={styles.detailBox}>
             <View style={styles.oneBox}>
-              <Text style={[styles.textFont, styles.defaultText]}>{title}</Text>
+              <Text style={[styles.textFont, styles.defaultText]}>
+                {appleDetail.title}
+              </Text>
             </View>
             <View style={styles.nameBox}>
-              <Text style={[styles.textFont, styles.defaultText]}>{name}</Text>
+              <Text style={[styles.textFont, styles.defaultText]}>
+                {appleDetail.creator.teamName}
+              </Text>
               <View style={styles.countBox}>
                 <Image
                   style={styles.countIcon}
                   source={require('../assets/icons/usercount.png')}
                 />
-                <Text>{people}</Text>
+                <Text>{appleDetail.creator.member.length}</Text>
               </View>
             </View>
-            <View style={styles.nameBox}>
-              <Text style={[styles.textFont, styles.smallText]}>
-                위치: 대전광역시 유성구 덕명동 29-10
-              </Text>
-            </View>
+            {address && (
+              <View style={styles.nameBox}>
+                <Text style={[styles.textFont, styles.smallText]}>
+                  {address}
+                </Text>
+              </View>
+            )}
             <View style={styles.contentBox}>
               <Text style={[styles.textFont, styles.smallText]}>
                 이 사과에 기록된 데이터
               </Text>
               <View style={styles.iconBox}>
-                <Image
-                  style={styles.contentIcon}
-                  source={require('../assets/icons/text.png')}
-                />
-                <Image
-                  style={styles.contentIcon}
-                  source={require('../assets/icons/mic.png')}
-                />
-                <Image
-                  style={styles.contentIcon}
-                  source={require('../assets/icons/photo.png')}
-                />
-                <Image
-                  style={styles.contentIcon}
-                  source={require('../assets/icons/video.png')}
-                />
-                <Image
-                  style={styles.contentIcon}
-                  source={require('../assets/icons/gps.png')}
-                />
+                {appleDetail.content.text != null &&
+                  appleDetail.content.text.length != 0 && (
+                    <Image
+                      style={styles.contentIcon}
+                      source={require('../assets/icons/text.png')}
+                    />
+                  )}
+                {appleDetail.content.photo != null &&
+                  appleDetail.content.photo.length != 0 && (
+                    <Image
+                      style={styles.contentIcon}
+                      source={require('../assets/icons/photo.png')}
+                    />
+                  )}
+                {appleDetail.content.audio != null &&
+                  appleDetail.content.audio.length != 0 && (
+                    <Image
+                      style={styles.contentIcon}
+                      source={require('../assets/icons/mic.png')}
+                    />
+                  )}
+                {appleDetail.content.video != null &&
+                  appleDetail.content.video.length != 0 && (
+                    <Image
+                      style={styles.contentIcon}
+                      source={require('../assets/icons/video.png')}
+                    />
+                  )}
+                {appleDetail.location != null && (
+                  <Image
+                    style={styles.contentIcon}
+                    source={require('../assets/icons/gps.png')}
+                  />
+                )}
               </View>
               <Text style={[styles.textFont, styles.smallText]}>
-                숙성기간 : {createTime} ~ {createTime}
+                숙성기간 : {appleDetail.createAt.split('T')[0]} ~{' '}
+                {appleDetail.unlockAt.split('T')[0]}
               </Text>
             </View>
           </View>
@@ -190,22 +213,19 @@ const AppleDetail = () => {
     );
   }
 
-  const Card = ({nickname, index}: any) => {
+  const Card = ({nickname, index, uid}: any) => {
     return (
       <TouchableOpacity
         style={styles.card}
         onPress={() => {
-          Alert.alert('상세보기로 넘어가렴~');
-          // appleDetail();
+          seedDetail(nickname, uid);
         }}>
         <Image
           source={require('../assets/pictures/seed.png')}
           style={{width: 80, height: 80}}
           resizeMode="contain"
         />
-        <Text style={{fontFamily: 'UhBee Se_hyun', color: '#4C4036'}}>
-          {nickname}님의 씨앗
-        </Text>
+        <Text style={styles.seedDetail}>{nickname}님의 씨앗</Text>
       </TouchableOpacity>
     );
   };
@@ -213,7 +233,7 @@ const AppleDetail = () => {
   function ContentSeed() {
     return (
       <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingTop: 10}}>
-        {data.creator.member.map((item, index) => {
+        {appleDetail.creator.member.map((item, index) => {
           return (
             <View
               style={{
@@ -222,7 +242,7 @@ const AppleDetail = () => {
                 flexWrap: 'wrap',
               }}
               key={index}>
-              <Card key="{index}" nickname={item.nickname} />
+              <Card key="{index}" nickname={item.nickname} uid={item.uid} />
             </View>
           );
         })}
@@ -234,47 +254,70 @@ const AppleDetail = () => {
     return (
       <View style={{padding: 20}}>
         <Text style={styles.textFontBold}>기록된 사진</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
-          {/* <Image
-            style={{width: 50, height: 50}}
-            source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}}
-          /> */}
-
-          {data.content.photo.map((item, index) => {
-            return (
-              <Image
-                key={index}
-                style={{width: 200, height: 150, margin: 5}}
-                source={{
-                  uri: item.content,
-                }}
-              />
-            );
-          })}
-        </ScrollView>
+        <View style={{height: 230, width: '100%'}}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {appleDetail.content.photo.map((item, index) => {
+              return (
+                <Image
+                  key={index}
+                  style={{
+                    margin: 3,
+                    height: '100%',
+                    aspectRatio: 1.6,
+                    flex: 1,
+                    width: '100%',
+                    resizeMode: 'contain',
+                  }}
+                  source={{
+                    uri: item.content,
+                  }}
+                />
+              );
+            })}
+          </ScrollView>
+        </View>
       </View>
     );
   }
 
+  // 현재 사용하지 않는 함수
   function VideoRecord() {
     return (
       <View style={{padding: 20}}>
         <Text style={styles.textFontBold}>기록된 영상</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}>
-          {data.content.video.map((item, index) => {
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          {appleDetail.content.video.map((item, index) => {
             return (
-              <Video
-                key={index}
-                source={{
-                  uri: item.content,
-                }}
-                style={{width: 200, height: 150, margin: 5}}
-                paused={false} // 재생/중지 여부
-                resizeMode={'cover'} // 프레임이 비디오 크기와 일치하지 않을 때 비디오 크기를 조정하는 방법을 결정합니다. cover : 비디오의 크기를 유지하면서 최대한 맞게
-                onLoad={e => console.log(e)} // 미디어가 로드되고 재생할 준비가 되면 호출되는 콜백 함수입니다.
-                repeat={true} // video가 끝나면 다시 재생할 지 여부
-                onAnimatedValueUpdate={() => {}}
-              />
+              <View style={{width: 200, height: 150, margin: 5}}>
+                <Video
+                  onEnd={onEnd}
+                  onLoad={onLoad}
+                  onLoadStart={onLoadStart}
+                  onProgress={onProgress}
+                  paused={paused}
+                  ref={videoPlayer}
+                  resizeMode={screenType}
+                  onFullScreen={isFullScreen}
+                  source={{
+                    uri: 'https://assets.mixkit.co/videos/download/mixkit-countryside-meadow-4075.mp4',
+                  }}
+                  style={styles.mediaPlayer}
+                  volume={10}
+                />
+                <MediaControls
+                  duration={duration}
+                  isLoading={isLoading}
+                  mainColor="#333"
+                  onFullScreen={onFullScreen}
+                  onPaused={onPaused}
+                  onReplay={onReplay}
+                  onSeek={onSeek}
+                  onSeeking={onSeeking}
+                  playerState={playerState}
+                  progress={currentTime}
+                  toolbar={renderToolbar()}
+                />
+              </View>
             );
           })}
         </ScrollView>
@@ -284,30 +327,21 @@ const AppleDetail = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Header />
-        <ContentSeed />
-        <Photo />
-        <VideoRecord />
-      </ScrollView>
+      {appleDetail && (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Header />
+          <ContentSeed />
+          {appleDetail.content.photo != null &&
+            appleDetail.content.photo.length != 0 && <Photo />}
+          {/* {appleDetail.content.video != null &&
+            appleDetail.content.video.length != 0 && <VideoRecord />} */}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  fullScreen: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-  },
   backgroundVideo: {
     position: 'absolute',
     top: 0,
@@ -325,6 +359,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FBF8F6',
+  },
+  toolbar: {
+    marginTop: 30,
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+  },
+  mediaPlayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'black',
+    justifyContent: 'center',
   },
   header: {
     // width: '100%',
@@ -407,6 +456,11 @@ const styles = StyleSheet.create({
     left: 0,
     bottom: 0,
     right: 0,
+  },
+  seedDetail: {
+    fontFamily: 'UhBee Se_hyun',
+    color: '#4C4036',
+    fontSize: 12,
   },
 });
 

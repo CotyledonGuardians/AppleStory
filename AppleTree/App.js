@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import {Image, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import SplashScreen from 'react-native-splash-screen';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
@@ -21,15 +21,18 @@ import GroupSession from './sessions/GroupSession';
 import AppleDetail from './screens/AppleDetail';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import SeedDetail from './screens/SeedDetail';
+import HitApple from './sessions/AppleHitSession';
+import LockAppleDetail from './screens/lock/LockAppleDetail';
 import auth from '@react-native-firebase/auth';
-import {setGestureState} from 'react-native-reanimated/lib/reanimated2/NativeMethods';
+import JoinSession from './screens/test/JoinSession';
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
-const CreateStack = createStackNavigator();
-const HomeStack = createStackNavigator();
-const ListStack = createStackNavigator();
+const Stack = createNativeStackNavigator();
+const CreateStack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator();
+const MapStack = createNativeStackNavigator();
+const ListStack = createNativeStackNavigator();
 
 const styles = StyleSheet.create({
   navIcon: {
@@ -39,19 +42,16 @@ const styles = StyleSheet.create({
 });
 
 export default function App() {
-  const [token, setToken] = useState(null);
-
-  // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState(false);
+  const [login, setLogin] = useState(false);
 
   auth().onAuthStateChanged(user => {
     if (user) {
-      setUser(true);
+      setLogin(true);
     } else {
-      setUser(false);
+      setLogin(false);
     }
   });
+
   function MyStacks() {
     return (
       <Stack.Navigator
@@ -88,9 +88,10 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/home.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <HomeStack.Navigator
@@ -99,30 +100,54 @@ export default function App() {
                 tabBarStyle: {display: 'none'},
               }}>
               <HomeStack.Screen name="Main" component={Main} />
+              <HomeStack.Screen name="HitApple" component={HitApple} />
+              <HomeStack.Screen
+                name="LockAppleDetail"
+                component={LockAppleDetail}
+              />
+              <HomeStack.Screen name="AppleDetail" component={AppleDetail} />
+              <HomeStack.Screen name="SeedDetail" component={SeedDetail} />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
         <Tab.Screen
-          name="Map"
-          component={Map}
+          name="MapNavi"
           options={{
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/map.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
-          }}
-        />
+            unmountOnBlur: true,
+          }}>
+          {() => (
+            <MapStack.Navigator
+              screenOptions={{
+                headerShown: false,
+                tabBarStyle: {display: 'none'},
+              }}>
+              <MapStack.Screen name="Map" component={Map} />
+              <MapStack.Screen name="AppleDetail" component={AppleDetail} />
+              <MapStack.Screen name="SeedDetail" component={SeedDetail} />
+              <MapStack.Screen name="HitApple" component={HitApple} />
+              <MapStack.Screen
+                name="LockAppleDetail"
+                component={LockAppleDetail}
+              />
+            </MapStack.Navigator>
+          )}
+        </Tab.Screen>
         <Tab.Screen
           name="MakeRoom"
           options={{
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/create.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <CreateStack.Navigator screenOptions={{headerShown: false}}>
@@ -130,11 +155,13 @@ export default function App() {
                 name="MakeRoomForm"
                 component={MakeRoomForm}
               />
+              <CreateStack.Screen name="JoinSession" component={JoinSession} />
               <CreateStack.Screen name="GroupCreate" component={GroupCreate} />
               <CreateStack.Screen
                 name="GroupSession"
                 component={GroupSession}
               />
+
               <CreateStack.Screen name="RecordVoice" component={RecordVoice} />
               <CreateStack.Screen
                 options={{headerShown: false}}
@@ -145,7 +172,7 @@ export default function App() {
           )}
         </Tab.Screen>
         <Tab.Screen
-          name="AppleList"
+          name="List"
           // component={AppleList}
           options={{
             tabBarIcon: () => (
@@ -154,6 +181,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <ListStack.Navigator
@@ -162,6 +190,12 @@ export default function App() {
               }}>
               <ListStack.Screen name="AppleList" component={AppleList} />
               <ListStack.Screen name="AppleDetail" component={AppleDetail} />
+              <ListStack.Screen name="SeedDetail" component={SeedDetail} />
+              <ListStack.Screen name="HitApple" component={HitApple} />
+              <ListStack.Screen
+                name="LockAppleDetail"
+                component={LockAppleDetail}
+              />
             </ListStack.Navigator>
           )}
         </Tab.Screen>
@@ -172,25 +206,27 @@ export default function App() {
             tabBarIcon: () => (
               <Image
                 source={require('./assets/icons/mypage.png')}
-                style={{width: 20, height: 20}}
+                style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}
         />
       </Tab.Navigator>
     );
   }
+
   // AsyncStorage의 idToken 가져오기
-  const getToken = async () => {
-    try {
-      const savedToken = await AsyncStorage.getItem('idToken');
-      setToken(savedToken);
-      // const currentToken = savedToken;
-      // console.log('currentToken:', currentToken);
-    } catch (error) {
-      console.log('getToken error' + error);
-    }
-  };
+  // const getToken = async () => {
+  //   try {
+  //     const savedToken = await AsyncStorage.getItem('idToken');
+  //     setToken(savedToken);
+  //     // const currentToken = savedToken;
+  //     // console.log('currentToken:', currentToken);
+  //   } catch (error) {
+  //     console.log('getToken error' + error);
+  //   }
+  // };
 
   //componentDidMount할때 해줘야되는거
   GoogleSignin.configure({});
@@ -201,10 +237,7 @@ export default function App() {
         '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
     });
   };
-  useEffect(() => {
-    getToken();
-    console.log('token잇냐?', token);
-  });
+
   useEffect(() => {
     try {
       setTimeout(() => {
@@ -212,13 +245,14 @@ export default function App() {
       }, 500); /** 스플래시 시간 조절 (0.5초) **/
       googleSigninConfigure();
     } catch (e) {
-      console.warn('에러발생');
+      // console.warn('에러발생');
       console.warn(e);
     }
   }, []);
+
   return (
     <NavigationContainer>
-      {user ? <MyTabs /> : <MyStacks />}
+      {login ? <MyTabs /> : <MyStacks />}
     </NavigationContainer>
   );
 }

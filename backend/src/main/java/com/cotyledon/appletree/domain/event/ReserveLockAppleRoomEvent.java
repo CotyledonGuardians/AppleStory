@@ -7,4 +7,5 @@ import lombok.*;
 public class ReserveLockAppleRoomEvent {
 
     private String roomId;
+    private Long appleId;
 }
