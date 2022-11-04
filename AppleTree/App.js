@@ -145,6 +145,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <CreateStack.Navigator screenOptions={{headerShown: false}}>

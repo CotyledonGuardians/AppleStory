@@ -50,31 +50,11 @@ const Apple = ({
       <TouchableOpacity
         style={appleStyle[index]}
         onPress={() => {
-          const connect = () => {
-            UseStomp(
-              () => {
-                console.log('make room succeed', apple.id);
-                navigation.navigate('HitApple', {
-                  id: apple.id,
-                });
-              },
-              () => {
-                console.log('make room failed', apple.id);
-              },
-            );
-          };
-          DisconnectIfConnected(connect, {}, connect);
-        }}>
-        <Image style={styles.apple} source={imgUrl[3]} />
-      </TouchableOpacity>
-    );
-  } else {
-    const diff = Math.ceil((unlockDay - today - 32400) / (1000 * 60 * 60 * 24));
-    if (diff === 0) {
-      return (
-        <TouchableOpacity
-          style={appleStyle[index]}
-          onPress={() => {
+          if (apple.isCatch) {
+            navigation.navigate('AppleDetail', {
+              id: apple.id,
+            });
+          } else {
             const connect = () => {
               UseStomp(
                 () => {
@@ -89,6 +69,38 @@ const Apple = ({
               );
             };
             DisconnectIfConnected(connect, {}, connect);
+          }
+        }}>
+        <Image style={styles.apple} source={imgUrl[3]} />
+      </TouchableOpacity>
+    );
+  } else {
+    const diff = Math.ceil((unlockDay - today - 32400) / (1000 * 60 * 60 * 24));
+    if (diff === 0) {
+      return (
+        <TouchableOpacity
+          style={appleStyle[index]}
+          onPress={() => {
+            if (apple.isCatch) {
+              navigation.navigate('AppleDetail', {
+                id: apple.id,
+              });
+            } else {
+              const connect = () => {
+                UseStomp(
+                  () => {
+                    console.log('make room succeed', apple.id);
+                    navigation.navigate('HitApple', {
+                      id: apple.id,
+                    });
+                  },
+                  () => {
+                    console.log('make room failed', apple.id);
+                  },
+                );
+              };
+              DisconnectIfConnected(connect, {}, connect);
+            }
           }}>
           <Image style={styles.apple} source={imgUrl[3]} />
         </TouchableOpacity>
