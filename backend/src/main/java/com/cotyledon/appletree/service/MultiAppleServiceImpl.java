@@ -27,7 +27,8 @@ public class MultiAppleServiceImpl implements MultiAppleService {
     @Transactional
     public Long saveAppleAndAppleUsersAndGetAppleId(AppleDTO appleDTO, Set<String> userUids) {
 
-        Apple apple = appleDTO.toAppleEntity();
+        Apple apple = appleRepository.findById(appleDTO.getId()).orElseThrow();
+        appleDTO.translateInto(apple);
 
         // createAt 세팅
         apple.setCreateAt(Timestamp.valueOf(LocalDateTime.now()));
