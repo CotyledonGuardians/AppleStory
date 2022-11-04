@@ -139,7 +139,7 @@ const AppleHitSession = ({navigation, route}) => {
                 width: 100,
                 position: 'absolute',
                 left: punchPosition.x - 100,
-                top: punchPosition.y - 620,
+                top: punchPosition.y - 600,
               }}
             />
           </Animatable.View>
