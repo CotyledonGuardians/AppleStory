@@ -323,6 +323,10 @@ const GroupCreate = ({navigation: {navigate}, route}) => {
       .then(() => {
         actAdded();
       })
+      .then(() => {
+        alert('추억담기 완료!');
+        navigate('Home', {screen: 'Main'});
+      })
       .catch(err => {
         deleteAllUploaded().catch(err => {
           console.log(err);

@@ -8,6 +8,7 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {SmallButton, Button} from '../components/Button';
 import {
@@ -27,7 +28,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   // session message
   const [message, setMessage] = useState([]);
   // 방장인지체크 추후 변경
-  let isOwner = false;
+  const [isHost, setIsHost] = useState(false);
   // room id
   const {roomId} = route.params;
   // 클립보드 복사
@@ -62,8 +63,13 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   // session start
   useEffect(() => {
     alert(roomId);
+    const myid = auth().currentUser.uid;
     const messageListeners = {
-      onChange: ({uidToIndex, statuses}) => {
+      onChange: ({uidToIndex, statuses, hostUid}) => {
+        //방장인지 체크
+        if (myid === hostUid) {
+          setIsHost(true);
+        }
         let length = statuses.length;
         let hasUpload = 0;
         for (let i = 0; i < statuses.length; i++) {
@@ -86,6 +92,10 @@ const GroupSession = ({navigation: {navigate}, route}) => {
           stage: item.stage,
         }));
         setMessage([...newMessage]);
+      },
+      onSave: savedAppleId => {
+        console.log('savedAppleId:', savedAppleId);
+        console.log('typeof it:', typeof savedAppleId);
       },
     };
     //방에 들어가기
@@ -148,7 +158,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
           </ScrollView>
         </View>
         <View style={styles.buttons}>
-          {isOwner ? (
+          {!isHost ? (
             <Button onPress={() => disconnect()} text="추억 담기" />
           ) : (
             <>
