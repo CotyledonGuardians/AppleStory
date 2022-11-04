@@ -5,7 +5,6 @@ import com.cotyledon.appletree.domain.event.PartyChangeEvent;
 import com.cotyledon.appletree.domain.stomp.BaseMessage;
 import com.cotyledon.appletree.domain.stomp.DestinationBuilder;
 import com.cotyledon.appletree.service.AppleService;
-import com.cotyledon.appletree.service.UnlockAppleRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
