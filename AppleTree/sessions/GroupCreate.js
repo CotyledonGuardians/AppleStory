@@ -13,6 +13,7 @@ import {
   Text,
   TextInput,
   Image,
+  Alert,
 } from 'react-native';
 import {Button} from '../components/Button';
 import RecordVoice from '../screens/RecordVoice';
@@ -22,6 +23,7 @@ import storage from '@react-native-firebase/storage';
 import RNFS from 'react-native-fs';
 import RNFetchBlob from 'rn-fetch-blob';
 import {SendIfSubscribed} from '../stomp';
+import {DisconnectIfConnected} from '../stomp';
 // define enum for asset type
 const AssetType = {
   IMAGE: 'image',
@@ -30,7 +32,7 @@ const AssetType = {
 };
 Object.freeze(AssetType);
 
-const GroupCreate = ({navigation: {navigate}, route}) => {
+const GroupCreate = ({navigation, route}) => {
   // 녹음기 모달//
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -52,6 +54,9 @@ const GroupCreate = ({navigation: {navigate}, route}) => {
 
   // GroupCreate에서 넘겨준 room id
   const {roomId} = route.params;
+  // GroupCreate에서 넘겨준 isHost
+  const {isHost} = route.params;
+  // console.log('isHost:::::', isHost);
   const actAdded = () => {
     console.log('actAdded');
     SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
@@ -324,8 +329,18 @@ const GroupCreate = ({navigation: {navigate}, route}) => {
         actAdded();
       })
       .then(() => {
-        alert('추억담기 완료!');
-        navigate('Home', {screen: 'Main'});
+        // console.log('isHost?', isHost);
+        if (isHost) {
+          Alert.alert('추억담기 완료!', '다시 세션으로 돌아갑니다.');
+          navigation.pop();
+        } else {
+          Alert.alert(
+            '추억담기 완료!',
+            '방장이 사과를 매달때까지 기다려주세요.',
+          );
+          disconnect();
+          navigation.navigate('Home', {screen: 'Main'});
+        }
       })
       .catch(err => {
         deleteAllUploaded().catch(err => {
@@ -352,7 +367,11 @@ const GroupCreate = ({navigation: {navigate}, route}) => {
       });
     });
   };
-
+  const disconnect = () => {
+    DisconnectIfConnected(() => {
+      navigation.navigate('Home', {screen: 'Main'});
+    });
+  };
   return (
     <ScrollView contentContainerStyle={styles.wrapper}>
       <SafeAreaView style={styles.container}>

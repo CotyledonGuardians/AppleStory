@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   Pressable,
+  Alert,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -37,6 +38,8 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
   // 사과매달기 함수 추후 변경
   const hangApple = () => {
+    submit();
+    disconnect();
     navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
   };
   // 자동 스크롤밑으로
@@ -159,7 +162,13 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         </View>
         <View style={styles.buttons}>
           {!isHost ? (
-            <Button onPress={() => disconnect()} text="추억 담기" />
+            <Button
+              onPress={() => {
+                actAdding();
+                navigate('GroupCreate', {roomId: roomId, isHost: isHost});
+              }}
+              text="추억 담기"
+            />
           ) : (
             <>
               <SmallButton
@@ -170,7 +179,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               <SmallButton
                 onPress={() => {
                   actAdding();
-                  navigate('GroupCreate', {roomId: roomId});
+                  navigate('GroupCreate', {roomId: roomId, isHost: isHost});
                 }}
                 text="추억 담기"
                 disabled={false}
