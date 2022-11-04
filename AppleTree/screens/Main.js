@@ -48,7 +48,16 @@ const Apple = ({
     return (
       <TouchableOpacity
         style={appleStyle[index]}
-        onPress={() => navigation.navigate('HitApple')}>
+        onPress={() => {
+          if (apple.isCatch) {
+            navigation.navigate('AppleDetail', {
+              screen: 'AppleDetail',
+              id: apple.id,
+            });
+          } else {
+            navigation.navigate('HitApple');
+          }
+        }}>
         <Image style={styles.apple} source={imgUrl[3]} />
       </TouchableOpacity>
     );
