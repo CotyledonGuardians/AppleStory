@@ -5,7 +5,6 @@ import com.cotyledon.appletree.domain.event.PartyChangeEvent;
 import com.cotyledon.appletree.domain.stomp.BaseMessage;
 import com.cotyledon.appletree.domain.stomp.DestinationBuilder;
 import com.cotyledon.appletree.service.AppleService;
-import com.cotyledon.appletree.service.UnlockAppleRoomService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -67,8 +66,7 @@ public class UnlockAppleRoomEventListener {
         log.info("사과 죽음");
 
         // isCatch 를 true 로 저장
-        // TODO: 밑에 주석 풀기
-//        appleService.catchToTrue(appleId);
+        appleService.catchToTrue(appleId);
 
         simpMessagingTemplate.convertAndSend(DestinationBuilder.build(PREFIX, roomId),
                 BaseMessage.withCommandAndData("onDie", roomId));
