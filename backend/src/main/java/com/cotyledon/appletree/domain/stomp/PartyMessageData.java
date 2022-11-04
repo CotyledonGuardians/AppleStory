@@ -11,15 +11,17 @@ import lombok.*;
 @ToString
 public class PartyMessageData {
 
-    private Double totalHealth;
     private Integer appleSize;
     private Integer partySize;
+    private Double totalHealth;
+    private Double currentHealth;
 
     public static PartyMessageData withRoomAndPartySize(UnlockAppleRoom room, int partySize) {
         return PartyMessageData.builder()
-                .totalHealth(room.getTotalHealth())
                 .appleSize(room.getAppleSize())
                 .partySize(partySize)
+                .totalHealth(room.getTotalHealth())
+                .currentHealth(room.getCurrentHealth())
                 .build();
     }
 }
