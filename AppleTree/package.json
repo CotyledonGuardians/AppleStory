@@ -8,6 +8,8 @@
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint .",
+    "android:local": "react-native run-android --variant=localdebug",
+    "android:local-release": "react-native run-android --variant=localrelease",
     "android:staging": "react-native run-android --variant=stagingdebug",
     "android:staging-release": "react-native run-android --variant=stagingrelease",
     "android:dev": "react-native run-android --variant=developmentdebug",
