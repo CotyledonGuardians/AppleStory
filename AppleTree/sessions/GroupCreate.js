@@ -453,7 +453,7 @@ const GroupCreate = ({}) => {
             transparent={true}
             visible={modalVisible}
             >
-            <View style={styles.centeredView}>
+            <View style={(modalVisible) ? styles.modalOpenCenteredView : styles.centeredView}>
               <View style={styles.modalView}>
                 <RecordVoice
                   setModalVisible={setModalVisible}
@@ -581,13 +581,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'UhBee Se_hyun'
   },
-
   //모달 스타일 start
   centeredView: {
     flex:0.8,
     justifyContent: 'center',
     alignItems: 'center',
     // marginTop: '30%'
+  },
+  modalOpenCenteredView: {
+    flex:0.8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '30%'
   },
   modalView: {
     fontFamily: 'UhBee Se_hyun Bold',
