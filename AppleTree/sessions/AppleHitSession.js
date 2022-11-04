@@ -43,7 +43,8 @@ const AppleHitSession = ({navigation, route}) => {
         console.log('onPartyChange::totalHealth', totalHp);
         setApple(appleSize);
         setParty(partySize);
-        SetClickProgress(currentHealth);
+        console.log(currentHealth);
+        SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
       },
       onHealthChange: ({currentHealth}) => {
         console.log(`currentHealth: ${currentHealth}`);
@@ -62,7 +63,7 @@ const AppleHitSession = ({navigation, route}) => {
   const disconnect = () => {
     DisconnectIfConnected(() => {
       navigation.navigate('AppleDetail', {
-        id: 26,
+        id: roomId,
       });
     });
   };
@@ -138,7 +139,7 @@ const AppleHitSession = ({navigation, route}) => {
                 width: 100,
                 position: 'absolute',
                 left: punchPosition.x - 100,
-                top: punchPosition.y - 620,
+                top: punchPosition.y - 600,
               }}
             />
           </Animatable.View>
