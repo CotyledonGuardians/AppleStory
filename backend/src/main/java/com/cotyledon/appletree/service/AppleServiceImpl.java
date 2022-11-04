@@ -133,6 +133,8 @@ public class AppleServiceImpl implements AppleService{
 
     @Override
     public void catchToTrue(Long appleId) {
-        findById(appleId).orElseThrow().setIsCatch(true);
+        Apple apple = findById(appleId).orElseThrow();
+        apple.setIsCatch(true);
+        appleRepository.save(apple);
     }
 }
