@@ -15,6 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
+import {UseStomp} from '../stomp';
 
 // 남은 시간에 따라 사과 사진 변경
 const imgUrl = [
@@ -48,7 +49,19 @@ const Apple = ({
     return (
       <TouchableOpacity
         style={appleStyle[index]}
-        onPress={() => navigation.navigate('HitApple', {id: apple.id})}>
+        onPress={() => {
+          UseStomp(
+            () => {
+              console.log('make room succeed', apple.id);
+              navigation.navigate('HitApple', {
+                id: apple.id,
+              });
+            },
+            () => {
+              console.log('make room failed', apple.id);
+            },
+          );
+        }}>
         <Image style={styles.apple} source={imgUrl[3]} />
       </TouchableOpacity>
     );
@@ -59,7 +72,17 @@ const Apple = ({
         <TouchableOpacity
           style={appleStyle[index]}
           onPress={() => {
-            navigation.navigate('HitApple', {id: apple.id});
+            UseStomp(
+              () => {
+                console.log('make room succeed', apple.id);
+                navigation.navigate('HitApple', {
+                  id: apple.id,
+                });
+              },
+              () => {
+                console.log('make room failed', apple.id);
+              },
+            );
           }}>
           <Image style={styles.apple} source={imgUrl[3]} />
         </TouchableOpacity>

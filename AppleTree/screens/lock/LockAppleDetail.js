@@ -3,6 +3,7 @@ import {SafeAreaView, Image, Text, View, StyleSheet} from 'react-native';
 import {getLockAppleDetail} from '../../api/AppleAPI';
 import useInterval from '../../config/useInterval';
 import {Button} from '../../components/Button';
+import {UseStomp} from '../../stomp';
 
 const LockAppleDetail = ({route, navigation}) => {
   const {id} = route.params;
@@ -79,9 +80,17 @@ const LockAppleDetail = ({route, navigation}) => {
               </Text>
               <Button
                 onPress={() => {
-                  navigation.navigate('HitApple', {
-                    id: apple.id,
-                  });
+                  UseStomp(
+                    () => {
+                      console.log('make room succeed', apple.id);
+                      navigation.navigate('HitApple', {
+                        id: apple.id,
+                      });
+                    },
+                    () => {
+                      console.log('make room failed', apple.id);
+                    },
+                  );
                 }}
                 text="사과 때리러 가기"
               />
