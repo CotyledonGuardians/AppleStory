@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
@@ -52,10 +51,10 @@ public class RoomAppleServiceImpl implements RoomAppleService {
     @Override
     public boolean validateAndCleanContent(Content content, String uid) {
         List<ContentDescription>[] lists = new List[]{
-                ofAuthorOrEmpty(content.getText(), uid),
-                ofAuthorOrEmpty(content.getPhoto(), uid),
-                ofAuthorOrEmpty(content.getAudio(), uid),
-                ofAuthorOrEmpty(content.getVideo(), uid)};
+                ofNotNullListWithAuthor(content.getText(), uid),
+                ofNotNullListWithAuthor(content.getPhoto(), uid),
+                ofNotNullListWithAuthor(content.getAudio(), uid),
+                ofNotNullListWithAuthor(content.getVideo(), uid)};
 
         content.setText(lists[0]);
         content.setPhoto(lists[1]);
@@ -76,9 +75,15 @@ public class RoomAppleServiceImpl implements RoomAppleService {
         content.getVideo().removeIf(cd -> cd.getAuthor().equals(member.getUid()));
     }
 
-    private List<ContentDescription> ofAuthorOrEmpty(List<ContentDescription> list, String uid) {
-        return Optional.ofNullable(list).orElse(Collections.emptyList()).stream()
-                .peek(cd -> cd.setAuthor(uid)).collect(Collectors.toList());
+    private List<ContentDescription> ofNotNullListWithAuthor(List<ContentDescription> list, String uid) {
+
+        List<ContentDescription> notNullList = Optional.ofNullable(list).orElse(Collections.emptyList());
+
+        notNullList.removeIf(cd -> cd == null || cd.getContent() == null || cd.getContent().isBlank());
+
+        notNullList.forEach(cd -> cd.setAuthor(uid));
+
+        return notNullList;
     }
 
     private boolean allEmpty(List<ContentDescription>[] lists) {
