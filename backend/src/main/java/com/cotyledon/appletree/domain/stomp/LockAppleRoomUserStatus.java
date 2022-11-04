@@ -19,7 +19,7 @@ public class LockAppleRoomUserStatus {
 
     public static LockAppleRoomUserStatus joined() {
         return LockAppleRoomUserStatus.builder()
-                .nickname("하드코딩된 닉네임")
+                .nickname(null)
                 .hasUpload(false)
                 .stage(JOINED)
                 .build();
@@ -27,7 +27,7 @@ public class LockAppleRoomUserStatus {
 
     public static LockAppleRoomUserStatus adding() {
         return LockAppleRoomUserStatus.builder()
-                .nickname("하드코딩된 닉네임")
+                .nickname(null)
                 .hasUpload(false)
                 .stage(ADDING)
                 .build();
@@ -43,7 +43,7 @@ public class LockAppleRoomUserStatus {
 
     public static LockAppleRoomUserStatus cancelled() {
         return LockAppleRoomUserStatus.builder()
-                .nickname("하드코딩된 닉네임")
+                .nickname(null)
                 .hasUpload(false)
                 .stage(CANCELLED)
                 .build();
@@ -51,7 +51,7 @@ public class LockAppleRoomUserStatus {
 
     public static LockAppleRoomUserStatus leftWithoutUploading() {
         return LockAppleRoomUserStatus.builder()
-                .nickname("하드코딩된 닉네임")
+                .nickname(null)
                 .hasUpload(false)
                 .stage(LEFT)
                 .build();
