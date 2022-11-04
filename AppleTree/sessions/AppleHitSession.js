@@ -1,15 +1,75 @@
-import React, {useState} from 'react';
+import {TestScheduler} from 'jest';
+import React, {useState, useEffect} from 'react';
 import {SafeAreaView, StyleSheet, Image, Text, Pressable} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import * as Progress from 'react-native-progress';
-const AppleHitSession = ({navigation}) => {
+import {
+  SubscribeIfConnected,
+  DisconnectIfConnected,
+  SendIfSubscribed,
+} from '../stomp/';
+
+const AppleHitSession = ({navigation, route}) => {
   const [showPunch, setShowPunch] = useState(false);
   const [clickProgress, SetClickProgress] = useState(1);
   const [punchPosition, setPunchPosition] = useState({
     x: 0,
     y: 0,
   });
+  const [totalHp, setTotalHp] = useState(0);
+  const [apple, setApple] = useState(0);
+  const [party, setParty] = useState(0);
+  const [currentHp, setCurrentHp] = useState(0);
+
+  const roomId = route.params.id;
   console.log('여기는1', clickProgress);
+  console.log(route.params.id);
+
+  // session start
+  useEffect(() => {
+    console.log('useEffect::roomId', roomId);
+    const messageListeners = {
+      onPartyChange: ({totalHealth, appleSize, partySize}) => {
+        console.log(
+          `totalHealth: ${totalHealth}, appleSize: ${appleSize}, partySize: ${partySize}`,
+        );
+        setTotalHp(totalHealth);
+        console.log('onPartyChange::totalHealth', totalHp);
+        setApple(appleSize);
+        console.log('onPartyChange::appleSize', apple);
+        setParty(partySize);
+      },
+      onHealthChange: ({currentHealth}) => {
+        console.log(`currentHealth: ${currentHealth}`);
+        setCurrentHp(currentHealth);
+        console.log(`appleSize: ${apple}`);
+        console.log('onHealthChange::totalHp', totalHp);
+        console.log('onHealthChange::currentHp', currentHp);
+        // console.log('몇이게', (currentHealth / totalHp).toFixed(1));
+        SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
+        // SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
+      },
+      onDie: () => {
+        console.log('잡았당~!');
+      },
+    };
+
+    //방에 들어가기
+    SubscribeIfConnected(`/unlock-apple-room.${roomId}`, messageListeners);
+  }, [roomId]);
+
+  const disconnect = () => {
+    DisconnectIfConnected(() => {
+      navigation.navigate('List');
+    });
+  };
+
+  const attack = () => {
+    console.log('쥰내게 때리기~');
+
+    SendIfSubscribed(`/unlock-apple-room.${roomId}.attack`, {});
+  };
+
   const pressHandler = e => {
     // console.log(e.nativeEvent.pageX);
     // console.log(e.nativeEvent.pageY);
@@ -18,11 +78,14 @@ const AppleHitSession = ({navigation}) => {
       x: e.nativeEvent.pageX,
       y: e.nativeEvent.pageY,
     });
-    if (clickProgress <= 0) {
-      SetClickProgress(1);
-    } else {
-      SetClickProgress(clickProgress - 0.1);
-    }
+
+    attack();
+    // if (clickProgress <= 0) {
+    //   SetClickProgress(1);
+    // } else {
+    //   console.log(clickProgress);
+    //   SetClickProgress(clickProgress - 0.1);
+    // }
     console.log('여기는2', clickProgress);
     setTimeout(() => {
       setShowPunch(false);
@@ -77,7 +140,11 @@ const AppleHitSession = ({navigation}) => {
           </Animatable.View>
         )}
       </Pressable>
-      <Text style={styles.bottomtxt}>함께 때리면 더 빨리 열 수 있어요!</Text>
+      {/* <Text style={styles.bottomtxt}>함께 때리면 더 빨리 열 수 있어요!</Text> */}
+      <Text style={styles.bottomtxt}>총 HP : {totalHp}</Text>
+      <Text style={styles.bottomtxt}>총 인원 수 : {apple}</Text>
+      <Text style={styles.bottomtxt}>참가 인원 수 : {party}</Text>
+      <Text style={styles.bottomtxt}>현재 HP : {currentHp}</Text>
     </SafeAreaView>
   );
 };

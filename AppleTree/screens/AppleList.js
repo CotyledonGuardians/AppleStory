@@ -13,6 +13,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import SelectDropdown from 'react-native-select-dropdown';
 import {getCloseAppleList, getOpenAppleList} from '../api/AppleAPI';
+import {UseStomp} from '../stomp';
 
 const AppleList = ({navigation}) => {
   const [route, setRoute] = useState('열린 사과');
@@ -152,7 +153,21 @@ const AppleList = ({navigation}) => {
                 id: id,
               });
             } else {
-              navigation.navigate('HitApple');
+              UseStomp(
+                () => {
+                  console.log('make room succeed', id);
+                  navigation.navigate('HitApple', {
+                    id: id,
+                  });
+                },
+                () => {
+                  console.log('make room failed', id);
+                  // alert('make room failed', id);
+                },
+              );
+              // navigation.navigate('HitApple', {
+              //   id: id,
+              // });
             }
           } else {
             navigation.navigate('LockAppleDetail', {
