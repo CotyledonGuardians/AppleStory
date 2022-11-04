@@ -27,30 +27,30 @@ const AppleHitSession = ({navigation, route}) => {
 
   // session start
   useEffect(() => {
+    let total = 0;
+
     console.log('useEffect::roomId', roomId);
     const messageListeners = {
       onPartyChange: ({totalHealth, appleSize, partySize}) => {
         console.log(
           `totalHealth: ${totalHealth}, appleSize: ${appleSize}, partySize: ${partySize}`,
         );
+
         setTotalHp(totalHealth);
-        console.log('onPartyChange::totalHealth', totalHp);
+        total = totalHealth;
         setApple(appleSize);
-        console.log('onPartyChange::appleSize', apple);
         setParty(partySize);
+        console.log('onPartyChange::totalHealth', total);
       },
       onHealthChange: ({currentHealth}) => {
         console.log(`currentHealth: ${currentHealth}`);
         setCurrentHp(currentHealth);
-        console.log(`appleSize: ${apple}`);
-        console.log('onHealthChange::totalHp', totalHp);
-        console.log('onHealthChange::currentHp', currentHp);
-        // console.log('몇이게', (currentHealth / totalHp).toFixed(1));
-        SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
-        // SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
+        console.log('몇이게', (currentHealth / totalHp).toFixed(1));
+        SetClickProgress(parseFloat((currentHealth / total).toFixed(1)));
       },
       onDie: () => {
-        console.log('잡았당~!');
+        alert('잡았당');
+        disconnect();
       },
     };
 
@@ -60,13 +60,13 @@ const AppleHitSession = ({navigation, route}) => {
 
   const disconnect = () => {
     DisconnectIfConnected(() => {
-      navigation.navigate('List');
+      navigation.navigate('AppleDetail', {
+        id: roomId,
+      });
     });
   };
 
   const attack = () => {
-    console.log('쥰내게 때리기~');
-
     SendIfSubscribed(`/unlock-apple-room.${roomId}.attack`, {});
   };
 
