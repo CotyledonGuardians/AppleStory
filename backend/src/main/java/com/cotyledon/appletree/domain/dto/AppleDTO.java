@@ -13,6 +13,8 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 public class AppleDTO {
+
+    private Long id;
     private Boolean type;
     private String title;
     private Creator creator;
