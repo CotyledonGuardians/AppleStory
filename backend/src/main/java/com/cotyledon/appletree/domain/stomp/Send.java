@@ -43,12 +43,17 @@ public class Send {
             throw exception.buildDefault();
         }
 
-        if (roomType == RoomType.UNLOCK) {
-            try {
-                appleId = Long.parseLong(roomId);
-            } catch (NumberFormatException e) {
-                throw exception.buildDefault();
-            }
+        switch (roomType) {
+            case LOCK:
+                roomId = roomId.toUpperCase();
+                break;
+            case UNLOCK:
+                try {
+                    appleId = Long.parseLong(roomId);
+                } catch (NumberFormatException e) {
+                    throw exception.buildDefault();
+                }
+                break;
         }
 
         return Send.builder().roomType(roomType).roomId(roomId).appleId(appleId).build();
