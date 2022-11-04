@@ -1,6 +1,13 @@
 import {TestScheduler} from 'jest';
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, StyleSheet, Image, Text, Pressable} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  Pressable,
+} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import * as Progress from 'react-native-progress';
 import {
@@ -16,40 +23,34 @@ const AppleHitSession = ({navigation, route}) => {
     x: 0,
     y: 0,
   });
-  const [totalHp, setTotalHp] = useState(0);
+
   const [apple, setApple] = useState(0);
   const [party, setParty] = useState(0);
-  const [currentHp, setCurrentHp] = useState(0);
-
   const roomId = route.params.id;
-  console.log('여기는1', clickProgress);
-  console.log(route.params.id);
 
   // session start
   useEffect(() => {
-    let total = 0;
+    let totalHp = 0;
 
     console.log('useEffect::roomId', roomId);
     const messageListeners = {
-      onPartyChange: ({totalHealth, appleSize, partySize}) => {
+      onPartyChange: ({totalHealth, appleSize, partySize, currentHealth}) => {
         console.log(
           `totalHealth: ${totalHealth}, appleSize: ${appleSize}, partySize: ${partySize}`,
         );
 
-        setTotalHp(totalHealth);
-        total = totalHealth;
+        totalHp = totalHealth;
+        console.log('onPartyChange::totalHealth', totalHp);
         setApple(appleSize);
         setParty(partySize);
-        console.log('onPartyChange::totalHealth', total);
+        SetClickProgress(currentHealth);
       },
       onHealthChange: ({currentHealth}) => {
         console.log(`currentHealth: ${currentHealth}`);
-        setCurrentHp(currentHealth);
-        console.log('몇이게', (currentHealth / totalHp).toFixed(1));
-        SetClickProgress(parseFloat((currentHealth / total).toFixed(1)));
+        SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
       },
       onDie: () => {
-        alert('잡았당');
+        alert('사과 따기 성공!');
         disconnect();
       },
     };
@@ -61,7 +62,7 @@ const AppleHitSession = ({navigation, route}) => {
   const disconnect = () => {
     DisconnectIfConnected(() => {
       navigation.navigate('AppleDetail', {
-        id: roomId,
+        id: 26,
       });
     });
   };
@@ -80,13 +81,7 @@ const AppleHitSession = ({navigation, route}) => {
     });
 
     attack();
-    // if (clickProgress <= 0) {
-    //   SetClickProgress(1);
-    // } else {
-    //   console.log(clickProgress);
-    //   SetClickProgress(clickProgress - 0.1);
-    // }
-    console.log('여기는2', clickProgress);
+
     setTimeout(() => {
       setShowPunch(false);
     }, 250);
@@ -101,10 +96,18 @@ const AppleHitSession = ({navigation, route}) => {
     },
   };
   //체력 hp 추후 변경
-  console.log('여기는3', clickProgress);
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.toptxt}>사과가 열리기까지 이 정도 남았어요!</Text>
+      <View style={styles.countBox}>
+        <Image
+          style={styles.countIcon}
+          source={require('../assets/icons/usercount.png')}
+        />
+        <Text style={styles.countText}>
+          {party} / {apple}
+        </Text>
+      </View>
+
       <Progress.Bar
         progress={clickProgress}
         width={300}
@@ -116,10 +119,11 @@ const AppleHitSession = ({navigation, route}) => {
         borderRadius={15}
         borderWidth={5}
       />
+      <Text style={styles.toptxt}>사과가 열리기까지 이 정도 남았어요!</Text>
       <Pressable onPress={pressHandler}>
         <Image
           source={require('../assets/pictures/apple4.png')}
-          style={{width: 300, height: 300}}
+          style={{resizeMode: 'contain', width: 300, height: 300}}
         />
         {/* 클릭이벤트일때 주먹 사진 가져오기 */}
         {showPunch && (
@@ -140,11 +144,7 @@ const AppleHitSession = ({navigation, route}) => {
           </Animatable.View>
         )}
       </Pressable>
-      {/* <Text style={styles.bottomtxt}>함께 때리면 더 빨리 열 수 있어요!</Text> */}
-      <Text style={styles.bottomtxt}>총 HP : {totalHp}</Text>
-      <Text style={styles.bottomtxt}>총 인원 수 : {apple}</Text>
-      <Text style={styles.bottomtxt}>참가 인원 수 : {party}</Text>
-      <Text style={styles.bottomtxt}>현재 HP : {currentHp}</Text>
+      <Text style={styles.bottomtxt}>함께 때리면 더 빨리 열 수 있어요!</Text>
     </SafeAreaView>
   );
 };
@@ -156,8 +156,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  box: {
+    width: 350,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   progress: {
-    marginBottom: 50,
+    marginTop: 20,
+    marginBottom: 5,
   },
   toptxt: {
     fontFamily: 'UhBee Se_hyun',
@@ -167,8 +174,29 @@ const styles = StyleSheet.create({
   bottomtxt: {
     fontFamily: 'UhBee Se_hyun Bold',
     textAlign: 'center',
-    marginTop: 30,
+    marginTop: 20,
     fontSize: 20,
+  },
+  countBox: {
+    width: 100,
+    height: 30,
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderRadius: 30,
+    marginTop: 5,
+    backgroundColor: '#ECE5E0',
+    paddingRight: 10,
+    paddingLeft: 15,
+  },
+  countIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+  },
+  countText: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: 16,
+    color: '#4C4036',
   },
 });
 
