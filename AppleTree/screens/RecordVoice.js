@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { createContext, useState } from 'react';
 import {
   Platform,
   PermissionsAndroid,
@@ -10,14 +10,21 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import {SmallButton, SmallWhiteButton} from '../components/Button';
+import RNFS from 'react-native-fs';
+import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 
-const RecordVoiceTest = () => {
+export const audioContext = createContext({
+  setFilepath: () => {},
+  setRecordTime: () => {},
+})
+
+const RecordVoice = ({setModalVisible, setAudioPathOnDevice, setAudioIsPicked, setRecordedTime}) => {
   // recordStatus : 0(녹음된 내용이 없음), 1(녹음 중), 2(녹음된 완료/재생가능), 3(녹음된 파일 임시 정지)
   const [recordStatus, setRecordStatus] = useState(0);
   const [recordTime, setRecordTime] = useState('00:00');
   const [playTime, setPlayTime] = useState('00:00');
+  const [filepath, setFilepath] = useState(null);
   const [audioRecorderPlayer, setAudioRecorderPlayer] = useState(new AudioRecorderPlayer());
   audioRecorderPlayer.setSubscriptionDuration(0.1);
 
@@ -45,6 +52,7 @@ const RecordVoiceTest = () => {
 
   const onRetryRecord = () => {
     // 기존 플레이어를 제거하고, callback listener 제거
+    setFilepath(null);
     try{
       stopPlay();
     } catch(err) {
@@ -115,8 +123,9 @@ const RecordVoiceTest = () => {
         return;
       }
     }
-    console.log(`startRecord ${audioRecorderPlayer._isRecording}`);
+    // console.log(`startRecord ${audioRecorderPlayer._isRecording}`);
     const result = await audioRecorderPlayer.startRecorder().then((uri) => {
+        // setFilepath(uri.replace('file:///',''));
         return uri;
     }).catch((err) => {
         console.log("Error in startRecorder: ", err);
@@ -132,30 +141,33 @@ const RecordVoiceTest = () => {
     } catch(err) {
       console.log(`addListener: ${err}`)
     }
-    console.log(`startRecorder: ${result}`);
+    // console.log(`startRecorder: ${result}`);
   }
 
   const stopRecord = async () => {
     console.log(`stopRecord ${audioRecorderPlayer._isRecording}`);
     const result = await audioRecorderPlayer.stopRecorder()
-    .then((uri) => uri)
+    .then((uri) => {
+      setFilepath(uri);
+      return uri;
+    })
     .catch((err) => {
       console.log('Error in stopRecord: ', err);
     });
     audioRecorderPlayer.removeRecordBackListener();
-    console.log(`stopRecorder: ${result}`);
+    // console.log(`stopRecorder: ${result}`);
   };
 
   const playRecord = async () => {
     console.log('onStartPlay');
 
-    const msg = await audioRecorderPlayer.startPlayer().catch((err) => {
+    /*const msg = */await audioRecorderPlayer.startPlayer().catch((err) => {
       console.log("Error in startPlayer: ", err);
     });
-    const volume = await audioRecorderPlayer.setVolume(1.0).catch((err) => {
+    /*const volume = */await audioRecorderPlayer.setVolume(1.0).catch((err) => {
       console.log("Error in setVolume: ", err);
     });
-    console.log(`file: ${msg}`, `volume: ${volume}`);
+    // console.log(`file: ${msg}`, `volume: ${volume}`);
 
     audioRecorderPlayer.addPlayBackListener((e) => {
         const _playTime = audioRecorderPlayer.mmss(
@@ -185,35 +197,96 @@ const RecordVoiceTest = () => {
   }
 
   const resumePlay = async () => {
-    try {
-      await audioRecorderPlayer.resumePlayer().catch((err) => {
-        console.log('Error in resumePlay: ', err);
-      });
-    } catch(err) {
-      console.log('Error: resumePlayingRecord');
-    }
+    await audioRecorderPlayer.resumePlayer().catch((err) => {
+      console.log('Error in resumePlay: ', err);
+    });
   }
 
   const stopPlay = async () => {
-    try {
-      await audioRecorderPlayer.stopPlayer()
-      .catch((err) => {
-        console.log('Error in stopPlay: ', err);
+    await audioRecorderPlayer.stopPlayer()
+    .catch((err) => {
+      console.log('Error in stopPlay: ', err);
+    });
+    audioRecorderPlayer.removePlayBackListener();
+  }
+
+  const cancelRecord = async () => {
+    if(recordStatus === 1) {
+      await stopRecord().catch((err) => {
+        console.log('Error in stopRecord: ', err.message);
       });
-      audioRecorderPlayer.removePlayBackListener();
-    } catch(err) {
-      console.log('Error: stopPlay');
     }
+    if(recordStatus === 3) {
+      await stopPlay().then(()=>{
+        setRecordStatus(1);
+      }).catch((err) => {
+        console.log('Error in stopPlay ', err.message);
+      })
+    }
+    if(filepath) {
+      await RNFS.unlink(filepath)
+      .then(() => {
+        console.log(`Delete ${filepath}`);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+      setFilepath(null);
+    }
+    setModalVisible(false);
+  }
+
+  const onSubmit = async () => {
+    if(!filepath) {
+      Alert.alert('녹음을 완료해주세요!');
+      return;
+    }
+    /*
+    * 1) 캐시 -> 파일 복사
+    * 2) 파일 복사한 경로 set
+    * 3) 캐시 삭제
+    */
+
+    // 1) 캐시 -> 파일 복사
+    const targetPath = RNFS.CachesDirectoryPath + '/audio.mp4';
+    await RNFS.copyFile(filepath, RNFS.CachesDirectoryPath + '/audio.mp4')
+    .then(() => {
+      // 2) 파일 복사한 경로 set
+      setAudioPathOnDevice(targetPath);
+      setRecordedTime(recordTime);
+      setAudioIsPicked(true);
+    })
+    .catch((err) => {
+      console.log('Error in copyFile: ', err.message);
+    })
+
+    // 3) 캐시 삭제
+    await RNFS.unlink(filepath)
+      .then(() => {
+        console.log(`Delete ${filepath}`);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+    setFilepath(null);
+    setModalVisible(false);
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.textBox}>
+      {/* <View style={styles.textBox}>
         <Text style={styles.headerText}>사과에 남길 말을 담아주세요!</Text>
-      </View>
+      </View> */}
       <View style={styles.recordBox}>
-        <Text style={styles.recordText}>최대 1분</Text>
-        <View style={styles.test}>
+        {(recordStatus === 0) ? (
+          <Text style={styles.recordText}>최대 1분</Text>
+        ) : (recordStatus === 1 || recordStatus === 2) ? (
+          <Text style={styles.recordText}>{recordTime}</Text>
+        ) : /* (recordStatus === 3 || recordStatus === 4) */(
+          <Text style={styles.recordText}>{playTime} / {recordTime}</Text>
+        )
+        }
+        <View style={styles.recordToolBox}>
           {(recordStatus === 2 || recordStatus === 4) ?
           <View style={styles.retryBox}>
             <TouchableOpacity 
@@ -224,7 +297,7 @@ const RecordVoiceTest = () => {
                 source={require('../assets/icons/retry.png')}
               />
             </TouchableOpacity>
-            <Text>다시 녹음</Text>
+            <Text style={styles.recordText}>다시 녹음</Text>
           </View>:<View style={styles.dummyBox}></View>}
           <View style={styles.recordButtonBox}>
             { (recordStatus === 0) ?
@@ -240,7 +313,6 @@ const RecordVoiceTest = () => {
                (<TouchableOpacity
                 style={styles.recordButton}
                 onPress={onStopRecord}>
-                <Text>{recordTime}</Text>
                 <Image
                   style={styles.recordImg}
                   source={require('../assets/icons/stop.png')}
@@ -250,7 +322,6 @@ const RecordVoiceTest = () => {
                 (<TouchableOpacity
                   style={styles.recordButton}
                   onPress={onPlayRecord}>
-                  <Text>{recordTime}</Text>
                   <Image
                     style={styles.recordImg}
                     source={require('../assets/icons/play.png')}
@@ -259,7 +330,6 @@ const RecordVoiceTest = () => {
               : ((recordStatus === 3) ? (<TouchableOpacity
                 style={styles.recordButton}
                 onPress={onPausePlay}>
-                <Text>{playTime} / {recordTime}</Text>
                 <Image
                   style={styles.recordImg}
                   source={require('../assets/icons/pause.png')}
@@ -269,7 +339,6 @@ const RecordVoiceTest = () => {
               : (<TouchableOpacity
                 style={styles.recordButton}
                 onPress={onResumePlay}>
-                <Text>{playTime} / {recordTime}</Text>
                 <Image
                   style={styles.recordImg}
                   source={require('../assets/icons/play.png')}
@@ -281,9 +350,16 @@ const RecordVoiceTest = () => {
           </View>
           <View style={styles.dummyBox}></View>
         </View>
-        <Text style={styles.recordText}>버튼을 눌러 녹음하세요!</Text>
+        {(recordStatus === 0) ? (
+          <Text style={styles.recordText}>버튼을 눌러 녹음하세요!</Text>
+        ) : (recordStatus === 1) ? (
+          <Text style={styles.recordText}>최대 1분!</Text>
+        ) : /* (recordStatus === 3 || recordStatus === 4) */(
+          <Text style={styles.recordText}>녹음 내용을 확인하세요!</Text>
+        )
+        }
       </View>
-      <View style={styles.blankBox} />
+      {/* <View style={styles.blankBox} /> */}
       <View style={styles.bearBox}>
         <View style={styles.sideTextBox}>
           <Text style={styles.defaultText}>미래에 친구에게 전할 말을</Text>
@@ -295,8 +371,16 @@ const RecordVoiceTest = () => {
         />
       </View>
       <View style={styles.buttonBox}>
-        <SmallWhiteButton text="취소" />
-        <SmallButton text="완료" />
+        <SmallWhiteButton 
+        onPress={cancelRecord}
+        text="취소" />
+        <SmallButton 
+        onPress={() => {
+            onSubmit().catch((err) => {
+            console.log('Error in onSubmit: ', err.message);
+          })
+        }}
+        text="완료" />
       </View>
     </SafeAreaView>
   );
@@ -334,10 +418,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
-    padding: 10,
     margin: 10,
-    flex: 2,
+    flex: 3,
     justifyContent: 'space-around',
+  },
+  recordToolBox: {
+    flexDirection: 'row',
   },
   recordText: {
     color: '#AAA19B',
@@ -396,11 +482,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
+    marginBottom: '10%'
   },
-  test: {
-    flexDirection: 'row',
-  },
-
 });
 
-export default RecordVoiceTest;
+export default RecordVoice;

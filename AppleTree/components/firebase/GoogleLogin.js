@@ -1,7 +1,13 @@
 import React from 'react';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {Pressable, StyleSheet, Image} from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GoogleLogin = props => {
@@ -23,29 +29,29 @@ const GoogleLogin = props => {
       console.log('storeToken error' + error);
     }
   };
-  //AsyncStorage 삭제
-  const removeToken = async () => {
-    try {
-      await AsyncStorage.removeItem('idToken');
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // //AsyncStorage 삭제
+  // const removeToken = async () => {
+  //   try {
+  //     await AsyncStorage.removeItem('idToken');
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   return (
-    <>
-      <Pressable
-        onPress={() =>
-          onGoogleButtonPress().then(() => {
-            props.propFunction(true);
-            console.log('Google login success');
-          })
-        }
-        style={styles.container}>
-        <Image
-          style={styles.icon}
-          source={require('../../assets/icons/google.png')}></Image>
-      </Pressable>
-    </>
+    <TouchableOpacity
+      onPress={() =>
+        onGoogleButtonPress().then(() => {
+          props.propFunction(true);
+          console.log('Google login success');
+        })
+      }
+      style={styles.buttonShape}>
+      <Image
+        style={styles.icon}
+        source={require('../../assets/icons/googleIcon.png')}
+      />
+      <Text style={styles.buttonText}>구글로 로그인하기</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -59,8 +65,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icon: {
-    height: 50,
-    width: 50,
+    height: 30,
+    width: 30,
+  },
+  buttonShape: {
+    width: 300,
+    height: 60,
+    borderRadius: 100,
+    backgroundColor: '#4c4036',
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  buttonText: {
+    textAlign: 'center',
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontFamily: 'UhBee Se_hyun Bold',
+    marginLeft: 10,
   },
 });
 export default GoogleLogin;

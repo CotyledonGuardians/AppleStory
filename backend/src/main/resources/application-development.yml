@@ -16,7 +16,11 @@ spring:
     host: ${com.cotyledon.appletree.dev-dep.host}
     password: ${com.cotyledon.appletree.dev-dep.password}
 
+
+
 logging:
+  file:
+    name: logs/development.log
   level:
     com.cotyledon.appletree: DEBUG
     org:

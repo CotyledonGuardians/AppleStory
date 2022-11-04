@@ -1,81 +1,45 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {SafeAreaView, ScrollView, StyleSheet} from 'react-native';
-import {TextInput} from 'react-native';
-import {Pressable, Text} from 'react-native';
+import React, {useState} from 'react';
+import {SafeAreaView, StyleSheet} from 'react-native';
+import {TextInput, Image} from 'react-native';
+import {Text} from 'react-native';
 import {View} from 'react-native-animatable';
 import {UseStomp} from '../../stomp';
+import {SmallButton} from '../../components/Button';
 const JoinSession = ({navigation: {navigate}}) => {
   const [roomId, setRoomID] = useState('');
-  const [message, setMessage] = useState([
-    {idx: 1, nickname: '쨈송', stage: 'JOINED'},
-  ]);
-  // useEffect(() => {
-  //   ref.scrollIntoView({inline: 'end'});
-  // }, [message.length]);
   function joinLockApple() {
-    console.log('joinLockApple');
     console.log('roomId', roomId);
     UseStomp(
       () => {
-        console.log('make room succeed', roomId);
+        console.log('session join succeed : ', roomId);
         navigate('GroupSession', {roomId: roomId});
       },
       () => {
-        console.log('make room failed', roomId);
-        navigate('GroupSession');
+        console.log('session join failed', roomId);
+        alert('방번호를 다시 확인해주세요.');
       },
     );
   }
-  let cnt = 1;
-  const addMessage = () => {
-    console.log('addMessage');
-    setMessage([...message, {idx: cnt++, nickname: '똥쟁이', stage: 'ADDED'}]);
-  };
-  const scrollViewRef = useRef();
-  const stateMessage = (nick, state) => {
-    switch (state) {
-      case 'JOINED':
-        return nick + '님께서 입장 하셨습니다.';
-      case 'ADDING':
-        return nick + '님께서 사과를 생성 중입니다.';
-      case 'ADDED':
-        return nick + '님께서 사과 생성을 완료했습니다.';
-      case 'CANCELLED':
-        return nick + '님께서 방을 나갔습니다.';
-      case 'LEFT':
-        return nick + '님께서 방을 나갔습니다.';
-      default:
-        break;
-    }
-  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.view}>
-        <ScrollView
-          style={styles.ScrollView}
-          ref={scrollViewRef}
-          onContentSizeChange={() =>
-            scrollViewRef.current.scrollToEnd({animated: true})
-          }>
-          {message.map(item => (
-            <Text key={item.idx}>
-              {stateMessage(item.nickname, item.stage)}
-            </Text>
-          ))}
-        </ScrollView>
-      </View>
-      <Pressable onPress={() => addMessage()}>
-        <Text>메세지 추가</Text>
-      </Pressable>
-      <View>
-        <TextInput
-          value={roomId}
-          placeholder="방 번호를 입력하세요"
-          onChangeText={text => setRoomID(text)}
-        />
-        <Pressable onPress={() => joinLockApple}>
-          <Text>세션에 참여하기</Text>
-        </Pressable>
+      <Image
+        source={require('../../assets/pictures/aegom3.png')}
+        style={styles.image}
+      />
+      <View style={styles.marginTopBottom}>
+        <Text style={styles.txt}>방 번호</Text>
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            value={roomId}
+            placeholder="방 번호를 입력하세요"
+            onChangeText={text => setRoomID(text)}
+          />
+        </View>
+        <View style={styles.buttonWrap}>
+          <SmallButton onPress={() => joinLockApple()} text="입장하기" />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -89,13 +53,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
   },
-  ScrollView: {
-    backgroundColor: '#A9A9A9',
+  marginTopBottom: {
+    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 10,
   },
-  view: {
+  input: {
+    width: 300,
+    height: 50,
+    backgroundColor: '#ECE5E0',
+    borderRadius: 10,
+    justifyContent: 'center',
+    color: '#4C4036',
+    fontSize: 13,
+    fontFamily: 'UhBee Se_hyun',
+    textAlign: 'center',
     margin: 10,
-    width: '100%',
-    height: 200,
+  },
+  txt: {
+    fontSize: 15,
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
+  },
+  form: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+    width: 300,
+    height: 50,
+    backgroundColor: '#ECE5E0',
+    borderRadius: 10,
+  },
+  buttonWrap: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  image: {
+    resizeMode: 'contain',
+    marginBottom: 10,
+    height: 260,
   },
 });
 

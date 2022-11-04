@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
   name: {
     textAlign: 'center',
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
     backgroundColor: '#ECE5E0',

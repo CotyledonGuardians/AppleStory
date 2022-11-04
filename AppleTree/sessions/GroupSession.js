@@ -8,6 +8,7 @@ import {
   ScrollView,
   Pressable,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {SmallButton, Button} from '../components/Button';
 import {
@@ -21,23 +22,18 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   // unlockGIF loading
   const [ready, setReady] = useState(true);
   // session total cnt
-  const [total, setTotal] = useState(null);
+  const [total, setTotal] = useState(0);
   // session compelete cnt
-  const [compelete, setCompelete] = useState(null);
+  const [compelete, setCompelete] = useState(0);
   // session message
-  const [message, setMessage] = useState([
-    {idx: 1, nickname: 'nickname', stage: 'JOINED'},
-  ]);
+  const [message, setMessage] = useState([]);
   // 방장인지체크 추후 변경
-  let isOwner = false;
-  // 복사할 앱 링크 추후 변경
-  let sessionLink = 'https://복사한-url-키키키키';
+  const [isHost, setIsHost] = useState(false);
   // room id
   const {roomId} = route.params;
   // 클립보드 복사
   const copyToClipboard = () => {
-    Clipboard.setString(sessionLink);
-    alert('클립보드에 복사되었습니다.');
+    Clipboard.setString(roomId);
   };
   // 사과매달기 함수 추후 변경
   const hangApple = () => {
@@ -47,6 +43,8 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const scrollViewRef = useRef();
   // 메세지 컨버터
   const stateMessage = (nick, state) => {
+    console.log('stateMessage');
+    console.log(nick);
     switch (state) {
       case 'JOINED':
         return nick + '님께서 입장 하셨습니다.';
@@ -62,29 +60,47 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         break;
     }
   };
-  //~명 중 ~명 을 계산해주는 함수
-  const appleState = () => {
-    //총 인원:statuses.length - ( left&&hasUpload===false )
-    //완료한 인원:hasUpload가 true인 인원
-  };
   // session start
   useEffect(() => {
     alert(roomId);
+    const myid = auth().currentUser.uid;
     const messageListeners = {
-      onChange: ({uidToIndex, statuses}) => {
-        //제일 마지막에 들어온 사람의 nickname과 stage를 message에 add
-        setMessage([
-          ...message,
-          {
-            nickname: statuses[statuses.length - 1].nickname,
-            stage: statuses[statuses.length - 1].stage,
-          },
-        ]);
+      onChange: ({uidToIndex, statuses, hostUid}) => {
+        //방장인지 체크
+        if (myid === hostUid) {
+          setIsHost(true);
+        }
+        let length = statuses.length;
+        let hasUpload = 0;
+        for (let i = 0; i < statuses.length; i++) {
+          if (statuses[i].nickname === null) {
+            statuses[i].nickname = 'user' + (i + 1);
+          }
+          if (statuses[i].stage === 'LEFT' && statuses[i].hasUpload === false) {
+            length = length - 1;
+          }
+          if (statuses[i].hasUpload === true) {
+            hasUpload = hasUpload + 1;
+          }
+        }
+        setTotal(length);
+        setCompelete(hasUpload);
+        // 배열을 계속 갈아끼워줌(닉네임과 상태에 따라)
+        const newMessage = statuses.map((item, idx) => ({
+          idx: idx,
+          nickname: item.nickname,
+          stage: item.stage,
+        }));
+        setMessage([...newMessage]);
+      },
+      onSave: savedAppleId => {
+        console.log('savedAppleId:', savedAppleId);
+        console.log('typeof it:', typeof savedAppleId);
       },
     };
     //방에 들어가기
     SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
-  }, [roomId, message]);
+  }, [roomId]);
 
   const disconnect = () => {
     DisconnectIfConnected(() => {
@@ -94,20 +110,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
 
   const actAdding = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.adding`, {});
-  };
-
-  const actAdded = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
-      nickname: '이것이닉넴',
-      content: {
-        text: [
-          {
-            author: '이것은 uid로 덮어써짐',
-            content: 'This is text.',
-          },
-        ],
-      },
-    });
   };
 
   const actCancelled = () => {
@@ -127,7 +129,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
       <Text style={styles.complete}>
         {/* 추후 변경 */}
         {/* {}명 중 {}명 완료 */}
-        3명 중 2명 완료
+        {total}명 중 {compelete}명 완료
       </Text>
       <View style={styles.form}>
         <Pressable onPress={() => copyToClipboard()}>
@@ -137,7 +139,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               style={styles.copyIcon}
             />
             <Text style={styles.copyText}>
-              링크를 복사해서 친구를 초대하세요!
+              방 번호를 복사해서 친구를 초대하세요!
             </Text>
           </View>
         </Pressable>
@@ -149,14 +151,14 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               scrollViewRef.current.scrollToEnd({animated: true})
             }>
             {message.map(item => (
-              <Text key={item.idx}>
+              <Text key={item.idx} style={styles.txt}>
                 {stateMessage(item.nickname, item.stage)}
               </Text>
             ))}
           </ScrollView>
         </View>
         <View style={styles.buttons}>
-          {isOwner ? (
+          {!isHost ? (
             <Button onPress={() => disconnect()} text="추억 담기" />
           ) : (
             <>
@@ -166,7 +168,10 @@ const GroupSession = ({navigation: {navigate}, route}) => {
                 disabled={false}
               />
               <SmallButton
-                onPress={() => navigate('GroupCreate', {roomId: roomId})}
+                onPress={() => {
+                  actAdding();
+                  navigate('GroupCreate', {roomId: roomId});
+                }}
                 text="추억 담기"
                 disabled={false}
               />
@@ -189,15 +194,15 @@ const styles = StyleSheet.create({
   view: {
     marginTop: 25,
     padding: 25,
-    width: 300,
+    width: 370,
     height: 250,
-    borderRadius: 10,
+    fontSize: 12,
+    fontFamily: 'UhBee Se_hyun',
   },
   ScrollView: {
     backgroundColor: '#ECE5E0',
+    borderRadius: 10,
     color: '#4C4036',
-    fontSize: 12,
-    fontFamily: 'UhBee Se_hyun',
   },
   complete: {
     fontSize: 16,
@@ -228,6 +233,15 @@ const styles = StyleSheet.create({
   image: {
     width: 111,
     height: 140,
+  },
+  txt: {
+    marginLeft: 15,
+    marginRight: 15,
+    marginBottom: 5,
+    marginTop: 5,
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: 13,
+    color: '#4c4036',
   },
 });
 

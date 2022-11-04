@@ -14,6 +14,8 @@ import {
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
+import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
+// import Slider from '@react-native-community/slider';
 
 const img_speaker = require('../assets/icons/mic.png');
 const img_pause = require('../assets/icons/mic.png');
@@ -22,24 +24,58 @@ const img_playjumpleft = require('../assets/icons/mic.png');
 const img_playjumpright = require('../assets/icons/mic.png');
 
 export default class PlayerScreen extends React.Component {
-  // static navigationOptions = props => ({
-  //   // title: props.navigation.state.params.title,
-  //   nickname: props.navigation.state.params,
-  // });
+  videoPlayer;
 
-  constructor() {
+  constructor(props) {
     super();
     this.state = {
       playState: 'paused', //playing, paused
       playSeconds: 0,
+      duration2: 0,
+      nickname: props.route.params.nickname,
+      text: '',
+      image: '',
+      video: '',
+      audio: '',
+
+      currentTime: 0,
       duration: 0,
+      isFullScreen: true,
+      isLoading: true,
+      paused: true,
+      playerState: PLAYER_STATES.PAUSED,
+      screenType: 'cover',
     };
     this.sliderEditing = false;
+    let uid = props.route.params.uid;
+    let data = props.route.params.data;
+    for (let i = 0; i < data.content.text.length; i++) {
+      if (data.content.text[i].author === uid) {
+        this.text = data.content.text[i].content;
+        break;
+      }
+    }
+    for (let i = 0; i < data.content.photo.length; i++) {
+      if (data.content.photo[i].author === uid) {
+        this.image = data.content.photo[i].content;
+        break;
+      }
+    }
+    for (let i = 0; i < data.content.video.length; i++) {
+      if (data.content.video[i].author === uid) {
+        this.video = data.content.video[i].content;
+        break;
+      }
+    }
+    for (let i = 0; i < data.content.audio.length; i++) {
+      if (data.content.audio[i].author === uid) {
+        this.audio = data.content.audio[i].content;
+        break;
+      }
+    }
   }
 
   componentDidMount() {
-    // this.play();
-
     this.timeout = setInterval(() => {
       if (
         this.sound &&
@@ -76,23 +112,21 @@ export default class PlayerScreen extends React.Component {
     }
   };
 
-  play = async () => {
+  play = () => {
     if (this.sound) {
       this.sound.play(this.playComplete);
       this.setState({playState: 'playing'});
     } else {
-      const filepath = require('./vancouver.mp3');
-      console.log('[Play]', filepath);
-
-      this.sound = new Sound(filepath, (error, _sound) => {
+      const filepath = this.audio;
+      this.sound = new Sound(filepath, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
-          Alert.alert('Notice', 'audio file error. (Error code : 1)');
+          // Alert.alert('Notice', 'audio file error. (Error code : 1)');
           this.setState({playState: 'paused'});
         } else {
           this.setState({
             playState: 'playing',
-            duration: this.sound.getDuration(),
+            duration2: this.sound.getDuration(),
           });
           this.sound.play(this.playComplete);
         }
@@ -105,7 +139,7 @@ export default class PlayerScreen extends React.Component {
         console.log('successfully finished playing');
       } else {
         console.log('playback failed due to audio decoding errors');
-        Alert.alert('Notice', 'audio file error. (Error code : 2)');
+        // Alert.alert('Notice', 'audio file error. (Error code : 2)');
       }
       this.setState({playState: 'paused', playSeconds: 0});
       this.sound.setCurrentTime(0);
@@ -131,7 +165,8 @@ export default class PlayerScreen extends React.Component {
       this.sound.getCurrentTime((secs, isPlaying) => {
         let nextSecs = secs + secsDelta;
         if (nextSecs < 0) nextSecs = 0;
-        else if (nextSecs > this.state.duration) nextSecs = this.state.duration;
+        else if (nextSecs > this.state.duration2)
+          nextSecs = this.state.duration2;
         this.sound.setCurrentTime(nextSecs);
         this.setState({playSeconds: nextSecs});
       });
@@ -145,48 +180,73 @@ export default class PlayerScreen extends React.Component {
     return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
   }
 
-  render() {
-    let nickname = this.props.route.params.nickname;
-    let uid = this.props.route.params.uid;
-    let data = this.props.route.params.data;
-    // let nickname = this.props.navigation.state.params;
-    let text = '';
-    let image = '';
-    let video = '';
-    let audio = '';
-    for (let i = 0; i < data.content.text.length; i++) {
-      if (data.content.text[i].author === uid) {
-        text = data.content.text[i].content;
-        break;
-      }
-    }
-    for (let i = 0; i < data.content.photo.length; i++) {
-      if (data.content.photo[i].author === uid) {
-        image = data.content.photo[i].content;
-        break;
-      }
-    }
-    for (let i = 0; i < data.content.video.length; i++) {
-      if (data.content.video[i].author === uid) {
-        video = data.content.video[i].content;
-        break;
-      }
-    }
-    for (let i = 0; i < data.content.audio.length; i++) {
-      if (data.content.audio[i].author === uid) {
-        audio = data.content.audio[i].content;
-        break;
-      }
-    }
-    const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
-    const durationString = this.getAudioTimeString(this.state.duration);
+  //Handler for change in seekbar
+  onSeek = seek => {
+    this.videoPlayer.seek(seek);
+  };
 
+  //Handler for Video Pause
+  onPaused = playerState => {
+    this.setState({
+      paused: !this.state.paused,
+      playerState,
+    });
+  };
+
+  //Handler for Replay
+  onReplay = () => {
+    this.setState({playerState: PLAYER_STATES.PLAYING});
+    this.videoPlayer.seek(0);
+  };
+
+  // Video Player will continue progress even if the video already ended
+  onProgress = data => {
+    const {isLoading, playerState} = this.state;
+
+    if (!isLoading && playerState !== PLAYER_STATES.ENDED) {
+      this.setState({currentTime: data.currentTime});
+    }
+  };
+
+  onLoad = data => this.setState({duration: data.duration, isLoading: false});
+
+  onLoadStart = data => this.setState({isLoading: true});
+
+  onEnd = () => this.setState({playerState: PLAYER_STATES.ENDED});
+
+  onError = () => alert('Something Wrong!! ', error);
+
+  exitFullScreen = () => {
+    alert('Exit full screen');
+  };
+
+  enterFullScreen = () => {
+    alert('entered full screen');
+  };
+
+  onFullScreen = () => {
+    if (this.state.screenType == 'contain')
+      this.setState({screenType: 'cover'});
+    else this.setState({screenType: 'contain'});
+  };
+  renderToolbar = () => (
+    <View>
+      <Text>Video Streaming Example </Text>
+    </View>
+  );
+
+  onSeeking = currentTime => this.setState({currentTime});
+
+  render() {
+    const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
+    const durationString = this.getAudioTimeString(this.state.duration2);
+    // this.setState({audio: audio});
     return (
       <SafeAreaView style={styles.container}>
         <Text style={[styles.textFontBold, styles.header]}>
-          {nickname}님의 기록
+          {this.state.nickname}님의 기록
         </Text>
-        {text === '' && image === '' && video === '' && audio === '' && (
+        {!this.text && !this.image && !this.video && !this.audio && (
           <View style={styles.emptyData}>
             <Image
               source={require('../assets/pictures/aegom3.png')}
@@ -196,35 +256,61 @@ export default class PlayerScreen extends React.Component {
           </View>
         )}
         <ScrollView showsVerticalScrollIndicator={false}>
-          {text !== '' && (
+          {this.text && (
             <View style={styles.textBox}>
-              <Text style={styles.textFont}>{text}</Text>
+              <Text style={styles.textFont}>{this.text}</Text>
             </View>
           )}
-          {image !== '' && (
+          {this.image && (
             <View style={styles.imageBox}>
               <Image
-                style={{width: '100%', height: 200}}
+                style={{
+                  margin: 3,
+                  height: '100%',
+                  aspectRatio: 1.6,
+                  flex: 1,
+                  width: '100%',
+                  resizeMode: 'contain',
+                }}
                 source={{
-                  uri: image,
+                  uri: this.image,
                 }}
               />
             </View>
           )}
-          {video !== '' && (
-            <Video
-              source={{
-                uri: video,
-              }}
-              style={{width: '100%', height: 200, marginTop: '5%'}}
-              paused={false} // 재생/중지 여부
-              resizeMode={'cover'} // 프레임이 비디오 크기와 일치하지 않을 때 비디오 크기를 조정하는 방법을 결정합니다. cover : 비디오의 크기를 유지하면서 최대한 맞게
-              onLoad={e => console.log(e)} // 미디어가 로드되고 재생할 준비가 되면 호출되는 콜백 함수입니다.
-              repeat={true} // video가 끝나면 다시 재생할 지 여부
-              onAnimatedValueUpdate={() => {}}
-            />
+          {this.video && (
+            <View style={{width: '100%', height: 200, marginTop: '5%'}}>
+              <Video
+                style={styles.mediaPlayer}
+                onEnd={this.onEnd}
+                onLoad={this.onLoad}
+                onLoadStart={this.onLoadStart}
+                onProgress={this.onProgress}
+                paused={this.state.paused}
+                ref={videoPlayer => (this.videoPlayer = videoPlayer)}
+                resizeMode={this.state.screenType}
+                onFullScreen={this.state.isFullScreen}
+                source={{uri: this.video}}
+                repeat={false}
+                controls={false}
+                volume={10}
+              />
+              <MediaControls
+                duration={this.state.duration}
+                isLoading={this.state.isLoading}
+                mainColor="#333"
+                onFullScreen={this.onFullScreen}
+                onPaused={this.onPaused}
+                onReplay={this.onReplay}
+                onSeek={this.onSeek}
+                onSeeking={this.onSeeking}
+                playerState={this.state.playerState}
+                progress={this.state.currentTime}
+                toolbar={this.renderToolbar()}
+              />
+            </View>
           )}
-          {audio !== '' && (
+          {this.audio && (
             <View style={styles.audioBox}>
               <View style={{flex: 1, justifyContent: 'center'}}>
                 <View
@@ -281,13 +367,10 @@ export default class PlayerScreen extends React.Component {
                   <Text style={styles.textFontTime}>{currentTimeString}</Text>
                   <Slider
                     onTouchStart={this.onSliderEditStart}
-                    // onTouchMove={() => console.log('onTouchMove')}
                     onTouchEnd={this.onSliderEditEnd}
-                    // onTouchEndCapture={() => console.log('onTouchEndCapture')}
-                    // onTouchCancel={() => console.log('onTouchCancel')}
                     onValueChange={this.onSliderEditing}
                     value={this.state.playSeconds}
-                    maximumValue={this.state.duration}
+                    maximumValue={this.state.duration2}
                     maximumTrackTintColor="gray"
                     minimumTrackTintColor="#4C4036"
                     thumbTintColor="#4C4036"
@@ -313,6 +396,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FBF8F6',
     padding: '6%',
+  },
+  toolbar: {
+    marginTop: 30,
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+  },
+  mediaPlayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'black',
   },
   header: {
     marginBottom: '5%',

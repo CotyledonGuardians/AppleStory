@@ -32,6 +32,8 @@ const AppleList = ({navigation}) => {
   const getInitData = async sort => {
     getOpenAppleList(sort, 0, 6)
       .then(response => {
+        console.log('WEFWEFWEF');
+        console.log(response.data);
         setOpenList(response.data.body.content);
       })
       .catch(error => {
@@ -84,7 +86,6 @@ const AppleList = ({navigation}) => {
 
           if (fetchedData.length === 0) {
             setLoading2(true);
-            console.log('데이터 없음');
             return;
           }
           // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.
@@ -439,167 +440,3 @@ const styles = StyleSheet.create({
 });
 
 export default AppleList;
-
-// const data = [
-//   {
-//     type: false,
-//     title: '테스트임1!',
-//     creator: {
-//       teamName: '테스트팀',
-//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//       member: [
-//         {
-//           nickname: '테스트닉네임',
-//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//         },
-//       ],
-//     },
-//     createAt: '2022-10-15T00:00:00.000+00:00',
-//     unlockAt: '2024-10-14T00:00:00.000+00:00',
-//     createScene: 'https://www.google.com',
-//     content: null,
-//     location: null,
-//     useSpace: false,
-//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//     isShow: false,
-//     isOpen: false,
-//   },
-//   {
-//     type: true,
-//     title: '테스트임1!',
-//     creator: {
-//       teamName: '테스트팀',
-//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//       member: [
-//         {
-//           nickname: '테스트닉네임',
-//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//         },
-//       ],
-//     },
-//     createAt: '2022-10-15T00:00:00.000+00:00',
-//     unlockAt: '2022-10-16T00:00:00.000+00:00',
-//     createScene: 'https://www.google.com',
-//     content: null,
-//     location: null,
-//     useSpace: false,
-//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//     isShow: false,
-//     isOpen: false,
-//   },
-//   {
-//     type: false,
-//     title: '테스트임1!',
-//     creator: {
-//       teamName: '테스트팀',
-//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//       member: [
-//         {
-//           nickname: '테스트닉네임',
-//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//         },
-//       ],
-//     },
-//     createAt: '2022-10-15T00:00:00.000+00:00',
-//     unlockAt: '2024-10-14T00:00:00.000+00:00',
-//     createScene: 'https://www.google.com',
-//     content: null,
-//     location: null,
-//     useSpace: false,
-//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//     isShow: false,
-//     isOpen: false,
-//   },
-//   {
-//     type: false,
-//     title: '테스트임1!',
-//     creator: {
-//       teamName: '테스트팀',
-//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//       member: [
-//         {
-//           nickname: '테스트닉네임',
-//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//         },
-//       ],
-//     },
-//     createAt: '2022-10-15T00:00:00.000+00:00',
-//     unlockAt: '2024-10-14T00:00:00.000+00:00',
-//     createScene: 'https://www.google.com',
-//     content: null,
-//     location: null,
-//     useSpace: false,
-//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//     isShow: false,
-//     isOpen: false,
-//   },
-//   {
-//     type: false,
-//     title: '테스트임1!',
-//     creator: {
-//       teamName: '테스트팀',
-//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//       member: [
-//         {
-//           nickname: '테스트닉네임',
-//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//         },
-//       ],
-//     },
-//     createAt: '2022-10-15T00:00:00.000+00:00',
-//     unlockAt: '2022-10-14T00:00:00.000+00:00',
-//     createScene: 'https://www.google.com',
-//     content: null,
-//     location: null,
-//     useSpace: false,
-//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//     isShow: false,
-//     isOpen: false,
-//   },
-//   {
-//     type: false,
-//     title: '테스트임1!',
-//     creator: {
-//       teamName: '테스트팀',
-//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//       member: [
-//         {
-//           nickname: '테스트닉네임',
-//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//         },
-//       ],
-//     },
-//     createAt: '2022-10-15T00:00:00.000+00:00',
-//     unlockAt: '2022-10-14T00:00:00.000+00:00',
-//     createScene: 'https://www.google.com',
-//     content: null,
-//     location: null,
-//     useSpace: false,
-//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//     isShow: false,
-//     isOpen: false,
-//   },
-//   {
-//     type: true,
-//     title: '테스트임1!',
-//     creator: {
-//       teamName: '테스트팀',
-//       hostUid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//       member: [
-//         {
-//           nickname: '테스트닉네임',
-//           uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//         },
-//       ],
-//     },
-//     createAt: '2022-10-15T00:00:00.000+00:00',
-//     unlockAt: '2024-10-22T00:00:00.000+00:00',
-//     createScene: 'https://www.google.com',
-//     content: null,
-//     location: null,
-//     useSpace: false,
-//     uid: 'WQk7cwPRUYhcaW4iUT9ZWZz8nil2',
-//     isShow: false,
-//     isOpen: true,
-//   },
-// ];

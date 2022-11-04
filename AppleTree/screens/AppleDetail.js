@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,6 +13,8 @@ import {DataTable} from 'react-native-paper';
 import Video from 'react-native-video';
 import {get} from 'react-native/Libraries/Utilities/PixelRatio';
 import {getAppleDetail} from '../api/AppleAPI';
+import {getAddress} from '../api/GeocodingAPI';
+import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 
 var randomImages = [
   require('../assets/pictures/aegom1.png'),
@@ -26,11 +28,78 @@ var randomImages = [
 
 const AppleDetail = ({navigation, route}) => {
   const [appleDetail, setAppleDetail] = useState();
+  const [address, setAddress] = useState();
+  const videoPlayer = useRef(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [paused, setPaused] = useState(false);
+  const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
+  const [screenType, setScreenType] = useState('content');
+
+  const onSeek = seek => {
+    //Handler for change in seekbar
+    videoPlayer.current.seek(seek);
+  };
+
+  const onPaused = playerState => {
+    //Handler for Video Pause
+    setPaused(!paused);
+    setPlayerState(playerState);
+  };
+
+  const onReplay = () => {
+    //Handler for Replay
+    setPlayerState(PLAYER_STATES.PLAYING);
+    videoPlayer.current.seek(0);
+  };
+
+  const onProgress = data => {
+    // Video Player will progress continue even if it ends
+    if (!isLoading && playerState !== PLAYER_STATES.ENDED) {
+      setCurrentTime(data.currentTime);
+    }
+  };
+
+  const onLoad = data => {
+    setDuration(data.duration);
+    setIsLoading(false);
+  };
+
+  const onLoadStart = data => setIsLoading(true);
+
+  const onEnd = () => setPlayerState(PLAYER_STATES.ENDED);
+
+  const onError = () => alert('Oh! ', error);
+
+  const exitFullScreen = () => {
+    alert('Exit full screen');
+  };
+
+  const enterFullScreen = () => {};
+
+  const onFullScreen = () => {
+    setIsFullScreen(isFullScreen);
+    if (screenType == 'content') setScreenType('cover');
+    else setScreenType('content');
+  };
+
+  const renderToolbar = () => (
+    <View>
+      <Text style={styles.toolbar}> toolbar </Text>
+    </View>
+  );
+
+  const onSeeking = currentTime => setCurrentTime(currentTime);
+
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(response => {
-        console.log(response.data.body);
         setAppleDetail(response.data.body);
+        if (response.data.body.location != null) {
+          getAddressLatLng(response.data.body.location);
+        }
       })
       .catch(error => {
         console.log('error', error);
@@ -46,6 +115,16 @@ const AppleDetail = ({navigation, route}) => {
     });
   };
 
+  const getAddressLatLng = location => {
+    getAddress(location.lat, location.lng).then(response => {
+      if (response.data.status === 'OK') {
+        setAddress(response.data.results[0].formatted_address);
+      } else {
+        setAddress(response.data.plus_code.compound_code);
+      }
+    });
+  };
+
   function Header() {
     return (
       <View style={styles.header}>
@@ -54,7 +133,7 @@ const AppleDetail = ({navigation, route}) => {
             source={
               randomImages[Math.floor(Math.random() * randomImages.length)]
             }
-            style={{marginLeft: 20, marginTop: 15, width: 140, height: 170}}
+            style={{marginLeft: 20, marginTop: 10, width: '80%', height: '90%'}}
           />
         </View>
         <View style={styles.headerRight}>
@@ -76,12 +155,13 @@ const AppleDetail = ({navigation, route}) => {
                 <Text>{appleDetail.creator.member.length}</Text>
               </View>
             </View>
-            <View style={styles.nameBox}>
-              <Text style={[styles.textFont, styles.smallText]}>
-                {/* 위치 받아서 변경필요 */}
-                위치: 대전광역시 유성구 덕명동 29-10
-              </Text>
-            </View>
+            {address && (
+              <View style={styles.nameBox}>
+                <Text style={[styles.textFont, styles.smallText]}>
+                  {address}
+                </Text>
+              </View>
+            )}
             <View style={styles.contentBox}>
               <Text style={[styles.textFont, styles.smallText]}>
                 이 사과에 기록된 데이터
@@ -138,7 +218,6 @@ const AppleDetail = ({navigation, route}) => {
       <TouchableOpacity
         style={styles.card}
         onPress={() => {
-          // Alert.alert('상세보기로 넘어가렴~');
           seedDetail(nickname, uid);
         }}>
         <Image
@@ -175,23 +254,33 @@ const AppleDetail = ({navigation, route}) => {
     return (
       <View style={{padding: 20}}>
         <Text style={styles.textFontBold}>기록된 사진</Text>
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {appleDetail.content.photo.map((item, index) => {
-            return (
-              <Image
-                key={index}
-                style={{width: 200, height: 150, margin: 5}}
-                source={{
-                  uri: item.content,
-                }}
-              />
-            );
-          })}
-        </ScrollView>
+        <View style={{height: 230, width: '100%'}}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {appleDetail.content.photo.map((item, index) => {
+              return (
+                <Image
+                  key={index}
+                  style={{
+                    margin: 3,
+                    height: '100%',
+                    aspectRatio: 1.6,
+                    flex: 1,
+                    width: '100%',
+                    resizeMode: 'contain',
+                  }}
+                  source={{
+                    uri: item.content,
+                  }}
+                />
+              );
+            })}
+          </ScrollView>
+        </View>
       </View>
     );
   }
 
+  // 현재 사용하지 않는 함수
   function VideoRecord() {
     return (
       <View style={{padding: 20}}>
@@ -199,18 +288,36 @@ const AppleDetail = ({navigation, route}) => {
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {appleDetail.content.video.map((item, index) => {
             return (
-              <Video
-                key={index}
-                source={{
-                  uri: item.content,
-                }}
-                style={{width: 200, height: 150, margin: 5}}
-                paused={false} // 재생/중지 여부
-                resizeMode={'cover'} // 프레임이 비디오 크기와 일치하지 않을 때 비디오 크기를 조정하는 방법을 결정합니다. cover : 비디오의 크기를 유지하면서 최대한 맞게
-                onLoad={e => console.log(e)} // 미디어가 로드되고 재생할 준비가 되면 호출되는 콜백 함수입니다.
-                repeat={true} // video가 끝나면 다시 재생할 지 여부
-                onAnimatedValueUpdate={() => {}}
-              />
+              <View style={{width: 200, height: 150, margin: 5}}>
+                <Video
+                  onEnd={onEnd}
+                  onLoad={onLoad}
+                  onLoadStart={onLoadStart}
+                  onProgress={onProgress}
+                  paused={paused}
+                  ref={videoPlayer}
+                  resizeMode={screenType}
+                  onFullScreen={isFullScreen}
+                  source={{
+                    uri: 'https://assets.mixkit.co/videos/download/mixkit-countryside-meadow-4075.mp4',
+                  }}
+                  style={styles.mediaPlayer}
+                  volume={10}
+                />
+                <MediaControls
+                  duration={duration}
+                  isLoading={isLoading}
+                  mainColor="#333"
+                  onFullScreen={onFullScreen}
+                  onPaused={onPaused}
+                  onReplay={onReplay}
+                  onSeek={onSeek}
+                  onSeeking={onSeeking}
+                  playerState={playerState}
+                  progress={currentTime}
+                  toolbar={renderToolbar()}
+                />
+              </View>
             );
           })}
         </ScrollView>
@@ -226,8 +333,8 @@ const AppleDetail = ({navigation, route}) => {
           <ContentSeed />
           {appleDetail.content.photo != null &&
             appleDetail.content.photo.length != 0 && <Photo />}
-          {appleDetail.content.video != null &&
-            appleDetail.content.video.length != 0 && <VideoRecord />}
+          {/* {appleDetail.content.video != null &&
+            appleDetail.content.video.length != 0 && <VideoRecord />} */}
         </ScrollView>
       )}
     </SafeAreaView>
@@ -252,6 +359,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FBF8F6',
+  },
+  toolbar: {
+    marginTop: 30,
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+  },
+  mediaPlayer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    backgroundColor: 'black',
+    justifyContent: 'center',
   },
   header: {
     // width: '100%',

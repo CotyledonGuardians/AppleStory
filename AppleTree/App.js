@@ -3,7 +3,7 @@ import {useEffect, useState} from 'react';
 import {Image, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import SplashScreen from 'react-native-splash-screen';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
@@ -28,11 +28,11 @@ import auth from '@react-native-firebase/auth';
 import JoinSession from './screens/test/JoinSession';
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
-const CreateStack = createStackNavigator();
-const HomeStack = createStackNavigator();
-const MapStack = createStackNavigator();
-const ListStack = createStackNavigator();
+const Stack = createNativeStackNavigator();
+const CreateStack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator();
+const MapStack = createNativeStackNavigator();
+const ListStack = createNativeStackNavigator();
 
 const styles = StyleSheet.create({
   navIcon: {
@@ -104,6 +104,8 @@ export default function App() {
                 name="LockAppleDetail"
                 component={LockAppleDetail}
               />
+              <HomeStack.Screen name="AppleDetail" component={AppleDetail} />
+              <HomeStack.Screen name="SeedDetail" component={SeedDetail} />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
