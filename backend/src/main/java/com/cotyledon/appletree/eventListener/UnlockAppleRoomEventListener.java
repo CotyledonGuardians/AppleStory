@@ -66,8 +66,7 @@ public class UnlockAppleRoomEventListener {
         log.info("사과 죽음");
 
         // isCatch 를 true 로 저장
-        // TODO: 밑에 주석 풀기
-//        appleService.catchToTrue(appleId);
+        appleService.catchToTrue(appleId);
 
         simpMessagingTemplate.convertAndSend(DestinationBuilder.build(PREFIX, roomId),
                 BaseMessage.withCommandAndData("onDie", roomId));
