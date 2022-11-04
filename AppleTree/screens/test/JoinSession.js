@@ -16,8 +16,7 @@ const JoinSession = ({navigation: {navigate}}) => {
       },
       () => {
         console.log('session join failed', roomId);
-        alert('방번호를 다시 확인해주세요');
-        navigate('GroupSession');
+        alert('방번호를 다시 확인해주세요.');
       },
     );
   }

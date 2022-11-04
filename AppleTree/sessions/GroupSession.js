@@ -28,14 +28,11 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const [message, setMessage] = useState([]);
   // 방장인지체크 추후 변경
   let isOwner = false;
-  // 복사할 앱 링크 추후 변경
-  let sessionLink = 'https://복사한-url-키키키키';
   // room id
   const {roomId} = route.params;
   // 클립보드 복사
   const copyToClipboard = () => {
-    Clipboard.setString(sessionLink);
-    alert('클립보드에 복사되었습니다.');
+    Clipboard.setString(roomId);
   };
   // 사과매달기 함수 추후 변경
   const hangApple = () => {
@@ -62,20 +59,15 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         break;
     }
   };
-  //~명 중 ~명 을 계산해주는 함수
-  const appleState = () => {
-    //총 인원:statuses.length - ( left&&hasUpload===false )
-    //완료한 인원:hasUpload가 true인 인원
-  };
   // session start
   useEffect(() => {
-    // alert(roomId);
+    alert(roomId);
     const messageListeners = {
       onChange: ({uidToIndex, statuses}) => {
         let length = statuses.length;
         let hasUpload = 0;
         for (let i = 0; i < statuses.length; i++) {
-          if (statuses[i].nickname === '하드코딩된 닉네임') {
+          if (statuses[i].nickname === null) {
             statuses[i].nickname = 'user' + (i + 1);
           }
           if (statuses[i].stage === 'LEFT' && statuses[i].hasUpload === false) {
@@ -110,20 +102,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.adding`, {});
   };
 
-  const actAdded = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
-      nickname: '이것이닉넴',
-      content: {
-        text: [
-          {
-            author: '이것은 uid로 덮어써짐',
-            content: 'This is text.',
-          },
-        ],
-      },
-    });
-  };
-
   const actCancelled = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.cancelled`, {});
   };
@@ -151,7 +129,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               style={styles.copyIcon}
             />
             <Text style={styles.copyText}>
-              링크를 복사해서 친구를 초대하세요!
+              방 번호를 복사해서 친구를 초대하세요!
             </Text>
           </View>
         </Pressable>
@@ -180,7 +158,10 @@ const GroupSession = ({navigation: {navigate}, route}) => {
                 disabled={false}
               />
               <SmallButton
-                onPress={() => navigate('GroupCreate', {roomId: roomId})}
+                onPress={() => {
+                  actAdding();
+                  navigate('GroupCreate', {roomId: roomId});
+                }}
                 text="추억 담기"
                 disabled={false}
               />
