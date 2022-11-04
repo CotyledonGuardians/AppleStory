@@ -91,6 +91,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <HomeStack.Navigator
@@ -118,6 +119,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <MapStack.Navigator
@@ -145,6 +147,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <CreateStack.Navigator screenOptions={{headerShown: false}}>
@@ -178,6 +181,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <ListStack.Navigator
@@ -205,6 +209,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}
         />
       </Tab.Navigator>

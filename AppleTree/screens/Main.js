@@ -15,6 +15,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
+import {UseStomp, DisconnectIfConnected} from '../stomp';
 
 // 남은 시간에 따라 사과 사진 변경
 const imgUrl = [
@@ -51,11 +52,23 @@ const Apple = ({
         onPress={() => {
           if (apple.isCatch) {
             navigation.navigate('AppleDetail', {
-              screen: 'AppleDetail',
               id: apple.id,
             });
           } else {
-            navigation.navigate('HitApple');
+            const connect = () => {
+              UseStomp(
+                () => {
+                  console.log('make room succeed', apple.id);
+                  navigation.navigate('HitApple', {
+                    id: apple.id,
+                  });
+                },
+                () => {
+                  console.log('make room failed', apple.id);
+                },
+              );
+            };
+            DisconnectIfConnected(connect, {}, connect);
           }
         }}>
         <Image style={styles.apple} source={imgUrl[3]} />
@@ -68,7 +81,26 @@ const Apple = ({
         <TouchableOpacity
           style={appleStyle[index]}
           onPress={() => {
-            navigation.navigate('HitApple');
+            if (apple.isCatch) {
+              navigation.navigate('AppleDetail', {
+                id: apple.id,
+              });
+            } else {
+              const connect = () => {
+                UseStomp(
+                  () => {
+                    console.log('make room succeed', apple.id);
+                    navigation.navigate('HitApple', {
+                      id: apple.id,
+                    });
+                  },
+                  () => {
+                    console.log('make room failed', apple.id);
+                  },
+                );
+              };
+              DisconnectIfConnected(connect, {}, connect);
+            }
           }}>
           <Image style={styles.apple} source={imgUrl[3]} />
         </TouchableOpacity>
@@ -123,6 +155,7 @@ const Main = ({navigation}) => {
   useEffect(() => {
     let getFlag = true;
     const getApples = async () => {
+      console.log('getFlag');
       const closeAppleList = await getCloseAppleList(1, 0, 6);
       const openAppleList = await getOpenAppleList(1, 0, 1);
       if (getFlag) {
@@ -230,7 +263,7 @@ const Main = ({navigation}) => {
           {openApples.length > 0 ? (
             <TouchableOpacity
               style={styles.basketTouch}
-              onPress={() => navigation.navigate('List')}>
+              onPress={() => navigation.navigate('AppleList')}>
               <Image
                 style={styles.basket}
                 source={require('../assets/pictures/basketfull.png')}
@@ -274,9 +307,7 @@ const Main = ({navigation}) => {
                 <SmallButton
                   onPress={() => {
                     setModalVisible(false);
-                    navigation.navigate('LockAppleDetail', {
-                      id: apple.id,
-                    });
+                    navigation.navigate('LockAppleDetail', {id: apple.id});
                   }}
                   text="자세히 보기"
                   disabled={false}
