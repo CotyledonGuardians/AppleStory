@@ -31,6 +31,8 @@ const AppleList = ({navigation}) => {
   const getInitData = async sort => {
     getOpenAppleList(sort, 0, 6)
       .then(response => {
+        console.log('WEFWEFWEF');
+        console.log(response.data);
         setOpenList(response.data.body.content);
       })
       .catch(error => {

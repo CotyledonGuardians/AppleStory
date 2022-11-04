@@ -9,13 +9,13 @@ import {
   TouchableOpacity,
   Alert,
   Button,
-  // Slider,
+  Slider,
   Platform,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
-import Slider from '@react-native-community/slider';
+// import Slider from '@react-native-community/slider';
 
 const img_speaker = require('../assets/icons/mic.png');
 const img_pause = require('../assets/icons/mic.png');
