@@ -47,12 +47,17 @@ public class Subscription {
             throw exception.buildWithReleasing(sid);
         }
 
-        if (roomType == RoomType.UNLOCK) {
-            try {
-                appleId = Long.parseLong(roomId);
-            } catch (NumberFormatException e) {
-                throw exception.buildWithReleasing(sid);
-            }
+        switch (roomType) {
+            case LOCK:
+                roomId = roomId.toUpperCase();
+                break;
+            case UNLOCK:
+                try {
+                    appleId = Long.parseLong(roomId);
+                } catch (NumberFormatException e) {
+                    throw exception.buildWithReleasing(sid);
+                }
+                break;
         }
 
         return Subscription.builder().roomType(roomType).roomId(roomId).appleId(appleId).build();
