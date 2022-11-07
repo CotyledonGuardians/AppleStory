@@ -44,13 +44,16 @@ const GoogleLogin = props => {
           props.propFunction(true);
           console.log('Google login success');
         })
-      }
-      style={styles.buttonShape}>
+      }>
       <Image
+        style={styles.icon}
+        source={require('../../assets/icons/google.png')}
+      />
+      {/* <Image
         style={styles.icon}
         source={require('../../assets/icons/googleIcon.png')}
       />
-      <Text style={styles.buttonText}>구글로 로그인하기</Text>
+      <Text style={styles.buttonText}>구글로 로그인하기</Text> */}
     </TouchableOpacity>
   );
 };
@@ -65,8 +68,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icon: {
-    height: 30,
-    width: 30,
+    height: 50,
+    width: 50,
   },
   buttonShape: {
     width: 300,

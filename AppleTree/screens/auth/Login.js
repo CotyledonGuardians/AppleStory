@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {SafeAreaView, View, StyleSheet, Image} from 'react-native';
-// import {Text, TextInput, Pressable} from 'react-native';
-// import {Button} from '../../components/Button';
+import {Text, TextInput, Pressable} from 'react-native';
+import {Button} from '../../components/Button';
 import GoogleLogin from '../../components/firebase/GoogleLogin';
 
 const Login = ({navigation}) => {
@@ -9,6 +9,9 @@ const Login = ({navigation}) => {
   const getLoginState = isLogin => {
     console.log('Login:isLogin: ', isLogin);
   };
+  const [email, setEmail] = useState(null);
+  const [pwd, setPwd] = useState(null);
+
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -19,29 +22,51 @@ const Login = ({navigation}) => {
         source={require('AppleTree/assets/pictures/aegoms.png')}
         style={styles.image}
       />
-      {/* <View style={styles.marginTopBottom}>
-        <View style={styles.email}>
+      <View style={styles.marginTopBottom}>
+        <View style={styles.txtBox}>
           <Text style={styles.txt}>이메일</Text>
           <TextInput
             value={email}
             autoCapitalize={'none'}
             keyboardType={'email-address'}
             style={styles.input}
+            onChangeText={text => setEmail(text)}
+          />
+        </View>
+        <View style={styles.txtBox}>
+          <Text style={styles.txt}>비밀번호</Text>
+          <TextInput
+            value={pwd}
+            autoCapitalize={'none'}
+            style={styles.input}
+            secureTextEntry
+            onChangeText={text => setPwd(text)}
           />
         </View>
         <Button onPress={onLogin} text="로그인" />
-      </View> */}
+      </View>
       <View style={styles.marginTopBottom}>
-        {/* <Pressable onPress={() => navigation.navigate('Register')} /> */}
         <GoogleLogin propFunction={getLoginState} />
+      </View>
+      <View style={styles.marginTopBottom}>
+        <Pressable onPress={() => navigation.navigate('Register')}>
+          <Text
+            style={{
+              color: '#ABABAB',
+              textDecorationLine: 'underline',
+              fontFamily: 'UhBee Se_hyun',
+            }}>
+            이메일로 회원가입하기
+          </Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
 };
 
-// const onLogin = () => {
-//   alert('로긘');
-// };
+const onLogin = () => {
+  alert('로긘');
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -55,7 +80,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  email: {
+  txtBox: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
