@@ -9,12 +9,12 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {DataTable} from 'react-native-paper';
 import Video from 'react-native-video';
-import {get} from 'react-native/Libraries/Utilities/PixelRatio';
 import {getAppleDetail} from '../api/AppleAPI';
 import {getAddress} from '../api/GeocodingAPI';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
+import storage from '@react-native-firebase/storage';
+import auth from '@react-native-firebase/auth';
 
 var randomImages = [
   require('../assets/pictures/aegom1.png'),
@@ -37,6 +37,7 @@ const AppleDetail = ({navigation, route}) => {
   const [paused, setPaused] = useState(false);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
   const [screenType, setScreenType] = useState('content');
+  const [photoURLs, setPhotoURLs] = useState(null);
 
   const onSeek = seek => {
     //Handler for change in seekbar
@@ -100,6 +101,11 @@ const AppleDetail = ({navigation, route}) => {
         if (response.data.body.location != null) {
           getAddressLatLng(response.data.body.location);
         }
+        setPhotoURLs(response.data.body.content.photo.map(async (photo, idx) => {
+          await storage().ref(photo.content).getDownloadURL().catch(err => {
+            console.log(err);
+          });
+        }));
       })
       .catch(error => {
         console.log('error', error);
@@ -256,7 +262,9 @@ const AppleDetail = ({navigation, route}) => {
         <Text style={styles.textFontBold}>기록된 사진</Text>
         <View style={{height: 230, width: '100%'}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {appleDetail.content.photo.map((item, index) => {
+            {console.log(photoURLs)}
+            {/* {photoURLs.map(item => {
+              console.log(item);
               return (
                 <Image
                   key={index}
@@ -269,11 +277,11 @@ const AppleDetail = ({navigation, route}) => {
                     resizeMode: 'contain',
                   }}
                   source={{
-                    uri: item.content,
+                    uri: item,
                   }}
                 />
               );
-            })}
+            })} */}
           </ScrollView>
         </View>
       </View>
