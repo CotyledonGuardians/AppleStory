@@ -61,10 +61,10 @@ export default function App() {
         {/* 인트로 3개 */}
         <Stack.Screen name="IntroFirst" component={IntroFirst} />
         <Stack.Screen name="IntroSecond" component={IntroSecond} />
-        {/* 로그인 페이지 */}
-        <Stack.Screen name="Login" component={Login} />
         {/* 회원가입 페이지 */}
         <Stack.Screen name="Register" component={Register} />
+        {/* 로그인 페이지 */}
+        <Stack.Screen name="Login" component={Login} />
       </Stack.Navigator>
     );
   }

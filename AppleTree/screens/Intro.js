@@ -2,7 +2,7 @@ import React from 'react';
 import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Text, Image} from 'react-native';
 import {Pressable} from 'react-native';
-
+import Register from './auth/Register';
 const IntroFirst = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
@@ -25,7 +25,7 @@ const IntroFirst = ({navigation}) => {
           style={styles.circle}></Pressable>
       </View>
       <View style={styles.next}>
-        <Pressable onPress={() => navigation.navigate('Login')}>
+        <Pressable onPress={() => navigation.navigate('Register')}>
           <Text style={styles.title}>넘기기</Text>
         </Pressable>
         <View style={{flex: 0.8}}></View>
@@ -61,7 +61,7 @@ const IntroSecond = ({navigation}) => {
       <View style={styles.next}>
         <View></View>
         <View style={{flex: 0.8}}></View>
-        <Pressable onPress={() => navigation.navigate('Login')}>
+        <Pressable onPress={() => navigation.navigate('Register')}>
           <Text style={styles.title}>완료</Text>
         </Pressable>
       </View>
