@@ -152,7 +152,7 @@ const Main = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [apple, setApple] = useState();
   const [time, setTime] = useState();
-  const idToken = auth()
+  auth()
     .currentUser.getIdToken()
     .then(idToken => {
       storeToken(idToken);

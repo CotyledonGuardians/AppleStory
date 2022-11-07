@@ -4,23 +4,12 @@ import {Text, TextInput, Image, Pressable} from 'react-native';
 import auth from '@react-native-firebase/auth';
 // import joinImg from '../../assets/pictures/aegomjoin.png';
 import {Button} from '../../components/Button';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 const Register = ({navigation}) => {
   const [email] = React.useState(null);
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
-  //AsyncStorage 저장
-  const storeToken = async idToken => {
-    // removeToken();
-    try {
-      // console.log('storeToken:idToken:', idToken);
-      await AsyncStorage.setItem('idToken', idToken);
-    } catch (error) {
-      console.log('storeToken error' + error);
-    }
-  };
   //회원가입 후 로그인 상태 유지
   function onAuthStateChanged(user) {
     setUser(user);
