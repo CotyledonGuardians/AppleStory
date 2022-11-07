@@ -202,7 +202,8 @@ const styles = StyleSheet.create({
     marginBottom: '2%',
   },
   aegom: {
-    width: '60%',
+    resizeMode: 'contain',
+    width: '70%',
     height: '90%',
   },
   detailBox: {
