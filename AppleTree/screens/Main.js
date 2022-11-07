@@ -19,6 +19,8 @@ import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
 import LoadingDefault from './LoadingDefault';
 import AppleList from './AppleList';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 남은 시간에 따라 사과 사진 변경
 const imgUrl = [
@@ -155,7 +157,11 @@ const Main = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [apple, setApple] = useState();
   const [time, setTime] = useState();
-
+  auth()
+    .currentUser.getIdToken()
+    .then(idToken => {
+      storeToken(idToken);
+    });
   useEffect(() => {
     let getFlag = true;
     const getApples = async () => {
@@ -176,6 +182,16 @@ const Main = ({navigation}) => {
     };
   }, []);
 
+  //AsyncStorage 저장
+  const storeToken = async idToken => {
+    // removeToken();
+    try {
+      // console.log('storeToken:idToken:', idToken);
+      await AsyncStorage.setItem('idToken', idToken);
+    } catch (error) {
+      console.log('storeToken error' + error);
+    }
+  };
   //AsyncStorage 삭제
   // const removeToken = async () => {
   //   try {
