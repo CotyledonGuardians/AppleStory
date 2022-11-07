@@ -31,6 +31,8 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const {roomId} = route.params;
   // apple id
   const {appleId} = route.params;
+  // 나의 올린 상태
+  const [myHasUpload, setMyHasUpload] = useState(false);
   // 클립보드 복사
   const copyToClipboard = () => {
     Clipboard.setString(roomId);
@@ -75,17 +77,24 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         if (myid === hostUid) {
           setIsHost(true);
         }
+        // 현재유저가 status배열의 몇번째에 있는지 체크
         let length = statuses.length;
         let hasUpload = 0;
         for (let i = 0; i < statuses.length; i++) {
+          // 처음 들어왔을때 익명번호 부여 user[N]
           if (statuses[i].nickname === null) {
             statuses[i].nickname = 'user' + (i + 1);
           }
+          // 업로드 안하고 세션에서 나갔을때
           if (statuses[i].stage === 'LEFT' && statuses[i].hasUpload === false) {
             length = length - 1;
           }
+          // 업로드 했을때
           if (statuses[i].hasUpload === true) {
             hasUpload = hasUpload + 1;
+          }
+          if (statuses[uidToIndex[myid]].hasUpload === true) {
+            setMyHasUpload(true);
           }
         }
         //세션의 총 인원 저장#ㅁ
@@ -171,14 +180,18 @@ const GroupSession = ({navigation: {navigate}, route}) => {
             !isHost ? (
               <Button
                 onPress={() => {
-                  actAdding();
-                  navigate('GroupCreate', {
-                    roomId: roomId,
-                    isHost: isHost,
-                    appleId: appleId,
-                  });
+                  if (myHasUpload) {
+                    alert('이미 작성을 완료했습니다.');
+                  } else {
+                    actAdding();
+                    navigate('GroupCreate', {
+                      roomId: roomId,
+                      isHost: isHost,
+                      appleId: appleId,
+                    });
+                  }
                 }}
-                text="내용 작성하기"
+                text="사과 내용쓰기"
               />
             ) : (
               <>
@@ -189,11 +202,14 @@ const GroupSession = ({navigation: {navigate}, route}) => {
                 />
                 <SmallButton
                   onPress={() => {
-                    // alert('이미 내용을 제출했습니다.');
-                    actAdding();
-                    navigate('GroupCreate', {roomId: roomId, isHost: isHost});
+                    if (myHasUpload) {
+                      alert('이미 작성을 완료했습니다.');
+                    } else {
+                      actAdding();
+                      navigate('GroupCreate', {roomId: roomId, isHost: isHost});
+                    }
                   }}
-                  text="추억 담기"
+                  text="사과 내용쓰기"
                   disabled={false}
                 />
               </>
