@@ -62,7 +62,7 @@ const AppleHitSession = ({navigation, route}) => {
 
   const disconnect = () => {
     DisconnectIfConnected(() => {
-      navigation.navigate('AppleDetail', {
+      navigation.navigate('AppleUnlockGIF', {
         id: roomId,
       });
     });
