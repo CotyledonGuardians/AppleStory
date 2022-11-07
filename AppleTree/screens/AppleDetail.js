@@ -37,7 +37,7 @@ const AppleDetail = ({navigation, route}) => {
   const [paused, setPaused] = useState(false);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
   const [screenType, setScreenType] = useState('content');
-  const [photoURLs, setPhotoURLs] = useState(null);
+  const [photoURLs, setPhotoURLs] = useState([]);
 
   const onSeek = seek => {
     //Handler for change in seekbar
@@ -101,11 +101,25 @@ const AppleDetail = ({navigation, route}) => {
         if (response.data.body.location != null) {
           getAddressLatLng(response.data.body.location);
         }
-        setPhotoURLs(response.data.body.content.photo.map(async (photo, idx) => {
-          await storage().ref(photo.content).getDownloadURL().catch(err => {
-            console.log(err);
+        return response.data.body.content.photo;
+      })
+      .then((photo) => photo.map((photo, idx) => storage().ref(photo.content).getDownloadURL()))
+      .then((promises) => {
+        promises.forEach((promise) => {
+          promise
+          .then((url) => {
+            setPhotoURLs((oldPhotoURLs) => {
+              const newPhotoURLs = [...oldPhotoURLs];
+
+              newPhotoURLs.push(url);
+
+              return newPhotoURLs;
+            });
+          })
+          .catch((err) => {
+            console.log("err on url promises foreach:::", err);
           });
-        }));
+        });
       })
       .catch(error => {
         console.log('error', error);
@@ -262,8 +276,7 @@ const AppleDetail = ({navigation, route}) => {
         <Text style={styles.textFontBold}>기록된 사진</Text>
         <View style={{height: 230, width: '100%'}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {console.log(photoURLs)}
-            {/* {photoURLs.map(item => {
+            {photoURLs.map((item, index) => {
               console.log(item);
               return (
                 <Image
@@ -281,7 +294,7 @@ const AppleDetail = ({navigation, route}) => {
                   }}
                 />
               );
-            })} */}
+            })}
           </ScrollView>
         </View>
       </View>
@@ -338,7 +351,7 @@ const AppleDetail = ({navigation, route}) => {
       {appleDetail && (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header />
-          <ContentSeed />
+          {/* <ContentSeed /> */}
           {appleDetail.content.photo != null &&
             appleDetail.content.photo.length != 0 && <Photo />}
           {/* {appleDetail.content.video != null &&
