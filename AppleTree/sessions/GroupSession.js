@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {SmallButton, Button} from '../components/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SmallButton, Button, HangButton} from '../components/Button';
 import {
   SubscribeIfConnected,
   DisconnectIfConnected,
@@ -170,36 +171,27 @@ const GroupSession = ({navigation: {navigate}, route}) => {
             !isHost ? (
               <Button
                 onPress={() => {
-                  // 제출 했는지(현재 사용자)
-                  // if (isSave) {
-                  //   alert('이미 내용을 제출했습니다.');
-                  // } else {
-
                   actAdding();
                   navigate('GroupCreate', {
                     roomId: roomId,
                     isHost: isHost,
                     appleId: appleId,
                   });
-                  // }
                 }}
-                text="추억 담기"
+                text="내용 작성하기"
               />
             ) : (
               <>
-                <SmallButton
+                <HangButton
                   onPress={() => hangApple()}
-                  text="사과 매달기"
+                  text="사과 봉인하기"
                   disabled={false}
                 />
                 <SmallButton
                   onPress={() => {
-                    // if (isSave) {
-                    //   alert('이미 내용을 제출했습니다.');
-                    // } else {
+                    // alert('이미 내용을 제출했습니다.');
                     actAdding();
                     navigate('GroupCreate', {roomId: roomId, isHost: isHost});
-                    // }
                   }}
                   text="추억 담기"
                   disabled={false}
@@ -246,7 +238,7 @@ const styles = StyleSheet.create({
   },
   copyText: {
     fontSize: 13,
-    // color: '#A6A6A6',
+    color: '#A6A6A6',
     fontFamily: 'UhBee Se_hyun Bold',
     marginTop: 10,
     textAlign: 'center',
@@ -268,9 +260,9 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     marginBottom: 5,
-    marginTop: 5,
+    marginTop: 10,
     fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: 13,
+    fontSize: 15,
     color: '#4c4036',
   },
 });

@@ -15,6 +15,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button} from '../components/Button';
 import RecordVoice from '../screens/RecordVoice';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -37,6 +38,7 @@ const GroupCreate = ({navigation, route}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [nickname, setNickName] = useState(null);
+  const [nickNameValid, setNickNameValid] = useState(false);
   const [content, setContent] = useState(null);
   const [image, setImage] = useState(null);
   const [video, setVideo] = useState(null);
@@ -59,12 +61,17 @@ const GroupCreate = ({navigation, route}) => {
   // GroupCreate에서 넘겨준 appleId
   const {appleId} = route.params;
 
-  // console.log("appleIdL: ", appleId);
-
-  // console.log('isHost:::::', isHost);
+  //닉네임 입력됬는지
+  const nickNameChangeHandler = text => {
+    if (text.trim().length === 0) {
+      setNickNameValid(false);
+    } else {
+      setNickNameValid(true);
+    }
+    setNickName(text);
+  };
   const actAdded = () => {
     console.log('actAdded');
-    console.log('imagePathOnStorage::::', imagePathOnStorage);
     SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
       nickname: nickname,
       content: {
@@ -396,7 +403,7 @@ const GroupCreate = ({navigation, route}) => {
           placeholder="자기만의 닉네임을 입력해주세요"
           placeholderTextColor={'#AAA19B'}
           maxLength={20}
-          onChangeText={text => setNickName(text)}
+          onChangeText={text => nickNameChangeHandler(text)}
         />
         <Text style={styles.txt}>사과에 담고 싶은 내용을 써주세요!</Text>
         <TextInput
@@ -517,7 +524,7 @@ const GroupCreate = ({navigation, route}) => {
             </Pressable>
           )}
         </View>
-        <Button onPress={onSubmit} text="추억 만들기" />
+        <Button onPress={onSubmit} disabled={!nickNameValid} text="완료" />
         {/* 녹음기 모달 start */}
         <View style={styles.centeredView}>
           <Modal animationType="fade" transparent={true} visible={modalVisible}>
