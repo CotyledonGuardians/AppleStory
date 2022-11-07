@@ -3,7 +3,7 @@ import {SafeAreaView, Image, Text, View, StyleSheet} from 'react-native';
 import {getLockAppleDetail} from '../../api/AppleAPI';
 import useInterval from '../../config/useInterval';
 import {Button} from '../../components/Button';
-import {UseStomp} from '../../stomp';
+import {UseStomp, DisconnectIfConnected} from '../../stomp';
 
 const LockAppleDetail = ({route, navigation}) => {
   const {id} = route.params;
@@ -29,7 +29,7 @@ const LockAppleDetail = ({route, navigation}) => {
 
     getLockAppleDetail(id)
       .then(response => {
-        console.log('lock apple detail', response.data);
+        // console.log('lock apple detail', response.data);
         setApple(response.data.body);
         initTimeSet(response.data.body.unlockAt);
       })
@@ -47,6 +47,7 @@ const LockAppleDetail = ({route, navigation}) => {
     ); // month는 1 적은 값
     const todayTime = new Date();
     const diff = openTime - todayTime;
+
     if (!openFlag) {
       diff > 0 ? setTimeOut(diff) : setOpenFlag(true);
     }
@@ -80,17 +81,20 @@ const LockAppleDetail = ({route, navigation}) => {
               </Text>
               <Button
                 onPress={() => {
-                  UseStomp(
-                    () => {
-                      console.log('make room succeed', apple.id);
-                      navigation.navigate('HitApple', {
-                        id: apple.id,
-                      });
-                    },
-                    () => {
-                      console.log('make room failed', apple.id);
-                    },
-                  );
+                  const connect = () => {
+                    UseStomp(
+                      () => {
+                        console.log('make room succeed', id);
+                        navigation.navigate('HitApple', {
+                          id: id,
+                        });
+                      },
+                      () => {
+                        console.log('make room failed', id);
+                      },
+                    );
+                  };
+                  DisconnectIfConnected(connect, {}, connect);
                 }}
                 text="사과 때리러 가기"
               />
