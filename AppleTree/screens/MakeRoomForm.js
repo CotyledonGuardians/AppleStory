@@ -172,12 +172,15 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
               text="방 만들기"
               disabled={!titleValid || !teamNameValid || !dateValid}
             />
-            <SmallButton
+            {/* <SmallButton
               onPress={() => navigate('JoinSession')}
-              text="입장하기"
+              text="방 번호로   입장하기"
               disabled={false}
-            />
+            /> */}
           </View>
+          <Text onPress={() => navigate('JoinSession')} style={styles.copyText}>
+            here! 방 번호로 참여하기
+          </Text>
         </View>
       </SafeAreaView>
     </ScrollView>
@@ -245,6 +248,14 @@ const styles = StyleSheet.create({
   buttonWrap: {
     flexDirection: 'row',
     justifyContent: 'center',
+  },
+  copyText: {
+    fontSize: 13,
+    color: '#373043',
+    fontFamily: 'UhBee Se_hyun Bold',
+    marginTop: 10,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
 });
 export default MakeRoomForm;

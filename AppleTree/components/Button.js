@@ -2,9 +2,9 @@ import React from 'react';
 import {Pressable, Text, StyleSheet} from 'react-native';
 
 // 1. button 생성
-const Button = ({onPress, text}) => {
+const Button = ({onPress, text, disabled}) => {
   return (
-    <Pressable onPress={onPress} style={styles.buttonShape}>
+    <Pressable onPress={onPress} style={styles.buttonShape} disabled={disabled}>
       <Text style={styles.buttonText}>{text}</Text>
     </Pressable>
   );
@@ -15,6 +15,17 @@ const SmallButton = ({onPress, text, disabled}) => {
     <Pressable
       onPress={onPress}
       style={styles.smallButtonShape}
+      disabled={disabled}>
+      <Text style={styles.buttonText}>{text}</Text>
+    </Pressable>
+  );
+};
+
+const HangButton = ({onPress, text, disabled}) => {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={styles.hangButtonShape}
       disabled={disabled}>
       <Text style={styles.buttonText}>{text}</Text>
     </Pressable>
@@ -50,6 +61,18 @@ const styles = StyleSheet.create({
     flex: 0.4,
     justifyContent: 'center',
   },
+  hangButtonShape: {
+    width: 135,
+    height: 60,
+    borderRadius: 25,
+    paddingHorizontal: 10,
+    margin: 5,
+    elevation: 2,
+    backgroundColor: '#A6B0D5',
+    color: 'black',
+    flex: 0.4,
+    justifyContent: 'center',
+  },
   smallWhiteButtonShape: {
     width: 135,
     height: 60,
@@ -68,6 +91,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'UhBee Se_hyun Bold',
   },
+  hangButtonText: {
+    textAlign: 'center',
+    color: '#373043',
+    fontSize: 15,
+    fontFamily: 'UhBee Se_hyun Bold',
+  },
   whilteButtonText: {
     textAlign: 'center',
     color: '#373043',
@@ -76,4 +105,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {Button, SmallButton, SmallWhiteButton};
+export {Button, SmallButton, SmallWhiteButton, HangButton};

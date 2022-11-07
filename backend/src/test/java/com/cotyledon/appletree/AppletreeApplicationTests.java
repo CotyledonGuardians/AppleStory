@@ -21,10 +21,10 @@ class AppletreeApplicationTests {
 		Creator creator = new Creator();
 
 		creator.setTeamName("뾰로롱");
-		creator.setHostUid("Ng0pEvu2CtdvPGKDAYOLQ6kkxXt1");
+		creator.setHostUid("nxOFWLP3R2e5MuH60EO2teH7hbR2");
 		Member member = new Member();
-		member.setNickname("연다");
-		member.setUid("Ng0pEvu2CtdvPGKDAYOLQ6kkxXt1");
+		member.setNickname("선아");
+		member.setUid("nxOFWLP3R2e5MuH60EO2teH7hbR2");
 //		Member member2 = new Member();
 //		member2.setNickname("옌");
 //		member2.setUid("uglPqseiY1NkD8MLqgTlwoSvFPi2");
@@ -33,13 +33,13 @@ class AppletreeApplicationTests {
 		member3.setUid("mU3O1NplvLMuALIBNxk3REAT9zH2");
 		List<Member> memberList = new ArrayList<>();
 		memberList.add(member);//memberList.add(member2);
-		memberList.add(member3);
+//		memberList.add(member3);
 		creator.setMember(memberList);
 
 		Content content = new Content();
 		ContentDescription text = new ContentDescription();
 		text.setAuthor(member.getUid());
-		text.setContent("놀기만 하는 연다");
+		text.setContent("가가가가가나나나나라라라마마바ㅏㅂ바바사사사");
 //		ContentDescription text2 = new ContentDescription();
 //		text2.setAuthor(member2.getUid());
 //		text2.setContent("먹기만 하는 나는 먹보 옌");
@@ -49,7 +49,7 @@ class AppletreeApplicationTests {
 
 		List<ContentDescription> textList = new ArrayList<>();
 		textList.add(text);//textList.add(text2);
-		textList.add(text3);
+//		textList.add(text3);
 
 		ContentDescription photo = new ContentDescription();
 		photo.setAuthor(member.getUid());
@@ -78,13 +78,13 @@ class AppletreeApplicationTests {
 		content.setVideo(videoList);
 
 		String DEFAULT_PATTERN = "yyyy-MM-dd HH:mm:ss";
-		String yourDateString = "2022-11-03 00:00:00";
+		String yourDateString = "2022-11-07 10:40:00";
 		DateFormat formatter = new SimpleDateFormat(DEFAULT_PATTERN);
 		Date myDate = formatter.parse(yourDateString);
 
 		GeoLocation location = new GeoLocation();
 		location.setLat(36.355590);
-		location.setLng(127.298500);
+		location.setLng(12.298500);
 
 		AppleDTO apple = new AppleDTO();
 		apple.setType(true);
@@ -97,9 +97,9 @@ class AppletreeApplicationTests {
 		apple.setIsCatch(false);
 
 		Set<String> uids = new HashSet<String>();
-		uids.add("Ng0pEvu2CtdvPGKDAYOLQ6kkxXt1");
+		uids.add("nxOFWLP3R2e5MuH60EO2teH7hbR2");
 //		uids.add("uglPqseiY1NkD8MLqgTlwoSvFPi2");
-		uids.add("mU3O1NplvLMuALIBNxk3REAT9zH2");
+//		uids.add("mU3O1NplvLMuALIBNxk3REAT9zH2");
 
 		multiAppleService.saveAppleAndAppleUsers(apple,uids);
 
