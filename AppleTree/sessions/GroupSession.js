@@ -7,38 +7,43 @@ import {
   Image,
   ScrollView,
   Pressable,
+  Alert,
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {SmallButton, Button} from '../components/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SmallButton, Button, HangButton} from '../components/Button';
 import {
   SubscribeIfConnected,
   DisconnectIfConnected,
   SendIfSubscribed,
 } from '../stomp/';
 const GroupSession = ({navigation: {navigate}, route}) => {
-  // set copy text
-  const [copiedText, setCopiedText] = useState(null);
-  // unlockGIF loading
-  const [ready, setReady] = useState(true);
-  // session total cnt
+  // 세션에 들어온 총 인원
   const [total, setTotal] = useState(0);
-  // session compelete cnt
+  // 추억을 담은 인원
   const [compelete, setCompelete] = useState(0);
-  // session message
+  // 세션 상태메세지(채팅방)
   const [message, setMessage] = useState([]);
-  // 방장인지체크 추후 변경
-  let isOwner = false;
-  // 복사할 앱 링크 추후 변경
-  let sessionLink = 'https://복사한-url-키키키키';
-  // room id
+  // 방장인지체크
+  const [isHost, setIsHost] = useState(false);
+  // 세션 방 번호
   const {roomId} = route.params;
+  // apple id
+  const {appleId} = route.params;
+  // 나의 올린 상태
+  const [myHasUpload, setMyHasUpload] = useState(false);
   // 클립보드 복사
   const copyToClipboard = () => {
-    Clipboard.setString(sessionLink);
-    alert('클립보드에 복사되었습니다.');
+    Clipboard.setString(roomId);
   };
-  // 사과매달기 함수 추후 변경
+  // 사과매달기
   const hangApple = () => {
+    // 사과에 담은 데이터 제출(세션에서 제출한 모든 인원)
+    submit();
+    // 세션 연결 끊기
+    disconnect();
+    // LockGIF로 이동시키기
     navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
   };
   // 자동 스크롤밑으로
@@ -49,11 +54,11 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     console.log(nick);
     switch (state) {
       case 'JOINED':
-        return nick + '님께서 입장 하셨습니다.';
+        return nick + '님께서 입장 하셨습니다❣';
       case 'ADDING':
-        return nick + '님께서 사과를 생성 중입니다.';
+        return nick + '님께서 내용을 입력 중입니다...';
       case 'ADDED':
-        return nick + '님께서 사과 생성을 완료했습니다.';
+        return nick + '님께서 사과 생성을 완료했습니다❣';
       case 'CANCELLED':
         return nick + '님께서 방을 나갔습니다.';
       case 'LEFT':
@@ -62,30 +67,39 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         break;
     }
   };
-  //~명 중 ~명 을 계산해주는 함수
-  const appleState = () => {
-    //총 인원:statuses.length - ( left&&hasUpload===false )
-    //완료한 인원:hasUpload가 true인 인원
-  };
   // session start
   useEffect(() => {
-    // alert(roomId);
+    alert(roomId);
+    const myid = auth().currentUser.uid;
     const messageListeners = {
-      onChange: ({uidToIndex, statuses}) => {
+      onChange: ({uidToIndex, statuses, hostUid}) => {
+        //방장인지 체크
+        if (myid === hostUid) {
+          setIsHost(true);
+        }
+        // 현재유저가 status배열의 몇번째에 있는지 체크
         let length = statuses.length;
         let hasUpload = 0;
         for (let i = 0; i < statuses.length; i++) {
-          if (statuses[i].nickname === '하드코딩된 닉네임') {
+          // 처음 들어왔을때 익명번호 부여 user[N]
+          if (statuses[i].nickname === null) {
             statuses[i].nickname = 'user' + (i + 1);
           }
+          // 업로드 안하고 세션에서 나갔을때
           if (statuses[i].stage === 'LEFT' && statuses[i].hasUpload === false) {
             length = length - 1;
           }
+          // 업로드 했을때
           if (statuses[i].hasUpload === true) {
             hasUpload = hasUpload + 1;
           }
+          if (statuses[uidToIndex[myid]].hasUpload === true) {
+            setMyHasUpload(true);
+          }
         }
+        //세션의 총 인원 저장#ㅁ
         setTotal(length);
+        //세션에서 사과내용 제출한 인원 저장
         setCompelete(hasUpload);
         // 배열을 계속 갈아끼워줌(닉네임과 상태에 따라)
         const newMessage = statuses.map((item, idx) => ({
@@ -95,39 +109,32 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         }));
         setMessage([...newMessage]);
       },
+      onSave: savedAppleId => {
+        console.log('savedAppleId:', savedAppleId);
+        console.log('typeof it:', typeof savedAppleId);
+      },
     };
     //방에 들어가기
     SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
   }, [roomId]);
 
+  // 세션 연결 해제
   const disconnect = () => {
     DisconnectIfConnected(() => {
       navigate('Home', {screen: 'Main'});
     });
   };
 
+  // 세션에서 사과에 내용을 쓰고있는 상태
   const actAdding = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.adding`, {});
-  };
-
-  const actAdded = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
-      nickname: '이것이닉넴',
-      content: {
-        text: [
-          {
-            author: '이것은 uid로 덮어써짐',
-            content: 'This is text.',
-          },
-        ],
-      },
-    });
   };
 
   const actCancelled = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.cancelled`, {});
   };
 
+  //방장이 사과매달기를 할때(hasUpload가 true인 모든 인원 제출)
   const submit = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.submit`, {});
   };
@@ -139,8 +146,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         style={styles.image}
       />
       <Text style={styles.complete}>
-        {/* 추후 변경 */}
-        {/* {}명 중 {}명 완료 */}
         {total}명 중 {compelete}명 완료
       </Text>
       <View style={styles.form}>
@@ -151,7 +156,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               style={styles.copyIcon}
             />
             <Text style={styles.copyText}>
-              링크를 복사해서 친구를 초대하세요!
+              방 번호를 복사해서 친구를 초대하세요!
             </Text>
           </View>
         </Pressable>
@@ -170,22 +175,46 @@ const GroupSession = ({navigation: {navigate}, route}) => {
           </ScrollView>
         </View>
         <View style={styles.buttons}>
-          {isOwner ? (
-            <Button onPress={() => disconnect()} text="추억 담기" />
-          ) : (
-            <>
-              <SmallButton
-                onPress={() => hangApple()}
-                text="사과 매달기"
-                disabled={false}
+          {
+            //방장이 아니고
+            !isHost ? (
+              <Button
+                onPress={() => {
+                  if (myHasUpload) {
+                    alert('이미 작성을 완료했습니다.');
+                  } else {
+                    actAdding();
+                    navigate('GroupCreate', {
+                      roomId: roomId,
+                      isHost: isHost,
+                      appleId: appleId,
+                    });
+                  }
+                }}
+                text="사과 내용쓰기"
               />
-              <SmallButton
-                onPress={() => navigate('GroupCreate', {roomId: roomId})}
-                text="추억 담기"
-                disabled={false}
-              />
-            </>
-          )}
+            ) : (
+              <>
+                <HangButton
+                  onPress={() => hangApple()}
+                  text="사과 봉인하기"
+                  disabled={false}
+                />
+                <SmallButton
+                  onPress={() => {
+                    if (myHasUpload) {
+                      alert('이미 작성을 완료했습니다.');
+                    } else {
+                      actAdding();
+                      navigate('GroupCreate', {roomId: roomId, isHost: isHost});
+                    }
+                  }}
+                  text="사과 내용쓰기"
+                  disabled={false}
+                />
+              </>
+            )
+          }
         </View>
       </View>
     </SafeAreaView>
@@ -247,9 +276,9 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     marginBottom: 5,
-    marginTop: 5,
+    marginTop: 10,
     fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: 13,
+    fontSize: 15,
     color: '#4c4036',
   },
 });

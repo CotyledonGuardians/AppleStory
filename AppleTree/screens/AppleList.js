@@ -13,6 +13,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import SelectDropdown from 'react-native-select-dropdown';
 import {getCloseAppleList, getOpenAppleList} from '../api/AppleAPI';
+import {UseStomp, DisconnectIfConnected} from '../stomp';
 
 const AppleList = ({navigation}) => {
   const [route, setRoute] = useState('열린 사과');
@@ -27,19 +28,27 @@ const AppleList = ({navigation}) => {
 
   const [closeList, setCloseList] = useState([]);
   const [openList, setOpenList] = useState([]);
-
+  const scrollViewRef = useRef();
+  const size = 100;
   const getInitData = async sort => {
-    getOpenAppleList(sort, 0, 6)
+    getOpenAppleList(sort, 0, size)
       .then(response => {
+        // console.log(response.data);
         setOpenList(response.data.body.content);
+        if (response.data.body.content.length < size) {
+          setLoading2(true);
+        }
       })
       .catch(error => {
         console.log('error', error);
       });
 
-    getCloseAppleList(sort, 0, 6)
+    getCloseAppleList(sort, 0, size)
       .then(response => {
         setCloseList(response.data.body.content);
+        if (response.data.body.content.length < size) {
+          setLoading(true);
+        }
       })
       .catch(error => {
         console.log('error', error);
@@ -54,17 +63,16 @@ const AppleList = ({navigation}) => {
   const updateList = async type => {
     if (type === 'close') {
       // API로부터 받아온 페이징 데이터를 이용해 다음 데이터를 로드
-      getCloseAppleList(sort, page, 6)
+      getCloseAppleList(sort, page, size)
         .then(response => {
           const fetchedData = response.data.body.content; // 피드 데이터 부분
-
           if (fetchedData.length === 0) {
             setLoading(true);
             return;
           }
           // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.
           const mergedData = closeList.concat(fetchedData);
-          if (fetchedData.length <= 6) {
+          if (fetchedData.length < size) {
             setLoading(true);
           }
 
@@ -77,18 +85,16 @@ const AppleList = ({navigation}) => {
         });
     } else if (type === 'open') {
       // API로부터 받아온 페이징 데이터를 이용해 다음 데이터를 로드
-      getOpenAppleList(sort, page2, 6)
+      getOpenAppleList(sort, page2, size)
         .then(response => {
           const fetchedData = response.data.body.content; // 피드 데이터 부분
-
           if (fetchedData.length === 0) {
             setLoading2(true);
-            console.log('데이터 없음');
             return;
           }
           // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.
           const mergedData = openList.concat(fetchedData);
-          if (fetchedData.length <= 6) {
+          if (fetchedData.length < size) {
             setLoading2(true);
           }
 
@@ -152,7 +158,20 @@ const AppleList = ({navigation}) => {
                 id: id,
               });
             } else {
-              navigation.navigate('HitApple');
+              const connect = () => {
+                UseStomp(
+                  () => {
+                    console.log('make room succeed', id);
+                    navigation.navigate('HitApple', {
+                      id: id,
+                    });
+                  },
+                  () => {
+                    console.log('make room failed', id);
+                  },
+                );
+              };
+              DisconnectIfConnected(connect, {}, connect);
             }
           } else {
             navigation.navigate('LockAppleDetail', {
@@ -166,7 +185,7 @@ const AppleList = ({navigation}) => {
           resizeMode="contain"
         />
         <Text style={{fontFamily: 'UhBee Se_hyun', color: '#4C4036'}}>
-          {title}
+          {title.length > 11 ? title.substr(0, 10).trim() + '...' : title}
         </Text>
       </TouchableOpacity>
     );
@@ -229,6 +248,10 @@ const AppleList = ({navigation}) => {
           <DropdownSelect />
         </View>
         <ScrollView
+          // ref={scrollViewRef}
+          // onContentSizeChange={() =>
+          //   scrollViewRef.current.scrollToEnd({animated: false})
+          // }
           onScroll={e => {
             // 현재 스크롤 값
             const updateScroll = e.nativeEvent.contentOffset.y;
@@ -301,7 +324,6 @@ const AppleList = ({navigation}) => {
             const screenHeight = e.nativeEvent.layoutMeasurement.height;
             // 원하는 로직을 시작하는 시점
             const endPoint = 10;
-
             if (screenHeight + updateScroll + endPoint >= documentHeight) {
               if (!loading2) {
                 updateList('open');
