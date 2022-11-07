@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import Clipboard from '@react-native-clipboard/clipboard';
-import {SmallButton, Button} from '../components/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {SmallButton, Button, HangButton} from '../components/Button';
 import {
   SubscribeIfConnected,
   DisconnectIfConnected,
@@ -30,6 +31,8 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const {roomId} = route.params;
   // apple id
   const {appleId} = route.params;
+  // 나의 올린 상태
+  const [myHasUpload, setMyHasUpload] = useState(false);
   // 클립보드 복사
   const copyToClipboard = () => {
     Clipboard.setString(roomId);
@@ -74,17 +77,24 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         if (myid === hostUid) {
           setIsHost(true);
         }
+        // 현재유저가 status배열의 몇번째에 있는지 체크
         let length = statuses.length;
         let hasUpload = 0;
         for (let i = 0; i < statuses.length; i++) {
+          // 처음 들어왔을때 익명번호 부여 user[N]
           if (statuses[i].nickname === null) {
             statuses[i].nickname = 'user' + (i + 1);
           }
+          // 업로드 안하고 세션에서 나갔을때
           if (statuses[i].stage === 'LEFT' && statuses[i].hasUpload === false) {
             length = length - 1;
           }
+          // 업로드 했을때
           if (statuses[i].hasUpload === true) {
             hasUpload = hasUpload + 1;
+          }
+          if (statuses[uidToIndex[myid]].hasUpload === true) {
+            setMyHasUpload(true);
           }
         }
         //세션의 총 인원 저장#ㅁ
@@ -170,38 +180,36 @@ const GroupSession = ({navigation: {navigate}, route}) => {
             !isHost ? (
               <Button
                 onPress={() => {
-                  // 제출 했는지(현재 사용자)
-                  // if (isSave) {
-                  //   alert('이미 내용을 제출했습니다.');
-                  // } else {
-
-                  actAdding();
-                  navigate('GroupCreate', {
-                    roomId: roomId,
-                    isHost: isHost,
-                    appleId: appleId,
-                  });
-                  // }
+                  if (myHasUpload) {
+                    alert('이미 작성을 완료했습니다.');
+                  } else {
+                    actAdding();
+                    navigate('GroupCreate', {
+                      roomId: roomId,
+                      isHost: isHost,
+                      appleId: appleId,
+                    });
+                  }
                 }}
-                text="추억 담기"
+                text="사과 내용쓰기"
               />
             ) : (
               <>
-                <SmallButton
+                <HangButton
                   onPress={() => hangApple()}
-                  text="사과 매달기"
+                  text="사과 봉인하기"
                   disabled={false}
                 />
                 <SmallButton
                   onPress={() => {
-                    // if (isSave) {
-                    //   alert('이미 내용을 제출했습니다.');
-                    // } else {
-                    actAdding();
-                    navigate('GroupCreate', {roomId: roomId, isHost: isHost});
-                    // }
+                    if (myHasUpload) {
+                      alert('이미 작성을 완료했습니다.');
+                    } else {
+                      actAdding();
+                      navigate('GroupCreate', {roomId: roomId, isHost: isHost});
+                    }
                   }}
-                  text="추억 담기"
+                  text="사과 내용쓰기"
                   disabled={false}
                 />
               </>
@@ -246,7 +254,7 @@ const styles = StyleSheet.create({
   },
   copyText: {
     fontSize: 13,
-    // color: '#A6A6A6',
+    color: '#A6A6A6',
     fontFamily: 'UhBee Se_hyun Bold',
     marginTop: 10,
     textAlign: 'center',
@@ -268,9 +276,9 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginRight: 15,
     marginBottom: 5,
-    marginTop: 5,
+    marginTop: 10,
     fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: 13,
+    fontSize: 15,
     color: '#4c4036',
   },
 });
