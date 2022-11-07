@@ -56,6 +56,11 @@ const GroupCreate = ({navigation, route}) => {
   const {roomId} = route.params;
   // GroupCreate에서 넘겨준 isHost
   const {isHost} = route.params;
+  // GroupCreate에서 넘겨준 appleId
+  const {appleId} = route.params;
+
+  // console.log("appleIdL: ", appleId);
+
   // console.log('isHost:::::', isHost);
   const actAdded = () => {
     console.log('actAdded');
@@ -68,7 +73,7 @@ const GroupCreate = ({navigation, route}) => {
             content: content,
           },
         ],
-        image: [
+        photo: [
           {
             author: nickname,
             content: imagePathOnStorage,
@@ -223,7 +228,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (asset && currentUid) {
-      const reference = storage().ref(`/test/images/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/images/${currentUid}`);
 
       if (Platform.OS === 'android') {
         const result = await reference
@@ -246,7 +251,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (asset && currentUid) {
-      const reference = storage().ref(`/test/videos/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/videos/${currentUid}`);
       const staticUrl = await getPathForFirebaseStorage(asset.uri).catch(
         err => {
           throw err;
@@ -266,7 +271,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (audioPathOnDevice && currentUid) {
-      const reference = storage().ref(`/test/audios/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/audios/${currentUid}`);
       return reference
         .putFile(audioPathOnDevice, {
           contentType: 'audio/mp4',

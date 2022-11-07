@@ -32,6 +32,8 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const [isHost, setIsHost] = useState(false);
   // room id
   const {roomId} = route.params;
+  // apple id
+  const {appleId} = route.params;
   // 클립보드 복사
   const copyToClipboard = () => {
     Clipboard.setString(roomId);
@@ -179,7 +181,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               <SmallButton
                 onPress={() => {
                   actAdding();
-                  navigate('GroupCreate', {roomId: roomId, isHost: isHost});
+                  navigate('GroupCreate', {roomId: roomId, isHost: isHost, appleId: appleId});
                 }}
                 text="추억 담기"
                 disabled={false}
