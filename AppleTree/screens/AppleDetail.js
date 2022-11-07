@@ -12,6 +12,8 @@ import Video from 'react-native-video';
 import {getAppleDetail} from '../api/AppleAPI';
 import {getAddress} from '../api/GeocodingAPI';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
+import storage from '@react-native-firebase/storage';
+import auth from '@react-native-firebase/auth';
 import Loading from './LoadingDefault';
 
 var randomImages = [
@@ -35,6 +37,7 @@ const AppleDetail = ({navigation, route}) => {
   const [paused, setPaused] = useState(false);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
   const [screenType, setScreenType] = useState('content');
+  const [photoURLs, setPhotoURLs] = useState([]);
 
   const onSeek = seek => {
     //Handler for change in seekbar
@@ -101,6 +104,25 @@ const AppleDetail = ({navigation, route}) => {
         if (response.data.body.location != null) {
           getAddressLatLng(response.data.body.location);
         }
+        return response.data.body.content.photo;
+      })
+      .then((photo) => photo.map((photo, idx) => storage().ref(photo.content).getDownloadURL()))
+      .then((promises) => {
+        promises.forEach((promise) => {
+          promise
+          .then((url) => {
+            setPhotoURLs((oldPhotoURLs) => {
+              const newPhotoURLs = [...oldPhotoURLs];
+
+              newPhotoURLs.push(url);
+
+              return newPhotoURLs;
+            });
+          })
+          .catch((err) => {
+            console.log("err on url promises foreach:::", err);
+          });
+        });
       })
       .catch(error => {
         console.log('error', error);
@@ -257,13 +279,14 @@ const AppleDetail = ({navigation, route}) => {
         <Text style={styles.textFontBold}>기록된 사진</Text>
         <View style={{height: 230, width: '100%'}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {appleDetail.content.photo.map((item, index) => {
+            {photoURLs.map((item, index) => {
+              console.log(item);
               return (
                 <Image
                   key={index}
                   style={styles.photoImg}
                   source={{
-                    uri: item.content,
+                    uri: item,
                   }}
                 />
               );
@@ -324,7 +347,7 @@ const AppleDetail = ({navigation, route}) => {
       {appleDetail && address ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header />
-          <ContentSeed />
+          {/* <ContentSeed /> */}
           {appleDetail.content.photo != null &&
             appleDetail.content.photo.length !== 0 && <Photo />}
           {/* {appleDetail.content.video != null &&
