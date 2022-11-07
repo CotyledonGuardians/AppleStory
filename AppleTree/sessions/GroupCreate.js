@@ -59,6 +59,7 @@ const GroupCreate = ({navigation, route}) => {
   // console.log('isHost:::::', isHost);
   const actAdded = () => {
     console.log('actAdded');
+    console.log('imagePathOnStorage::::', imagePathOnStorage);
     SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
       nickname: nickname,
       content: {
@@ -68,7 +69,7 @@ const GroupCreate = ({navigation, route}) => {
             content: content,
           },
         ],
-        image: [
+        photo: [
           {
             author: nickname,
             content: imagePathOnStorage,
