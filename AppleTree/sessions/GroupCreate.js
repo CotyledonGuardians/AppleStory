@@ -15,6 +15,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button} from '../components/Button';
 import RecordVoice from '../screens/RecordVoice';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -37,6 +38,7 @@ const GroupCreate = ({navigation, route}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [nickname, setNickName] = useState(null);
+  const [nickNameValid, setNickNameValid] = useState(false);
   const [content, setContent] = useState(null);
   const [image, setImage] = useState(null);
   const [video, setVideo] = useState(null);
@@ -56,7 +58,18 @@ const GroupCreate = ({navigation, route}) => {
   const {roomId} = route.params;
   // GroupCreate에서 넘겨준 isHost
   const {isHost} = route.params;
-  // console.log('isHost:::::', isHost);
+  // GroupCreate에서 넘겨준 appleId
+  const {appleId} = route.params;
+
+  //닉네임 입력됬는지
+  const nickNameChangeHandler = text => {
+    if (text.trim().length === 0) {
+      setNickNameValid(false);
+    } else {
+      setNickNameValid(true);
+    }
+    setNickName(text);
+  };
   const actAdded = () => {
     console.log('actAdded');
     SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
@@ -68,7 +81,7 @@ const GroupCreate = ({navigation, route}) => {
             content: content,
           },
         ],
-        image: [
+        photo: [
           {
             author: nickname,
             content: imagePathOnStorage,
@@ -223,7 +236,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (asset && currentUid) {
-      const reference = storage().ref(`/test/images/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/images/${currentUid}`);
 
       if (Platform.OS === 'android') {
         const result = await reference
@@ -246,7 +259,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (asset && currentUid) {
-      const reference = storage().ref(`/test/videos/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/videos/${currentUid}`);
       const staticUrl = await getPathForFirebaseStorage(asset.uri).catch(
         err => {
           throw err;
@@ -266,7 +279,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (audioPathOnDevice && currentUid) {
-      const reference = storage().ref(`/test/audios/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/audios/${currentUid}`);
       return reference
         .putFile(audioPathOnDevice, {
           contentType: 'audio/mp4',
@@ -390,7 +403,7 @@ const GroupCreate = ({navigation, route}) => {
           placeholder="자기만의 닉네임을 입력해주세요"
           placeholderTextColor={'#AAA19B'}
           maxLength={20}
-          onChangeText={text => setNickName(text)}
+          onChangeText={text => nickNameChangeHandler(text)}
         />
         <Text style={styles.txt}>사과에 담고 싶은 내용을 써주세요!</Text>
         <TextInput
@@ -511,7 +524,7 @@ const GroupCreate = ({navigation, route}) => {
             </Pressable>
           )}
         </View>
-        <Button onPress={onSubmit} text="추억 만들기" />
+        <Button onPress={onSubmit} disabled={!nickNameValid} text="완료" />
         {/* 녹음기 모달 start */}
         <View style={styles.centeredView}>
           <Modal animationType="fade" transparent={true} visible={modalVisible}>
