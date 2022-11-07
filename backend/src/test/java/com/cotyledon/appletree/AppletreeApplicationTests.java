@@ -88,7 +88,7 @@ class AppletreeApplicationTests {
 
 		AppleDTO apple = new AppleDTO();
 		apple.setType(true);
-		apple.setTitle("내가떴다9");
+		apple.setTitle("떴따뿅");
 		apple.setCreator(creator);
 		apple.setUnlockAt(myDate);
 		apple.setContent(content);
@@ -101,9 +101,9 @@ class AppletreeApplicationTests {
 //		uids.add("uglPqseiY1NkD8MLqgTlwoSvFPi2");
 		uids.add("mU3O1NplvLMuALIBNxk3REAT9zH2");
 
-		Long id = multiAppleService.saveAppleAndAppleUsersAndGetAppleId(apple,uids);
+		multiAppleService.saveAppleAndAppleUsers(apple,uids);
 
-		System.out.println("저장완료옹"+id);
+		System.out.println("저장완료옹");
 	}
 
 }

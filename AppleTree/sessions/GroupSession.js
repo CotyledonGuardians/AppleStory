@@ -28,7 +28,9 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const [isHost, setIsHost] = useState(false);
   // 세션 방 번호
   const {roomId} = route.params;
-  // 방 번호 클립보드 복사
+  // apple id
+  const {appleId} = route.params;
+  // 클립보드 복사
   const copyToClipboard = () => {
     Clipboard.setString(roomId);
   };
@@ -169,14 +171,17 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               <Button
                 onPress={() => {
                   // 제출 했는지(현재 사용자)
-                  const {isSave} = route.params;
-                  console.log('방장아님isSave:::', isSave);
-                  if (isSave) {
-                    alert('이미 내용을 제출했습니다.');
-                  } else {
-                    actAdding();
-                    navigate('GroupCreate', {roomId: roomId, isHost: isHost});
-                  }
+                  // if (isSave) {
+                  //   alert('이미 내용을 제출했습니다.');
+                  // } else {
+
+                  actAdding();
+                  navigate('GroupCreate', {
+                    roomId: roomId,
+                    isHost: isHost,
+                    appleId: appleId,
+                  });
+                  // }
                 }}
                 text="추억 담기"
               />

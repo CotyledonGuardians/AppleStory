@@ -72,12 +72,12 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
         // console.log('makeRoom::response.data', response.data);
         return response.data;
       })
-      .then(({roomId}) => {
+      .then(({roomId, appleId}) => {
         const connect = () => {
           UseStomp(
             () => {
-              console.log('make room succeed', roomId);
-              navigate('GroupSession', {roomId: roomId});
+              console.log('make room succeed', roomId, appleId);
+              navigate('GroupSession', {roomId: roomId, appleId: appleId});
             },
             () => {
               console.log('make room failed', roomId);
