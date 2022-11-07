@@ -3,9 +3,10 @@ import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Text, Image, ImageBackground} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {getMyAppleCount} from '../../api/AppleAPI';
+import LoadingDefault from '../LoadingDefault';
 
 const MyPage = () => {
-  const [appleCnt, setAppleCnt] = useState(0);
+  const [appleCnt, setAppleCnt] = useState();
   const email = auth().currentUser.email;
 
   useEffect(() => {
@@ -18,7 +19,7 @@ const MyPage = () => {
       });
   });
 
-  return (
+  return appleCnt ? (
     <SafeAreaView style={styles.container}>
       <Text style={styles.name}>{email}</Text>
       <View>
@@ -35,6 +36,8 @@ const MyPage = () => {
         style={styles.image}
       />
     </SafeAreaView>
+  ) : (
+    <LoadingDefault />
   );
 };
 
