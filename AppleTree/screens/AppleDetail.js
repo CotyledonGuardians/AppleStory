@@ -7,14 +7,14 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
-import {DataTable} from 'react-native-paper';
 import Video from 'react-native-video';
-import {get} from 'react-native/Libraries/Utilities/PixelRatio';
 import {getAppleDetail} from '../api/AppleAPI';
 import {getAddress} from '../api/GeocodingAPI';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
+import storage from '@react-native-firebase/storage';
+import auth from '@react-native-firebase/auth';
+import Loading from './LoadingDefault';
 
 var randomImages = [
   require('../assets/pictures/aegom1.png'),
@@ -37,16 +37,17 @@ const AppleDetail = ({navigation, route}) => {
   const [paused, setPaused] = useState(false);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
   const [screenType, setScreenType] = useState('content');
+  const [photoURLs, setPhotoURLs] = useState([]);
 
   const onSeek = seek => {
     //Handler for change in seekbar
     videoPlayer.current.seek(seek);
   };
 
-  const onPaused = playerState => {
+  const onPaused = newPlayerState => {
     //Handler for Video Pause
     setPaused(!paused);
-    setPlayerState(playerState);
+    setPlayerState(newPlayerState);
   };
 
   const onReplay = () => {
@@ -71,18 +72,21 @@ const AppleDetail = ({navigation, route}) => {
 
   const onEnd = () => setPlayerState(PLAYER_STATES.ENDED);
 
-  const onError = () => alert('Oh! ', error);
+  // const onError = () => alert('Oh! ', error);
 
-  const exitFullScreen = () => {
-    alert('Exit full screen');
-  };
+  // const exitFullScreen = () => {
+  //   alert('Exit full screen');
+  // };
 
-  const enterFullScreen = () => {};
+  // const enterFullScreen = () => {};
 
   const onFullScreen = () => {
     setIsFullScreen(isFullScreen);
-    if (screenType == 'content') setScreenType('cover');
-    else setScreenType('content');
+    if (screenType === 'content') {
+      setScreenType('cover');
+    } else {
+      setScreenType('content');
+    }
   };
 
   const renderToolbar = () => (
@@ -91,7 +95,7 @@ const AppleDetail = ({navigation, route}) => {
     </View>
   );
 
-  const onSeeking = currentTime => setCurrentTime(currentTime);
+  const onSeeking = newCurrentTime => setCurrentTime(newCurrentTime);
 
   useEffect(() => {
     getAppleDetail(route.params.id)
@@ -100,11 +104,30 @@ const AppleDetail = ({navigation, route}) => {
         if (response.data.body.location != null) {
           getAddressLatLng(response.data.body.location);
         }
+        return response.data.body.content.photo;
+      })
+      .then((photo) => photo.map((photo, idx) => storage().ref(photo.content).getDownloadURL()))
+      .then((promises) => {
+        promises.forEach((promise) => {
+          promise
+          .then((url) => {
+            setPhotoURLs((oldPhotoURLs) => {
+              const newPhotoURLs = [...oldPhotoURLs];
+
+              newPhotoURLs.push(url);
+
+              return newPhotoURLs;
+            });
+          })
+          .catch((err) => {
+            console.log("err on url promises foreach:::", err);
+          });
+        });
       })
       .catch(error => {
         console.log('error', error);
       });
-  }, []);
+  }, [route.params.id]);
 
   const seedDetail = (nickname, uid) => {
     navigation.navigate('SeedDetail', {
@@ -133,7 +156,7 @@ const AppleDetail = ({navigation, route}) => {
             source={
               randomImages[Math.floor(Math.random() * randomImages.length)]
             }
-            style={{marginLeft: 20, marginTop: 10, width: '80%', height: '90%'}}
+            style={styles.headerImg}
           />
         </View>
         <View style={styles.headerRight}>
@@ -168,28 +191,28 @@ const AppleDetail = ({navigation, route}) => {
               </Text>
               <View style={styles.iconBox}>
                 {appleDetail.content.text != null &&
-                  appleDetail.content.text.length != 0 && (
+                  appleDetail.content.text.length !== 0 && (
                     <Image
                       style={styles.contentIcon}
                       source={require('../assets/icons/text.png')}
                     />
                   )}
                 {appleDetail.content.photo != null &&
-                  appleDetail.content.photo.length != 0 && (
+                  appleDetail.content.photo.length !== 0 && (
                     <Image
                       style={styles.contentIcon}
                       source={require('../assets/icons/photo.png')}
                     />
                   )}
                 {appleDetail.content.audio != null &&
-                  appleDetail.content.audio.length != 0 && (
+                  appleDetail.content.audio.length !== 0 && (
                     <Image
                       style={styles.contentIcon}
                       source={require('../assets/icons/mic.png')}
                     />
                   )}
                 {appleDetail.content.video != null &&
-                  appleDetail.content.video.length != 0 && (
+                  appleDetail.content.video.length !== 0 && (
                     <Image
                       style={styles.contentIcon}
                       source={require('../assets/icons/video.png')}
@@ -256,20 +279,14 @@ const AppleDetail = ({navigation, route}) => {
         <Text style={styles.textFontBold}>기록된 사진</Text>
         <View style={{height: 230, width: '100%'}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {appleDetail.content.photo.map((item, index) => {
+            {photoURLs.map((item, index) => {
+              console.log(item);
               return (
                 <Image
                   key={index}
-                  style={{
-                    margin: 3,
-                    height: '100%',
-                    aspectRatio: 1.6,
-                    flex: 1,
-                    width: '100%',
-                    resizeMode: 'contain',
-                  }}
+                  style={styles.photoImg}
                   source={{
-                    uri: item.content,
+                    uri: item,
                   }}
                 />
               );
@@ -327,15 +344,17 @@ const AppleDetail = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {appleDetail && (
+      {appleDetail && address ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header />
-          <ContentSeed />
+          {/* <ContentSeed /> */}
           {appleDetail.content.photo != null &&
-            appleDetail.content.photo.length != 0 && <Photo />}
+            appleDetail.content.photo.length !== 0 && <Photo />}
           {/* {appleDetail.content.video != null &&
             appleDetail.content.video.length != 0 && <VideoRecord />} */}
         </ScrollView>
+      ) : (
+        <Loading />
       )}
     </SafeAreaView>
   );
@@ -461,6 +480,20 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun',
     color: '#4C4036',
     fontSize: 12,
+  },
+  headerImg: {
+    marginLeft: 20,
+    marginTop: 10,
+    width: '80%',
+    height: '90%',
+  },
+  photoImg: {
+    margin: 3,
+    height: '100%',
+    aspectRatio: 1.6,
+    flex: 1,
+    width: '100%',
+    resizeMode: 'contain',
   },
 });
 
