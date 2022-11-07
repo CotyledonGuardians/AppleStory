@@ -4,7 +4,7 @@ import {Text, TextInput, Pressable, Alert} from 'react-native';
 import {Button} from '../../components/Button';
 import auth from '@react-native-firebase/auth';
 import GoogleLogin from '../../components/firebase/GoogleLogin';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Login = ({navigation}) => {
   //하위컴포넌트(GoogleLogin)=>상위컴포넌트(Login)으로 props 전달하기 위한 함수
   const getLoginState = isLogin => {
@@ -20,11 +20,10 @@ const Login = ({navigation}) => {
       .signInWithEmailAndPassword(email, pwd)
       .then(data => {
         console.log('idToken:::' + data.user.getIdToken());
+        AsyncStorage.setItem('idToken', data.user.getIdToken());
         return data.user.getIdToken();
       })
-      .then(idToken => {
-        console.log('두번째 than까지왓다고~');
-      })
+      .then(idToken => {})
       .catch(error => {
         switch (error.code) {
           case 'auth/invalid-email':
