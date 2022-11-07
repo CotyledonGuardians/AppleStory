@@ -16,6 +16,7 @@ import java.util.Date;
 @ToString
 public class RoomApple {
 
+    private Long id;
     private Boolean type;
     private String title;
     private Creator creator;
@@ -29,6 +30,7 @@ public class RoomApple {
 
     public AppleDTO toAppleDTO() {
         return AppleDTO.builder()
+                .id(this.id)
                 .type(this.type)
                 .title(this.title)
                 .creator(this.creator)
@@ -44,6 +46,7 @@ public class RoomApple {
 
     public static RoomApple of(AppleDTO appleDTO) {
         return RoomApple.builder()
+                .id(appleDTO.getId())
                 .type(appleDTO.getType())
                 .title(appleDTO.getTitle())
                 .creator(appleDTO.getCreator())

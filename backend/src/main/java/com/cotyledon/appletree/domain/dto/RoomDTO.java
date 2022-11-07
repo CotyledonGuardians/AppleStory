@@ -11,4 +11,5 @@ import lombok.*;
 public class RoomDTO {
 
     private String roomId;
+    private Long appleId;
 }

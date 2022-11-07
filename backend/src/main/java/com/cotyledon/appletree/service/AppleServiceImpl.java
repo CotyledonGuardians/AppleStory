@@ -31,6 +31,8 @@ public class AppleServiceImpl implements AppleService{
     private final AppleUserRepository appleUserRepository;
     private final AppleCustomRepository appleCustomRepository;
 
+    private final FirebaseAuthService firebaseAuthService;
+
     @Override
     public Page<AppleListDTO> getOpenAppleList(String uid, int sort, Pageable pageable) {
         return appleCustomRepository.findOpenByUidSort(uid, sort, pageable);
@@ -77,6 +79,9 @@ public class AppleServiceImpl implements AppleService{
             AppleUser appleUser = appleUserRepository.findByApple_IdAndUid(apple.getId(), principal.getName()).get();
             appleUser.setIsOpen(Boolean.TRUE);
             appleUserRepository.save(appleUser);
+
+            // 해당 멤버에 자원 접근을 위한 custom claim 부여(getDownloadUrl())
+            firebaseAuthService.setClaimToAppleId(principal.getName(), id);
             return apple;
         }
 
@@ -128,6 +133,8 @@ public class AppleServiceImpl implements AppleService{
 
     @Override
     public void catchToTrue(Long appleId) {
-        findById(appleId).orElseThrow().setIsCatch(true);
+        Apple apple = findById(appleId).orElseThrow();
+        apple.setIsCatch(true);
+        appleRepository.save(apple);
     }
 }

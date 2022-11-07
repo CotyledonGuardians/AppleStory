@@ -35,6 +35,8 @@ public class WebSocketFront {
 
         long appleId = multiAppleService.reserveAppleAndGetId();
 
+        apple.setId(appleId);
+
         RoomDTO roomDTO = lockAppleRoomService.reserveRoomAndGetRoomDTO(principal.getName(), apple, appleId);
 
         return ResponseEntity.ok(roomDTO);

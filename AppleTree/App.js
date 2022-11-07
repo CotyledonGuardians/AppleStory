@@ -26,6 +26,9 @@ import HitApple from './sessions/AppleHitSession';
 import LockAppleDetail from './screens/lock/LockAppleDetail';
 import auth from '@react-native-firebase/auth';
 import JoinSession from './screens/test/JoinSession';
+import AppleUnlockGIF from './screens/unlock/AppleUnlockGIF';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -45,7 +48,8 @@ export default function App() {
   const [login, setLogin] = useState(false);
 
   auth().onAuthStateChanged(user => {
-    if (user) {
+    const idToken = AsyncStorage.getItem('idToken');
+    if (user && idToken) {
       setLogin(true);
     } else {
       setLogin(false);
@@ -61,10 +65,10 @@ export default function App() {
         {/* 인트로 3개 */}
         <Stack.Screen name="IntroFirst" component={IntroFirst} />
         <Stack.Screen name="IntroSecond" component={IntroSecond} />
-        {/* 로그인 페이지 */}
-        <Stack.Screen name="Login" component={Login} />
         {/* 회원가입 페이지 */}
         <Stack.Screen name="Register" component={Register} />
+        {/* 로그인 페이지 */}
+        <Stack.Screen name="Login" component={Login} />
       </Stack.Navigator>
     );
   }
@@ -72,15 +76,22 @@ export default function App() {
   function MyTabs() {
     return (
       <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: {
-            height: hp('9%'),
-          },
+        screenOptions={({route}) => ({
+          tabBarStyle: (route => {
+            const routeName = getFocusedRouteNameFromRoute(route);
+            if (
+              routeName === 'AppleUnlockGIF' ||
+              routeName === 'AppleLockGIF'
+            ) {
+              return {display: 'none', height: hp('9%')};
+            }
+            return {height: hp('9%')};
+          })(route),
           headerShown: false,
           tabBarShowLabel: false,
           tabBarInactiveBackgroundColor: '#ECE5E0',
           tabBarActiveBackgroundColor: '#c3b8ae',
-        }}>
+        })}>
         <Tab.Screen
           name="Home"
           // component={Main}
@@ -91,6 +102,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <HomeStack.Navigator
@@ -104,6 +116,8 @@ export default function App() {
                 name="LockAppleDetail"
                 component={LockAppleDetail}
               />
+              <HomeStack.Screen name="AppleDetail" component={AppleDetail} />
+              <HomeStack.Screen name="SeedDetail" component={SeedDetail} />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -116,6 +130,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <MapStack.Navigator
@@ -143,6 +158,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <CreateStack.Navigator screenOptions={{headerShown: false}}>
@@ -168,7 +184,6 @@ export default function App() {
         </Tab.Screen>
         <Tab.Screen
           name="List"
-          // component={AppleList}
           options={{
             tabBarIcon: () => (
               <Image
@@ -176,6 +191,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}>
           {() => (
             <ListStack.Navigator
@@ -190,6 +206,11 @@ export default function App() {
                 name="LockAppleDetail"
                 component={LockAppleDetail}
               />
+              <ListStack.Screen
+                options={{headerShown: false}}
+                name="AppleUnlockGIF"
+                component={AppleUnlockGIF}
+              />
             </ListStack.Navigator>
           )}
         </Tab.Screen>
@@ -203,6 +224,7 @@ export default function App() {
                 style={styles.navIcon}
               />
             ),
+            unmountOnBlur: true,
           }}
         />
       </Tab.Navigator>

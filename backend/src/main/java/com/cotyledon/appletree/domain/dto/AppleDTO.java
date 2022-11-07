@@ -13,6 +13,8 @@ import java.util.Date;
 @AllArgsConstructor
 @ToString
 public class AppleDTO {
+
+    private Long id;
     private Boolean type;
     private String title;
     private Creator creator;
@@ -80,6 +82,19 @@ public class AppleDTO {
                 .useSpace(this.useSpace)
                 .isCatch(true)
                 .build();
+    }
+
+    public void translateInto(Apple apple) {
+        apple.setType(this.type);
+        apple.setTitle(this.title);
+        apple.setCreator(this.creator);
+        apple.setCreateAt(this.createAt);
+        apple.setUnlockAt(this.unlockAt);
+        apple.setCreateScene(this.createScene);
+        apple.setContent(this.content);
+        apple.setLocation(this.location);
+        apple.setUseSpace(this.useSpace);
+        apple.setIsCatch(this.isCatch);
     }
 
     public boolean validateAndCleanWithHostUidForReservingRoom(String hostUid) {

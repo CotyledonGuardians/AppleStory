@@ -8,9 +8,11 @@ import com.cotyledon.appletree.domain.entity.redis.RoomApple;
 import com.cotyledon.appletree.domain.event.AppleSaveEvent;
 import com.cotyledon.appletree.domain.event.ReserveLockAppleRoomEvent;
 import com.cotyledon.appletree.domain.repository.redis.*;
+import com.cotyledon.appletree.domain.stomp.ChangeMessageData;
 import com.cotyledon.appletree.notifier.LockAppleRoomNotifier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -40,10 +42,15 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         }
 
         // 룸 생성
-        LockAppleRoom room = LockAppleRoom.builder().hostUid(hostUid).appleId(appleId).build();
-        lockAppleRoomRepository.save(room);
+        String roomId = generateRoomId();
 
-        String roomId = room.getId();
+        LockAppleRoom room  = LockAppleRoom.builder()
+                .id(roomId)
+                .hostUid(hostUid)
+                .appleId(appleId)
+                .build();
+
+        lockAppleRoomRepository.save(room);
 
         // Put 룸 사과
         roomAppleRepository.putRoomApple(roomId, RoomApple.of(apple));
@@ -51,7 +58,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         // reserve 이벤트 발행
         eventPublisher.publishEvent(ReserveLockAppleRoomEvent.builder().roomId(roomId).appleId(appleId).build());
 
-        return RoomDTO.builder().roomId(roomId).build();
+        return RoomDTO.builder().roomId(roomId).appleId(appleId).build();
     }
 
     @Override
@@ -97,7 +104,7 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         lockAppleRoomGroupRepository.putGroup(roomId, group);
 
         // change 이벤트 발행
-        lockAppleRoomNotifier.notifyForJoined(roomId, uid);
+        lockAppleRoomNotifier.notifyForJoined(roomId, uid, ChangeMessageData.withHostUid(room.get().getHostUid()));
 
         return true;
     }
@@ -173,5 +180,16 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         Optional<Set<String>> group = lockAppleRoomGroupRepository.findGroupByRoomId(roomId);
 
         return group.isPresent() && group.get().contains(uid);
+    }
+
+    private String generateRoomId() {
+
+        String id;
+
+        do {
+            id = RandomStringUtils.randomAlphanumeric(4).toUpperCase();
+        } while (roomAppleRepository.findRoomAppleByRoomId(id).isPresent());
+
+        return id;
     }
 }

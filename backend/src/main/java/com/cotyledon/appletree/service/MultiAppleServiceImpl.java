@@ -27,7 +27,8 @@ public class MultiAppleServiceImpl implements MultiAppleService {
     @Transactional
     public Long saveAppleAndAppleUsersAndGetAppleId(AppleDTO appleDTO, Set<String> userUids) {
 
-        Apple apple = appleDTO.toAppleEntity();
+        Apple apple = appleRepository.findById(appleDTO.getId()).orElseThrow();
+        appleDTO.translateInto(apple);
 
         // createAt 세팅
         apple.setCreateAt(Timestamp.valueOf(LocalDateTime.now()));
@@ -62,5 +63,23 @@ public class MultiAppleServiceImpl implements MultiAppleService {
 
         appleRepository.delete(apple.get());
         log.info("예약된 사과를 지움");
+    }
+
+    @Override
+    public void saveAppleAndAppleUsers(AppleDTO appleDTO, Set<String> userUids) {
+
+        Apple apple = appleDTO.toAppleEntity();
+
+        // createAt 세팅
+        apple.setCreateAt(Timestamp.valueOf(LocalDateTime.now()));
+
+        appleRepository.save(apple);
+
+        userUids.stream().map(uid -> AppleUser.builder()
+                .uid(uid)
+                .apple(apple)
+                .isOpen(false)
+                .isShow(true)
+                .build()).forEach(appleUserRepository::save);
     }
 }

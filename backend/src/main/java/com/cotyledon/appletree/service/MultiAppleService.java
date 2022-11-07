@@ -9,4 +9,5 @@ public interface MultiAppleService {
     Long saveAppleAndAppleUsersAndGetAppleId(AppleDTO appleDTO, Set<String> userUids);
     Long reserveAppleAndGetId();
     void deleteAppleIfEmpty(Long appleId);
+    void saveAppleAndAppleUsers(AppleDTO appleDTO, Set<String> userUids);
 }
