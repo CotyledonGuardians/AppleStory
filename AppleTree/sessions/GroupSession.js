@@ -18,19 +18,15 @@ import {
   SendIfSubscribed,
 } from '../stomp/';
 const GroupSession = ({navigation: {navigate}, route}) => {
-  // set copy text
-  const [copiedText, setCopiedText] = useState(null);
-  // unlockGIF loading
-  const [ready, setReady] = useState(true);
-  // session total cnt
+  // 세션에 들어온 총 인원
   const [total, setTotal] = useState(0);
-  // session compelete cnt
+  // 추억을 담은 인원
   const [compelete, setCompelete] = useState(0);
-  // session message
+  // 세션 상태메세지(채팅방)
   const [message, setMessage] = useState([]);
-  // 방장인지체크 추후 변경
+  // 방장인지체크
   const [isHost, setIsHost] = useState(false);
-  // room id
+  // 세션 방 번호
   const {roomId} = route.params;
   // apple id
   const {appleId} = route.params;
@@ -38,10 +34,13 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const copyToClipboard = () => {
     Clipboard.setString(roomId);
   };
-  // 사과매달기 함수 추후 변경
+  // 사과매달기
   const hangApple = () => {
+    // 사과에 담은 데이터 제출(세션에서 제출한 모든 인원)
     submit();
+    // 세션 연결 끊기
     disconnect();
+    // LockGIF로 이동시키기
     navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
   };
   // 자동 스크롤밑으로
@@ -52,11 +51,11 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     console.log(nick);
     switch (state) {
       case 'JOINED':
-        return nick + '님께서 입장 하셨습니다.';
+        return nick + '님께서 입장 하셨습니다❣';
       case 'ADDING':
-        return nick + '님께서 사과를 생성 중입니다.';
+        return nick + '님께서 내용을 입력 중입니다...';
       case 'ADDED':
-        return nick + '님께서 사과 생성을 완료했습니다.';
+        return nick + '님께서 사과 생성을 완료했습니다❣';
       case 'CANCELLED':
         return nick + '님께서 방을 나갔습니다.';
       case 'LEFT':
@@ -88,7 +87,9 @@ const GroupSession = ({navigation: {navigate}, route}) => {
             hasUpload = hasUpload + 1;
           }
         }
+        //세션의 총 인원 저장#ㅁ
         setTotal(length);
+        //세션에서 사과내용 제출한 인원 저장
         setCompelete(hasUpload);
         // 배열을 계속 갈아끼워줌(닉네임과 상태에 따라)
         const newMessage = statuses.map((item, idx) => ({
@@ -107,12 +108,14 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
   }, [roomId]);
 
+  // 세션 연결 해제
   const disconnect = () => {
     DisconnectIfConnected(() => {
       navigate('Home', {screen: 'Main'});
     });
   };
 
+  // 세션에서 사과에 내용을 쓰고있는 상태
   const actAdding = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.adding`, {});
   };
@@ -121,6 +124,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.cancelled`, {});
   };
 
+  //방장이 사과매달기를 할때(hasUpload가 true인 모든 인원 제출)
   const submit = () => {
     SendIfSubscribed(`/lock-apple-room.${roomId}.submit`, {});
   };
@@ -132,8 +136,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
         style={styles.image}
       />
       <Text style={styles.complete}>
-        {/* 추후 변경 */}
-        {/* {}명 중 {}명 완료 */}
         {total}명 중 {compelete}명 완료
       </Text>
       <View style={styles.form}>
@@ -163,31 +165,48 @@ const GroupSession = ({navigation: {navigate}, route}) => {
           </ScrollView>
         </View>
         <View style={styles.buttons}>
-          {!isHost ? (
-            <Button
-              onPress={() => {
-                actAdding();
-                navigate('GroupCreate', {roomId: roomId, isHost: isHost});
-              }}
-              text="추억 담기"
-            />
-          ) : (
-            <>
-              <SmallButton
-                onPress={() => hangApple()}
-                text="사과 매달기"
-                disabled={false}
-              />
-              <SmallButton
+          {
+            //방장이 아니고
+            !isHost ? (
+              <Button
                 onPress={() => {
+                  // 제출 했는지(현재 사용자)
+                  // if (isSave) {
+                  //   alert('이미 내용을 제출했습니다.');
+                  // } else {
+
                   actAdding();
-                  navigate('GroupCreate', {roomId: roomId, isHost: isHost, appleId: appleId});
+                  navigate('GroupCreate', {
+                    roomId: roomId,
+                    isHost: isHost,
+                    appleId: appleId,
+                  });
+                  // }
                 }}
                 text="추억 담기"
-                disabled={false}
               />
-            </>
-          )}
+            ) : (
+              <>
+                <SmallButton
+                  onPress={() => hangApple()}
+                  text="사과 매달기"
+                  disabled={false}
+                />
+                <SmallButton
+                  onPress={() => {
+                    // if (isSave) {
+                    //   alert('이미 내용을 제출했습니다.');
+                    // } else {
+                    actAdding();
+                    navigate('GroupCreate', {roomId: roomId, isHost: isHost});
+                    // }
+                  }}
+                  text="추억 담기"
+                  disabled={false}
+                />
+              </>
+            )
+          }
         </View>
       </View>
     </SafeAreaView>
@@ -227,7 +246,7 @@ const styles = StyleSheet.create({
   },
   copyText: {
     fontSize: 13,
-    color: '#A6A6A6',
+    // color: '#A6A6A6',
     fontFamily: 'UhBee Se_hyun Bold',
     marginTop: 10,
     textAlign: 'center',
