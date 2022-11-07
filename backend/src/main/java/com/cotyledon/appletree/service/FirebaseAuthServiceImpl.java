@@ -20,7 +20,7 @@ public class FirebaseAuthServiceImpl implements FirebaseAuthService {
     @Override
     public void setClaimToAppleId(String uid, Long appleId) throws FirebaseAuthException {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("appleId", appleId);
+        claims.put("appleId", appleId.toString());
         firebaseAuth.setCustomUserClaims(uid, claims);
     }
 
