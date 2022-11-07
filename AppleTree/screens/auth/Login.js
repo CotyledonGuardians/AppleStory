@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {SafeAreaView, View, StyleSheet, Image} from 'react-native';
-import {Text, TextInput, Pressable} from 'react-native';
+import {Text, TextInput, Pressable, Alert} from 'react-native';
 import {Button} from '../../components/Button';
+import auth from '@react-native-firebase/auth';
 import GoogleLogin from '../../components/firebase/GoogleLogin';
 
 const Login = ({navigation}) => {
@@ -11,7 +12,48 @@ const Login = ({navigation}) => {
   };
   const [email, setEmail] = useState(null);
   const [pwd, setPwd] = useState(null);
+  const [errMsg, setErrMsg] = useState('');
 
+  const onLogin = () => {
+    if (!checkLoginInput()) return;
+    auth()
+      .signInWithEmailAndPassword(email, pwd)
+      .then(data => {
+        console.log('idToken:::' + data.user.getIdToken());
+        return data.user.getIdToken();
+      })
+      .then(idToken => {
+        console.log('두번째 than까지왓다고~');
+      })
+      .catch(error => {
+        switch (error.code) {
+          case 'auth/invalid-email':
+            setErrMsg('Invalid email');
+            break;
+          case 'auth/user-not-found':
+            setErrMsg('No account with that email was found');
+            break;
+          case 'auth/wrong-password':
+            setErrMsg('Incorrect password');
+            break;
+          default:
+            setErrMsg('exception');
+            break;
+        }
+        Alert.alert(errMsg);
+      });
+  };
+  const checkLoginInput = () => {
+    if (!email.trim()) {
+      Alert.alert('Please enter ID!');
+      return false;
+    }
+    if (!pwd.trim()) {
+      Alert.alert('Please enter password!');
+      return false;
+    }
+    return true;
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -43,29 +85,18 @@ const Login = ({navigation}) => {
             onChangeText={text => setPwd(text)}
           />
         </View>
-        <Button onPress={onLogin} text="로그인" />
+        <Button onPress={() => onLogin()} text="로그인" />
       </View>
       <View style={styles.marginTopBottom}>
         <GoogleLogin propFunction={getLoginState} />
       </View>
       <View style={styles.marginTopBottom}>
         <Pressable onPress={() => navigation.navigate('Register')}>
-          <Text
-            style={{
-              color: '#ABABAB',
-              textDecorationLine: 'underline',
-              fontFamily: 'UhBee Se_hyun',
-            }}>
-            이메일로 회원가입하기
-          </Text>
+          <Text style={styles.undertxt}>이메일로 회원가입하기</Text>
         </Pressable>
       </View>
     </SafeAreaView>
   );
-};
-
-const onLogin = () => {
-  alert('로긘');
 };
 
 const styles = StyleSheet.create({
@@ -124,6 +155,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
+  },
+  undertxt: {
+    color: '#ABABAB',
+    textDecorationLine: 'underline',
+    fontFamily: 'UhBee Se_hyun',
   },
 });
 
