@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ImageBackground,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {SmallButton} from '../components/Button';
 import {
@@ -16,6 +17,8 @@ import {
 } from 'react-native-responsive-screen';
 import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
+import LoadingDefault from './LoadingDefault';
+import AppleList from './AppleList';
 
 // 남은 시간에 따라 사과 사진 변경
 const imgUrl = [
@@ -51,6 +54,7 @@ const Apple = ({
         style={appleStyle[index]}
         onPress={() => {
           if (apple.isCatch) {
+            Alert.alert('이미 사과가 따졌어요!');
             navigation.navigate('AppleDetail', {
               id: apple.id,
             });
@@ -157,6 +161,7 @@ const Main = ({navigation}) => {
     const getApples = async () => {
       console.log('getFlag');
       const closeAppleList = await getCloseAppleList(1, 0, 6);
+      console.log('closeAppleList', closeAppleList);
       const openAppleList = await getOpenAppleList(1, 0, 1);
       if (getFlag) {
         setCloseApples(closeAppleList.data.body.content);
@@ -263,7 +268,7 @@ const Main = ({navigation}) => {
           {openApples.length > 0 ? (
             <TouchableOpacity
               style={styles.basketTouch}
-              onPress={() => navigation.navigate('AppleList')}>
+              onPress={() => navigation.navigate('List', {screen: AppleList})}>
               <Image
                 style={styles.basket}
                 source={require('../assets/pictures/basketfull.png')}
@@ -281,7 +286,7 @@ const Main = ({navigation}) => {
           />
         </ImageBackground>
       ) : (
-        <Text>Loading</Text>
+        <LoadingDefault />
       )}
 
       {/* 안익은 사과 모달 start */}
@@ -308,6 +313,10 @@ const Main = ({navigation}) => {
                   onPress={() => {
                     setModalVisible(false);
                     navigation.navigate('LockAppleDetail', {id: apple.id});
+                    // navigation.navigate('List', {
+                    //   screen: 'LockAppleDetail',
+                    //   params: {id: apple.id},
+                    // });
                   }}
                   text="자세히 보기"
                   disabled={false}

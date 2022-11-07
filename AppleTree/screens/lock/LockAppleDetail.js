@@ -4,9 +4,12 @@ import {getLockAppleDetail} from '../../api/AppleAPI';
 import useInterval from '../../config/useInterval';
 import {Button} from '../../components/Button';
 import {UseStomp} from '../../stomp';
+import Loading from '../LoadingDefault';
+import {widthPercentageToDP} from 'react-native-responsive-screen';
 
 const LockAppleDetail = ({route, navigation}) => {
   const {id} = route.params;
+  console.log('id', id);
   const [apple, setApple] = useState();
   const [time, setTime] = useState('0일 0시간 0분');
   const [openFlag, setOpenFlag] = useState(false);
@@ -63,121 +66,119 @@ const LockAppleDetail = ({route, navigation}) => {
     timeCheck();
   }, 1000);
 
-  return (
+  return apple && time ? (
     <SafeAreaView style={styles.screen}>
-      {apple && time ? (
-        <SafeAreaView style={styles.container}>
-          <View style={styles.aegomBox}>
-            <Image
-              style={styles.aegom}
-              source={require('../../assets/pictures/aegomkeydetail.png')}
+      <SafeAreaView style={styles.container}>
+        <View style={styles.aegomBox}>
+          <Image
+            style={styles.aegom}
+            source={require('../../assets/pictures/aegomkeydetail.png')}
+          />
+        </View>
+        {openFlag ? (
+          <View style={styles.detailBox}>
+            <Text style={[styles.textFont, styles.defaultText]}>
+              애곰이가 사과를 준대요!
+            </Text>
+            <Button
+              onPress={() => {
+                UseStomp(
+                  () => {
+                    console.log('make room succeed', apple.id);
+                    navigation.navigate('HitApple', {
+                      id: apple.id,
+                    });
+                  },
+                  () => {
+                    console.log('make room failed', apple.id);
+                  },
+                );
+              }}
+              text="사과 때리러 가기"
             />
           </View>
-          {openFlag ? (
-            <View style={styles.detailBox}>
-              <Text style={[styles.textFont, styles.defaultText]}>
-                애곰이가 사과를 준대요!
-              </Text>
-              <Button
-                onPress={() => {
-                  UseStomp(
-                    () => {
-                      console.log('make room succeed', apple.id);
-                      navigation.navigate('HitApple', {
-                        id: apple.id,
-                      });
-                    },
-                    () => {
-                      console.log('make room failed', apple.id);
-                    },
-                  );
-                }}
-                text="사과 때리러 가기"
-              />
-            </View>
-          ) : (
-            <View style={styles.detailBox}>
-              <Text style={[styles.textFont, styles.defaultText]}>
-                애곰이는 아직 사과를 줄 생각이 없어요
-              </Text>
-              <Text style={[styles.textFont, styles.timeText]}>{time}</Text>
-            </View>
-          )}
+        ) : (
+          <View style={styles.detailBox}>
+            <Text style={[styles.textFont, styles.defaultText]}>
+              애곰이는 아직 사과를 줄 생각이 없어요
+            </Text>
+            <Text style={[styles.textFont, styles.timeText]}>{time}</Text>
+          </View>
+        )}
 
-          <View style={styles.appleDetailBox}>
-            <View style={styles.oneBox}>
-              <Text style={[styles.textFont, styles.nameText]}>
-                {apple.title}
-              </Text>
-            </View>
-            <View style={styles.nameBox}>
-              <Text style={[styles.textFont, styles.nameText]}>
-                {apple.teamName}
-              </Text>
-              <View style={styles.countBox}>
-                <Image
-                  style={styles.countIcon}
-                  source={require('../../assets/icons/usercount.png')}
-                />
-                <Text>{apple.number}</Text>
-              </View>
-            </View>
-            <View style={styles.contentBox}>
-              <Text style={[styles.textFont, styles.smallText]}>
-                이 사과에 기록된 데이터
-              </Text>
-              <View style={styles.iconBox}>
-                {apple.content.includes('text') ? (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../../assets/icons/text.png')}
-                  />
-                ) : (
-                  <></>
-                )}
-                {apple.content.includes('audio') ? (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../../assets/icons/mic.png')}
-                  />
-                ) : (
-                  <></>
-                )}
-                {apple.content.includes('photo') ? (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../../assets/icons/photo.png')}
-                  />
-                ) : (
-                  <></>
-                )}
-                {apple.content.includes('video') ? (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../../assets/icons/video.png')}
-                  />
-                ) : (
-                  <></>
-                )}
-                {apple.content.includes('space') ? (
-                  <Image
-                    style={styles.contentIcon}
-                    source={require('../../assets/icons/gps.png')}
-                  />
-                ) : (
-                  <></>
-                )}
-              </View>
-              <Text style={[styles.textFont, styles.secondText]}>
-                생성일 : {apple.createAt.split('T')[0]}
-              </Text>
+        <View style={styles.appleDetailBox}>
+          <View style={styles.oneBox}>
+            <Text style={[styles.textFont, styles.nameText]}>
+              {apple.title}
+            </Text>
+          </View>
+          <View style={styles.nameBox}>
+            <Text style={[styles.textFont, styles.nameText]}>
+              {apple.teamName}
+            </Text>
+            <View style={styles.countBox}>
+              <Image
+                style={styles.countIcon}
+                source={require('../../assets/icons/usercount.png')}
+              />
+              <Text>{apple.number}</Text>
             </View>
           </View>
-        </SafeAreaView>
-      ) : (
-        <Text>Loading</Text>
-      )}
+          <View style={styles.contentBox}>
+            <Text style={[styles.textFont, styles.smallText]}>
+              이 사과에 기록된 데이터
+            </Text>
+            <View style={styles.iconBox}>
+              {apple.content.includes('text') ? (
+                <Image
+                  style={styles.contentIcon}
+                  source={require('../../assets/icons/text.png')}
+                />
+              ) : (
+                <></>
+              )}
+              {apple.content.includes('audio') ? (
+                <Image
+                  style={styles.contentIcon}
+                  source={require('../../assets/icons/mic.png')}
+                />
+              ) : (
+                <></>
+              )}
+              {apple.content.includes('photo') ? (
+                <Image
+                  style={styles.contentIcon}
+                  source={require('../../assets/icons/photo.png')}
+                />
+              ) : (
+                <></>
+              )}
+              {apple.content.includes('video') ? (
+                <Image
+                  style={styles.contentIcon}
+                  source={require('../../assets/icons/video.png')}
+                />
+              ) : (
+                <></>
+              )}
+              {apple.content.includes('space') ? (
+                <Image
+                  style={styles.contentIcon}
+                  source={require('../../assets/icons/gps.png')}
+                />
+              ) : (
+                <></>
+              )}
+            </View>
+            <Text style={[styles.textFont, styles.secondText]}>
+              생성일 : {apple.createAt.split('T')[0]}
+            </Text>
+          </View>
+        </View>
+      </SafeAreaView>
     </SafeAreaView>
+  ) : (
+    <Loading />
   );
 };
 
@@ -198,8 +199,8 @@ const styles = StyleSheet.create({
     marginBottom: '2%',
   },
   aegom: {
-    width: '60%',
-    height: '90%',
+    width: widthPercentageToDP('60%'),
+    height: widthPercentageToDP('70%'),
   },
   detailBox: {
     flex: 2,
