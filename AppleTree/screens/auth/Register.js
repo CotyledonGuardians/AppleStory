@@ -2,13 +2,13 @@ import React, {useState, useEffect} from 'react';
 import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Text, TextInput, Image, Pressable} from 'react-native';
 import auth from '@react-native-firebase/auth';
-// import joinImg from '../../assets/pictures/aegomjoin.png';
+
 import {Button} from '../../components/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Register = ({navigation}) => {
-  const [email] = React.useState(null);
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+
   //AsyncStorage 저장
   const storeToken = async idToken => {
     // removeToken();
@@ -20,6 +20,7 @@ const Register = ({navigation}) => {
       console.log('storeToken error' + error);
     }
   };
+
   //회원가입 함수
   const register = async () => {
     try {
@@ -47,18 +48,9 @@ const Register = ({navigation}) => {
       />
       <View style={styles.marginTopBottom}>
         <View style={styles.email}>
-          <Text
-            style={{
-              flex: 0.3,
-              textAlign: 'center',
-              fontSize: 15,
-              fontFamily: 'UhBee Se_hyun Bold',
-              color: '#4C4036',
-            }}>
-            이메일
-          </Text>
+          <Text style={styles.txt}>이메일</Text>
           <TextInput
-            value={email}
+            value={registerEmail}
             autoCapitalize={'none'}
             keyboardType={'email-address'}
             style={styles.input}
@@ -69,11 +61,11 @@ const Register = ({navigation}) => {
         <View style={styles.email}>
           <Text style={styles.txt}>비밀번호</Text>
           <TextInput
-            value={email}
+            value={registerPassword}
             autoCapitalize={'none'}
-            keyboardType={'email-address'}
             style={styles.input}
             placeholder="password"
+            secureTextEntry
             onChange={e => setRegisterPassword(e.nativeEvent.text)}
           />
         </View>

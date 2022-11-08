@@ -49,9 +49,14 @@ const styles = StyleSheet.create({
 export default function App() {
   const [login, setLogin] = useState(false);
 
+  const setToken = async () => {
+    const idToken = await auth().currentUser.getIdToken();
+    await AsyncStorage.setItem('idToken', idToken);
+  };
+
   auth().onAuthStateChanged(user => {
-    const idToken = AsyncStorage.getItem('idToken');
-    if (user && idToken) {
+    if (user) {
+      setToken();
       setLogin(true);
     } else {
       setLogin(false);
