@@ -165,6 +165,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('apple-story-debug-secret.keystore')
+            storePassword 'applestory'
+            keyAlias 'apple-story-debug'
+            keyPassword 'applestory'
+        }
     }
     buildTypes {
         debug {
@@ -176,16 +182,18 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
     //빌드환경설정
-    flavorDimensions "default"
+    flavorDimensions "version"
     productFlavors {
         local {}
-        production {}
+        production {
+            dimension "version"
+        }
         staging {
         // 여기서 빌드별 구성을 할 수 있습니다.
         }

@@ -31,6 +31,7 @@ import JoinSession from './screens/test/JoinSession';
 import AppleUnlockGIF from './screens/unlock/AppleUnlockGIF';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Config from 'react-native-config';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -274,8 +275,7 @@ export default function App() {
     //구글 로그인 연동 환경세팅
     const googleSigninConfigure = () => {
       GoogleSignin.configure({
-        webClientId:
-          '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
+        webClientId: Config.GOOGLE_WEB_CLIENT_ID,
       });
     };
     try {
