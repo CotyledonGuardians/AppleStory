@@ -57,7 +57,7 @@ const Apple = ({
         onPress={() => {
           if (apple.isCatch) {
             Alert.alert('이미 사과가 따졌어요!');
-            navigation.navigate('AppleDetail', {
+            navigation.navigate('Overview', {
               id: apple.id,
             });
           } else {
@@ -88,7 +88,7 @@ const Apple = ({
           style={appleStyle[index]}
           onPress={() => {
             if (apple.isCatch) {
-              navigation.navigate('AppleDetail', {
+              navigation.navigate('Overview', {
                 id: apple.id,
               });
             } else {
