@@ -40,7 +40,7 @@ pipeline {
                 sh 'cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml'
                 sh 'cp $FIREBASE_PRODUCTION backend/src/main/resources/'
                 sh 'cp $REDIS_CONF_PRODUCTION backend/redis.conf'
-                sh 'cp $REDIS_ACL_PRODUCTION backend/user.acl'
+                sh 'cp $REDIS_ACL_PRODUCTION backend/users.acl'
                 sh 'cat $RABBIT_PRODUCTION >> backend/10-defaults.conf'
               }
             }
