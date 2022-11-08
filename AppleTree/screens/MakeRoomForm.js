@@ -7,6 +7,7 @@ import {
   TextInput,
   Pressable,
   Image,
+  PermissionsAndroid,
 } from 'react-native';
 import moment from 'moment';
 import 'moment/locale/ko';
@@ -17,6 +18,24 @@ import {UseStomp, DisconnectIfConnected} from '../stomp';
 import GroupSession from '../sessions/GroupSession';
 import JoinSession from './test/JoinSession';
 import {ScrollView} from 'react-native-gesture-handler';
+import Geolocation from 'react-native-geolocation-service';
+
+async function requestPermission() {
+  try {
+    if (Platform.OS === 'ios') {
+      return await Geolocation.requestAuthorization('always');
+    }
+    // 안드로이드 위치 정보 수집 권한 요청
+    if (Platform.OS === 'android') {
+      return await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 const MakeRoomForm = ({navigation: {navigate}}) => {
   //inputs
   const [title, setTitle] = useState(null);
@@ -44,11 +63,36 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
     setDateValid(true);
     hideDatePicker();
   };
+
+  // location
+  const [useLocation, setUseLocation] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+
   //date picker end
   let today = new Date();
-  // useEffect(()=>{
+  useEffect(() => {
+    requestPermission().then(result => {
+      console.log({result});
+      if (result === 'granted') {
+        Geolocation.getCurrentPosition(
+          position => {
+            const {latitude, longitude} = position.coords;
+            setUseLocation({
+              latitude,
+              longitude,
+            });
+          },
+          error => {
+            console.log(error.code, error.message);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }
+    });
+  }, []);
 
-  // },[]);
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
     console.log('makeRoom:::');
@@ -60,8 +104,8 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
       },
       unlockAt: unlockDate,
       location: {
-        lat: 37.5,
-        lng: 127.5,
+        lat: useLocation.latitude !== 0 ? useLocation.latitude : null,
+        lng: useLocation.longitude !== 0 ? useLocation.longitude : null,
       },
     };
     setAppleDTO(tempAppleDTO);
@@ -69,7 +113,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
     makeRoomAPI(tempAppleDTO)
       .then(response => {
         console.log('makeRoom::response', response);
-        // console.log('makeRoom::response.data', response.data);
+        console.log('makeRoom::response.data', response.data);
         return response.data;
       })
       .then(({roomId, appleId}) => {

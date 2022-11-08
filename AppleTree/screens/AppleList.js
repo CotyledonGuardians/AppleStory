@@ -46,27 +46,6 @@ const AppleList = ({navigation}) => {
       });
   };
 
-  const getOpenData = async sort => {
-    getOpenAppleList(sort, 0, size)
-      .then(response => {
-        // console.log(response.data);
-        setOpenList(response.data.body.content);
-      })
-      .catch(error => {
-        console.log('error', error);
-      });
-  };
-
-  const getCloseData = async sort => {
-    getCloseAppleList(sort, 0, size)
-      .then(response => {
-        setCloseList(response.data.body.content);
-      })
-      .catch(error => {
-        console.log('error', error);
-      });
-  };
-
   // 컴포넌트가 마운트되면 해당 함수를 호출해 초기 데이터 설정
   useEffect(() => {
     getInitData();
@@ -166,7 +145,6 @@ const AppleList = ({navigation}) => {
           // console.log('열린 사과', index, countries[index]);
           setRouteSort(countries[index]);
           // setSort(index);
-          getOpenData(index);
         }}
         buttonTextAfterSelection={(selectedItem, index) => {
           return selectedItem;
@@ -199,8 +177,6 @@ const AppleList = ({navigation}) => {
         onSelect={(selectedItem, index) => {
           // console.log('잠긴 사과');
           setRouteSort2(countries[index]);
-          // setSort2(index);
-          getCloseData(index);
         }}
         buttonTextAfterSelection={(selectedItem, index) => {
           return selectedItem;
