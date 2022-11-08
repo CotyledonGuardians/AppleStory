@@ -7,6 +7,7 @@ import {
   TextInput,
   Pressable,
   Image,
+  Platform,
   PermissionsAndroid,
 } from 'react-native';
 import moment from 'moment';
@@ -19,6 +20,7 @@ import GroupSession from '../sessions/GroupSession';
 import JoinSession from './test/JoinSession';
 import {ScrollView} from 'react-native-gesture-handler';
 import Geolocation from 'react-native-geolocation-service';
+import Loading from './LoadingDefault';
 
 async function requestPermission() {
   try {
@@ -50,6 +52,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   const [titleValid, setTitleValid] = useState(false);
   const [teamNameValid, setTeamNameValid] = useState(false);
   const [dateValid, setDateValid] = useState(false);
+  const [loading, setLoading] = useState(false);
   //date picker start
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -72,6 +75,8 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
 
   //date picker end
   let today = new Date();
+  var tomorrow = new Date(today.setDate(today.getDate() + 1));
+
   useEffect(() => {
     requestPermission().then(result => {
       console.log({result});
@@ -109,6 +114,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
       },
     };
     setAppleDTO(tempAppleDTO);
+    setLoading(true);
     // console.log('tempAppleDTO', tempAppleDTO);
     makeRoomAPI(tempAppleDTO)
       .then(response => {
@@ -125,7 +131,6 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             },
             () => {
               console.log('make room failed', roomId);
-              navigate('GroupSession');
             },
           );
         };
@@ -155,7 +160,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   };
 
   // inpust valid handler end
-  return (
+  return !loading ? (
     <ScrollView>
       <SafeAreaView style={styles.container}>
         <Image
@@ -206,7 +211,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="date"
-            minimumDate={today}
+            minimumDate={tomorrow}
             onConfirm={handleConfirm}
             onCancel={hideDatePicker}
           />
@@ -228,6 +233,8 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
         </View>
       </SafeAreaView>
     </ScrollView>
+  ) : (
+    <Loading />
   );
 };
 

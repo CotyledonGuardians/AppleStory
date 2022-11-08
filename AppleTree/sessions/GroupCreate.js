@@ -62,6 +62,7 @@ const GroupCreate = ({navigation, route}) => {
   const {isHost} = route.params;
   // GroupCreate에서 넘겨준 appleId
   const {appleId} = route.params;
+  console.log(appleId);
 
   //닉네임 입력됬는지
   const nickNameChangeHandler = text => {
@@ -346,7 +347,6 @@ const GroupCreate = ({navigation, route}) => {
       })
       .then(() => {
         // console.log('isHost?', isHost);
-        setLoading(false);
         if (isHost) {
           Alert.alert('추억담기 완료!', '다시 세션으로 돌아갑니다.');
           navigation.pop();

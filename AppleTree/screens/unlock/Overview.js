@@ -99,11 +99,12 @@ const Overview = ({navigation, route}) => {
 
   useEffect(() => {
     getAppleDetail(route.params.id)
-      .then(response => {
+      .then(async response => {
         setAppleDetail(response.data.body);
         if (response.data.body.location != null) {
           getAddressLatLng(response.data.body.location);
         }
+        await auth().currentUser.getIdTokenResult(true);
         return response.data.body.content.photo;
       })
       .then(photo =>
@@ -240,7 +241,7 @@ const Overview = ({navigation, route}) => {
     );
   }
 
-  const Card = ({nickname, index, uid}: any) => {
+  const Card = ({nickname, index, uid}) => {
     return (
       <TouchableOpacity
         style={styles.card}
