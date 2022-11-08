@@ -34,8 +34,8 @@ const Login = ({navigation}) => {
       const user = await auth()
         .signInWithEmailAndPassword(email, pwd)
         .then(() => {
-          const idToken = auth().currentUser.getIdToken();
-          storeToken(idToken);
+          // const idToken = auth().currentUser.getIdToken();
+          // storeToken(idToken);
         })
         .catch(error => {
           switch (error.code) {

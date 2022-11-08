@@ -39,12 +39,16 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
   // 사과매달기
   const hangApple = () => {
-    // 사과에 담은 데이터 제출(세션에서 제출한 모든 인원)
-    submit();
-    // 세션 연결 끊기
-    disconnect();
-    // LockGIF로 이동시키기
-    navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
+    if (total === compelete) {
+      // 사과에 담은 데이터 제출(세션에서 제출한 모든 인원)
+      submit();
+      // 세션 연결 끊기
+      disconnect();
+      // LockGIF로 이동시키기
+      navigate('AppleLockGIF', {screen: 'AppleLockGIF'});
+    } else {
+      Alert.alert('사과를 만들지 않은 사람이 있어요!');
+    }
   };
   // 자동 스크롤밑으로
   const scrollViewRef = useRef();
