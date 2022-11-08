@@ -38,7 +38,8 @@ pipeline {
             stage('set_files') {
               steps {
                 sh 'cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml'
-                sh 'cp $FIREBASE_PRODUCTION backend/src/main/resources/'
+                sh 'cp $FIREBASE_PRODUCTION backend/src/main/resources/firebase-service-account-production-secret.json'
+                sh 'chmod 755 backend/src/main/resources/firebase-service-account-production-secret.json'
                 sh 'cp $REDIS_CONF_PRODUCTION backend/redis.conf'
                 sh 'chmod 755 backend/redis.conf'
                 sh 'cp $REDIS_ACL_PRODUCTION backend/users.acl'
