@@ -258,7 +258,9 @@ const Main = ({navigation}) => {
           {openApples.length > 0 ? (
             <TouchableOpacity
               style={styles.basketTouch}
-              onPress={() => navigation.navigate('List', {screen: AppleList})}>
+              onPress={() =>
+                navigation.navigate('List', {screen: 'AppleList'})
+              }>
               <Image
                 style={styles.basket}
                 source={require('../assets/pictures/basketfull.png')}
