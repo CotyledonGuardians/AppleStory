@@ -62,6 +62,7 @@ const GroupCreate = ({navigation, route}) => {
   const {isHost} = route.params;
   // GroupCreate에서 넘겨준 appleId
   const {appleId} = route.params;
+  console.log(appleId);
 
   //닉네임 입력됬는지
   const nickNameChangeHandler = text => {

@@ -272,7 +272,7 @@ export default class PlayerScreen extends React.Component {
               <Text style={styles.textFont}>{this.text}</Text>
             </View>
           )}
-          {this.image && (
+          {/* {this.image && (
             <View style={styles.imageBox}>
               <Image
                 style={{
@@ -395,7 +395,7 @@ export default class PlayerScreen extends React.Component {
                 </View>
               </View>
             </View>
-          )}
+          )} */}
         </ScrollView>
       </SafeAreaView>
     );

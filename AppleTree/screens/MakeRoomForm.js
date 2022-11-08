@@ -50,6 +50,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   const [titleValid, setTitleValid] = useState(false);
   const [teamNameValid, setTeamNameValid] = useState(false);
   const [dateValid, setDateValid] = useState(false);
+  //appleId
   //date picker start
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -125,7 +126,6 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             },
             () => {
               console.log('make room failed', roomId);
-              navigate('GroupSession');
             },
           );
         };

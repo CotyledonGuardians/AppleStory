@@ -30,7 +30,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   // 세션 방 번호
   const {roomId} = route.params;
   // apple id
-  const {appleId} = route.params;
+  const [reservedAppleId, setReservedAppleId] = useState(-1);
   // 나의 올린 상태
   const [myHasUpload, setMyHasUpload] = useState(false);
   // 클립보드 복사
@@ -72,7 +72,9 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     alert(roomId);
     const myid = auth().currentUser.uid;
     const messageListeners = {
-      onChange: ({uidToIndex, statuses, hostUid}) => {
+      onChange: ({uidToIndex, statuses, hostUid, appleId}) => {
+        console.log("_appleId::::::",appleId);
+        setReservedAppleId(appleId);
         //방장인지 체크
         if (myid === hostUid) {
           setIsHost(true);
@@ -187,7 +189,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
                     navigate('GroupCreate', {
                       roomId: roomId,
                       isHost: isHost,
-                      appleId: appleId,
+                      appleId: reservedAppleId,
                     });
                   }
                 }}
@@ -209,7 +211,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
                       navigate('GroupCreate', {
                         roomId: roomId,
                         isHost: isHost,
-                        appleId: appleId,
+                        appleId: reservedAppleId,
                       });
                     }
                   }}
