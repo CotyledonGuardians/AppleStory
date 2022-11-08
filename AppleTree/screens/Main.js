@@ -157,17 +157,14 @@ const Main = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [apple, setApple] = useState();
   const [time, setTime] = useState();
-  auth()
-    .currentUser.getIdToken()
-    .then(idToken => {
-      storeToken(idToken);
-    });
+  const [idToken, setIdToken] = useState();
+
   useEffect(() => {
     let getFlag = true;
     const getApples = async () => {
-      console.log('getFlag');
+      console.log('Main');
+      setIdToken(await AsyncStorage.getItem('idToken'));
       const closeAppleList = await getCloseAppleList(1, 0, 6);
-      console.log('closeAppleList', closeAppleList);
       const openAppleList = await getOpenAppleList(1, 0, 1);
       if (getFlag) {
         setCloseApples(closeAppleList.data.body.content);
@@ -182,16 +179,6 @@ const Main = ({navigation}) => {
     };
   }, []);
 
-  //AsyncStorage 저장
-  const storeToken = async idToken => {
-    // removeToken();
-    try {
-      // console.log('storeToken:idToken:', idToken);
-      await AsyncStorage.setItem('idToken', idToken);
-    } catch (error) {
-      console.log('storeToken error' + error);
-    }
-  };
   //AsyncStorage 삭제
   // const removeToken = async () => {
   //   try {

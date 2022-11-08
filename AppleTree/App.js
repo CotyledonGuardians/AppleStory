@@ -28,6 +28,7 @@ import auth from '@react-native-firebase/auth';
 import JoinSession from './screens/test/JoinSession';
 import AppleUnlockGIF from './screens/unlock/AppleUnlockGIF';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -46,8 +47,14 @@ const styles = StyleSheet.create({
 export default function App() {
   const [login, setLogin] = useState(false);
 
+  const setToken = async () => {
+    const idToken = await auth().currentUser.getIdToken();
+    await AsyncStorage.setItem('idToken', idToken);
+  };
+
   auth().onAuthStateChanged(user => {
     if (user) {
+      setToken();
       setLogin(true);
     } else {
       setLogin(false);

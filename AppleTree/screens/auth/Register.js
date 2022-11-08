@@ -2,26 +2,11 @@ import React, {useState, useEffect} from 'react';
 import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Text, TextInput, Image, Pressable} from 'react-native';
 import auth from '@react-native-firebase/auth';
-// import joinImg from '../../assets/pictures/aegomjoin.png';
+
 import {Button} from '../../components/Button';
 const Register = ({navigation}) => {
-  const [email] = React.useState(null);
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
-  //회원가입 후 로그인 상태 유지
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
-  }, []);
-
-  if (initializing) return null;
 
   //회원가입 함수
   const register = async () => {
@@ -47,18 +32,9 @@ const Register = ({navigation}) => {
       />
       <View style={styles.marginTopBottom}>
         <View style={styles.email}>
-          <Text
-            style={{
-              flex: 0.3,
-              textAlign: 'center',
-              fontSize: 15,
-              fontFamily: 'UhBee Se_hyun Bold',
-              color: '#4C4036',
-            }}>
-            이메일
-          </Text>
+          <Text style={styles.txt}>이메일</Text>
           <TextInput
-            value={email}
+            value={registerEmail}
             autoCapitalize={'none'}
             keyboardType={'email-address'}
             style={styles.input}
@@ -69,11 +45,11 @@ const Register = ({navigation}) => {
         <View style={styles.email}>
           <Text style={styles.txt}>비밀번호</Text>
           <TextInput
-            value={email}
+            value={registerPassword}
             autoCapitalize={'none'}
-            keyboardType={'email-address'}
             style={styles.input}
             placeholder="password"
+            secureTextEntry
             onChange={e => setRegisterPassword(e.nativeEvent.text)}
           />
         </View>
