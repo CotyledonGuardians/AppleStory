@@ -13,42 +13,71 @@ const Login = ({navigation}) => {
   const [email, setEmail] = useState(null);
   const [pwd, setPwd] = useState(null);
   const [errMsg, setErrMsg] = useState('');
-
-  const onLogin = () => {
-    if (!checkLoginInput()) return;
-    auth()
-      .signInWithEmailAndPassword(email, pwd)
-      .then(data => {
-        console.log('idToken:::' + data.user.getIdToken());
-        AsyncStorage.setItem('idToken', data.user.getIdToken());
-        return data.user.getIdToken();
-      })
-      .then(idToken => {})
-      .catch(error => {
-        switch (error.code) {
-          case 'auth/invalid-email':
-            setErrMsg('Invalid email');
-            break;
-          case 'auth/user-not-found':
-            setErrMsg('No account with that email was found');
-            break;
-          case 'auth/wrong-password':
-            setErrMsg('Incorrect password');
-            break;
-          default:
-            setErrMsg('exception');
-            break;
-        }
-        Alert.alert(errMsg);
-      });
+  //AsyncStorage 저장
+  const storeToken = async idToken => {
+    // removeToken();
+    try {
+      // console.log('storeToken:idToken:', idToken);
+      await AsyncStorage.setItem('idToken', idToken);
+      await AsyncStorage.getItem('idToken');
+    } catch (error) {
+      console.log('storeToken error' + error);
+    }
+  };
+  //로그인 함수
+  const onLogin = async () => {
+    if (!checkLoginInput()) {
+      Alert.alert('엽슈!', '모든 값을 입력해야합니다.');
+      return;
+    }
+    try {
+      const user = await auth().signInWithEmailAndPassword(email, pwd);
+      console.log('User account created & signed in!' + user);
+      //AsyncStorage에 idToken저장
+      const idToken = await auth().currentUser.getIdToken();
+      storeToken(idToken);
+    } catch (error) {
+      console.log('login error : ' + error.message);
+    }
+    // auth()
+    //   .signInWithEmailAndPassword(email, pwd)
+    //   .then(data => {
+    //     // AsyncStorage.setItem('idToken', JSON.stringify(data.user.getIdToken()));
+    //     console.log('onLogin::data' + JSON.stringify(data));
+    //     return data.user.getIdToken();
+    //   })
+    //   .then(idToken => {
+    //     console.log('onLogin::idToken' + idToken);
+    //   })
+    //   .catch(error => {
+    //     switch (error.code) {
+    //       case 'auth/invalid-email':
+    //         setErrMsg('Invalid email');
+    //         break;
+    //       case 'auth/user-not-found':
+    //         setErrMsg('No account with that email was found');
+    //         break;
+    //       case 'auth/wrong-password':
+    //         setErrMsg('Incorrect password');
+    //         break;
+    //       default:
+    //         setErrMsg('exception');
+    //         break;
+    //     }
+    //     Alert.alert(errMsg);
+    //   });
   };
   const checkLoginInput = () => {
-    if (!email.trim()) {
-      Alert.alert('Please enter ID!');
-      return false;
-    }
-    if (!pwd.trim()) {
-      Alert.alert('Please enter password!');
+    if (email !== null && pwd !== null) {
+      if (!email.trim()) {
+        Alert.alert('Please enter ID!');
+        return false;
+      }
+      if (!pwd.trim()) {
+        Alert.alert('Please enter password!');
+        return false;
+      }
+    } else {
       return false;
     }
     return true;
