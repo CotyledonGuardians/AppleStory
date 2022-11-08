@@ -12,6 +12,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ${DB_BACKUP}:/var/lib/mysql
+    ports:
+      - "3306:3306"
 
   rabbitmq:
     container_name: rabbitmq
@@ -23,6 +25,9 @@ services:
       RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "5672:5672"
+      - "61613:61613"
 
   redis:
     container_name: redis
@@ -30,6 +35,8 @@ services:
     restart: always
     environment:
       REDIS_ARG: ${REDIS_ARG}
+    ports:
+      - "6379:6379"
 
   api:
     container_name: api
