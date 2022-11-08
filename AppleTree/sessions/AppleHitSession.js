@@ -32,22 +32,22 @@ const AppleHitSession = ({navigation, route}) => {
   useEffect(() => {
     let totalHp = 0;
 
-    console.log('useEffect::roomId', roomId);
+    // console.log('useEffect::roomId', roomId);
     const messageListeners = {
       onPartyChange: ({totalHealth, appleSize, partySize, currentHealth}) => {
-        console.log(
-          `totalHealth: ${totalHealth}, appleSize: ${appleSize}, partySize: ${partySize}`,
-        );
+        // console.log(
+        //   `totalHealth: ${totalHealth}, appleSize: ${appleSize}, partySize: ${partySize}`,
+        // );
 
         totalHp = totalHealth;
-        console.log('onPartyChange::totalHealth', totalHp);
+        // console.log('onPartyChange::totalHealth', totalHp);
         setApple(appleSize);
         setParty(partySize);
-        console.log(currentHealth);
+        // console.log(currentHealth);
         SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
       },
       onHealthChange: ({currentHealth}) => {
-        console.log(`currentHealth: ${currentHealth}`);
+        // console.log(`currentHealth: ${currentHealth}`);
         SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
       },
       onDie: () => {

@@ -51,7 +51,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   // },[]);
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
-    console.log('makeRoom:::');
+    // console.log('makeRoom:::');
     // api connect start
     const tempAppleDTO = {
       title: title,
