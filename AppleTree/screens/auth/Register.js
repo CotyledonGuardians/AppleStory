@@ -1,14 +1,21 @@
 import React, {useState, useEffect} from 'react';
-import {SafeAreaView, View, StyleSheet} from 'react-native';
-import {Text, TextInput, Image, Pressable} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  StyleSheet,
+  Text,
+  TextInput,
+  Image,
+  Pressable,
+  Alert,
+} from 'react-native';
 import auth from '@react-native-firebase/auth';
-
 import {Button} from '../../components/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Register = ({navigation}) => {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
-
+  const [errMsg, setErrMsg] = useState('');
   //AsyncStorage 저장
   const storeToken = async idToken => {
     // removeToken();
@@ -20,18 +27,59 @@ const Register = ({navigation}) => {
       console.log('storeToken error' + error);
     }
   };
-
+  const checkRegisterInput = () => {
+    if (registerEmail !== null && registerPassword !== null) {
+      if (!registerEmail.trim()) {
+        Alert.alert('Please enter ID!');
+        return false;
+      }
+      if (!registerPassword.trim()) {
+        Alert.alert('Please enter password!');
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  };
   //회원가입 함수
   const register = async () => {
+    if (!checkRegisterInput()) {
+      Alert.alert('엽슈!', '모든 값을 입력해야합니다.');
+      return;
+    }
     try {
-      const user = await auth().createUserWithEmailAndPassword(
-        registerEmail,
-        registerPassword,
-      );
-      console.log('User account created & signed in!' + user);
-      //AsyncStorage에 idToken저장
-      const idToken = await auth().currentUser.getIdToken();
-      storeToken(idToken);
+      const user = await auth()
+        .createUserWithEmailAndPassword(registerEmail, registerPassword)
+        .then(() => {
+          console.log('User account created & signed in!' + user);
+          //AsyncStorage에 idToken저장
+          const idToken = auth().currentUser.getIdToken();
+          storeToken(idToken);
+        })
+        .catch(error => {
+          switch (error.code) {
+            case 'auth/invalid-email':
+              Alert.alert(
+                '유효하지 않은 형식',
+                ' 이메일 형식이 유효하지 않습니다.',
+              );
+              break;
+            case 'auth/email-already-in-use':
+              Alert.alert('등록된 메일', ' 이미 등록된 이메일입니다.');
+              break;
+            case 'auth/weak-password':
+              Alert.alert(
+                '약한 비밀번호',
+                '비밀번호는 6글자 이상이어야합니다.',
+              );
+              break;
+            default:
+              Alert.alert('error', '알 수 없는 에러 콘솔확인 요망');
+              console.log('register::error' + error);
+              break;
+          }
+        });
     } catch (error) {
       console.log(error.message);
     }
