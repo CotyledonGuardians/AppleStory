@@ -9,7 +9,7 @@ const AppleUnlockGIF = ({navigation, route}) => {
         id: route.params.id,
       });
     }, 3000);
-  }, [navigation, route]);
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <Image
