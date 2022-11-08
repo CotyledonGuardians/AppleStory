@@ -53,8 +53,8 @@ const Register = ({navigation}) => {
         .then(() => {
           console.log('User account created & signed in!' + user);
           //AsyncStorage에 idToken저장
-          const idToken = auth().currentUser.getIdToken();
-          storeToken(idToken);
+          // const idToken = auth().currentUser.getIdToken();
+          // storeToken(idToken);
         })
         .catch(error => {
           switch (error.code) {
