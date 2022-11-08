@@ -1,0 +1,5 @@
+FROM redis:6.2.1
+COPY redis.conf /usr/local/etc/redis/redis.conf
+COPY users.acl /etc/redis/users.acl
+EXPOSE 6379
+CMD ["redis-server", "/usr/local/etc/redis/redis.conf"]
