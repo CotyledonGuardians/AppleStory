@@ -152,6 +152,13 @@ android {
         }
     }
     signingConfigs {
+        //릴리즈환경
+        // release {
+        //     storeFile file("signing key 경로")
+        //     storePassword "암호"
+        //     keyAlias "이름"
+        //     keyPassword "암호"
+        // }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -165,6 +172,7 @@ android {
             //빌드환경설정
             matchingFallbacks = ['debug', 'release']
         }
+        //릴리즈환경
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.

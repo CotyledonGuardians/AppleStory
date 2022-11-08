@@ -100,6 +100,7 @@ const Login = ({navigation}) => {
             autoCapitalize={'none'}
             keyboardType={'email-address'}
             style={styles.input}
+            placeholder="email"
             onChangeText={text => setEmail(text)}
           />
         </View>
@@ -110,6 +111,7 @@ const Login = ({navigation}) => {
             autoCapitalize={'none'}
             style={styles.input}
             secureTextEntry
+            placeholder="password"
             onChangeText={text => setPwd(text)}
           />
         </View>
