@@ -253,28 +253,26 @@ export default function App() {
   //     console.log('getToken error' + error);
   //   }
   // };
-
-  //componentDidMount할때 해줘야되는거
-  GoogleSignin.configure({});
-  //구글 로그인 연동 환경세팅
-  const googleSigninConfigure = () => {
-    GoogleSignin.configure({
-      webClientId:
-        '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
-    });
-  };
-
   useEffect(() => {
+    //componentDidMount할때 해줘야되는거
+    GoogleSignin.configure({});
+    //구글 로그인 연동 환경세팅
+    const googleSigninConfigure = () => {
+      GoogleSignin.configure({
+        webClientId:
+          '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
+      });
+    };
     try {
+      googleSigninConfigure();
       setTimeout(() => {
         SplashScreen.hide();
       }, 500); /** 스플래시 시간 조절 (0.5초) **/
-      googleSigninConfigure();
     } catch (e) {
       // console.warn('에러발생');
       console.warn(e);
     }
-  }, []);
+  });
 
   return (
     <NavigationContainer>
