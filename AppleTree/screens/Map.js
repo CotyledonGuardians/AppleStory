@@ -14,6 +14,7 @@ import {
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import {getMapAppleList} from '../api/AppleAPI';
+import {UseStomp, DisconnectIfConnected} from '../stomp';
 
 async function requestPermission() {
   try {
@@ -144,14 +145,26 @@ const Map = ({navigation}) => {
                         id: item.id,
                       });
                     } else {
-                      navigation.navigate('HitApple');
+                      const connect = () => {
+                        UseStomp(
+                          () => {
+                            console.log('make room succeed', item.id);
+                            navigation.navigate('HitApple', {
+                              id: item.id,
+                            });
+                          },
+                          () => {
+                            console.log('make room failed', item.id);
+                          },
+                        );
+                      };
+                      DisconnectIfConnected(connect, {}, connect);
                     }
                   } else {
                     navigation.navigate('LockAppleDetail', {
                       id: item.id,
                     });
                   }
-                  // appleDetail(item.id);
                 }}
                 title={item.title}
                 description={`숙성기간 ${item.createAt.split('T')[0]} ~  ${
