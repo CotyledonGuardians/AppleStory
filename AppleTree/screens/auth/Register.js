@@ -30,11 +30,11 @@ const Register = ({navigation}) => {
   const checkRegisterInput = () => {
     if (registerEmail !== null && registerPassword !== null) {
       if (!registerEmail.trim()) {
-        Alert.alert('Please enter ID!');
+        Alert.alert('빈 값', '이메일을 입력해주세요.');
         return false;
       }
       if (!registerPassword.trim()) {
-        Alert.alert('Please enter password!');
+        Alert.alert('빈 값', '비밀번호를 입력해주세요.');
         return false;
       }
     } else {
@@ -45,7 +45,6 @@ const Register = ({navigation}) => {
   //회원가입 함수
   const register = async () => {
     if (!checkRegisterInput()) {
-      Alert.alert('엽슈!', '모든 값을 입력해야합니다.');
       return;
     }
     try {
@@ -126,10 +125,6 @@ const Register = ({navigation}) => {
       </View>
     </SafeAreaView>
   );
-};
-
-const onCertify = () => {
-  alert('이멜인증보내기함수');
 };
 
 const styles = StyleSheet.create({

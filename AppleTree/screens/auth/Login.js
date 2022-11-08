@@ -31,50 +31,51 @@ const Login = ({navigation}) => {
       return;
     }
     try {
-      const user = await auth().signInWithEmailAndPassword(email, pwd);
-      console.log('User account created & signed in!' + user);
-      //AsyncStorage에 idToken저장
-      const idToken = await auth().currentUser.getIdToken();
-      storeToken(idToken);
+      const user = await auth()
+        .signInWithEmailAndPassword(email, pwd)
+        .then(() => {
+          const idToken = auth().currentUser.getIdToken();
+          storeToken(idToken);
+        })
+        .catch(error => {
+          switch (error.code) {
+            case 'auth/invalid-email':
+              Alert.alert(
+                '유효하지 않은 형식',
+                ' 이메일 형식이 유효하지 않습니다.',
+              );
+              break;
+            case 'auth/email-already-in-use':
+              Alert.alert('등록된 메일', ' 이미 등록된 이메일입니다.');
+              break;
+            case 'auth/weak-password':
+              Alert.alert(
+                '약한 비밀번호',
+                '비밀번호는 6글자 이상이어야합니다.',
+              );
+              break;
+            case 'auth/user-not-found':
+              Alert.alert('알 수 없는 사용자', '회원가입을 해주세요.');
+              break;
+
+            default:
+              Alert.alert('error', '알 수 없는 에러 콘솔확인 요망');
+              console.log('register::error' + error);
+              break;
+          }
+        });
     } catch (error) {
       console.log('login error : ' + error.message);
     }
-    // auth()
-    //   .signInWithEmailAndPassword(email, pwd)
-    //   .then(data => {
-    //     // AsyncStorage.setItem('idToken', JSON.stringify(data.user.getIdToken()));
-    //     console.log('onLogin::data' + JSON.stringify(data));
-    //     return data.user.getIdToken();
-    //   })
-    //   .then(idToken => {
-    //     console.log('onLogin::idToken' + idToken);
-    //   })
-    //   .catch(error => {
-    //     switch (error.code) {
-    //       case 'auth/invalid-email':
-    //         setErrMsg('Invalid email');
-    //         break;
-    //       case 'auth/user-not-found':
-    //         setErrMsg('No account with that email was found');
-    //         break;
-    //       case 'auth/wrong-password':
-    //         setErrMsg('Incorrect password');
-    //         break;
-    //       default:
-    //         setErrMsg('exception');
-    //         break;
-    //     }
-    //     Alert.alert(errMsg);
-    //   });
   };
   const checkLoginInput = () => {
     if (email !== null && pwd !== null) {
       if (!email.trim()) {
-        Alert.alert('Please enter ID!');
+        Alert.alert('빈 값', '이메일을 입력해주세요.');
         return false;
       }
       if (!pwd.trim()) {
-        Alert.alert('Please enter password!');
+        Alert.alert('빈 값', '비밀번호를 입력해주세요.');
         return false;
       }
     } else {
