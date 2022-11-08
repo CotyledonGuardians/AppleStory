@@ -118,7 +118,7 @@ const AppleList = ({navigation}) => {
   ];
 
   const appleDetail = id => {
-    navigation.navigate('AppleDetail', {screen: 'AppleDetail', id: id});
+    navigation.navigate('Overview', {screen: 'Overview', id: id});
   };
 
   const hitApple = () => {
@@ -153,8 +153,8 @@ const AppleList = ({navigation}) => {
           if (today >= lockDate) {
             // 현재 시간보다 시간이 지나있는 경우
             if (isCatch) {
-              navigation.navigate('AppleDetail', {
-                screen: 'AppleDetail',
+              navigation.navigate('Overview', {
+                screen: 'Overview',
                 id: id,
               });
             } else {
