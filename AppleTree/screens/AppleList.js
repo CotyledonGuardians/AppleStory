@@ -18,37 +18,49 @@ import {UseStomp, DisconnectIfConnected} from '../stomp';
 const AppleList = ({navigation}) => {
   const [route, setRoute] = useState('열린 사과');
   const [routeSort, setRouteSort] = useState('오래된 순');
+  const [routeSort2, setRouteSort2] = useState('오래된 순');
 
-  const [loading, setLoading] = useState(false);
-  const [loading2, setLoading2] = useState(false);
-  const [page, setPage] = useState(1);
-  const [page2, setPage2] = useState(1);
-  const [sort, setSort] = useState(0);
-  const [sort2, setSort2] = useState(0);
+  // const [sort, setSort] = useState(0);
+  // const [sort2, setSort2] = useState(0);
 
   const [closeList, setCloseList] = useState([]);
   const [openList, setOpenList] = useState([]);
   const scrollViewRef = useRef();
-  const size = 100;
+  const size = 1000;
   const getInitData = async sort => {
-    getOpenAppleList(sort, 0, size)
+    getOpenAppleList(0, 0, size)
       .then(response => {
         // console.log(response.data);
         setOpenList(response.data.body.content);
-        if (response.data.body.content.length < size) {
-          setLoading2(true);
-        }
       })
       .catch(error => {
         console.log('error', error);
       });
 
+    getCloseAppleList(0, 0, size)
+      .then(response => {
+        setCloseList(response.data.body.content);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  };
+
+  const getOpenData = async sort => {
+    getOpenAppleList(sort, 0, size)
+      .then(response => {
+        // console.log(response.data);
+        setOpenList(response.data.body.content);
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  };
+
+  const getCloseData = async sort => {
     getCloseAppleList(sort, 0, size)
       .then(response => {
         setCloseList(response.data.body.content);
-        if (response.data.body.content.length < size) {
-          setLoading(true);
-        }
       })
       .catch(error => {
         console.log('error', error);
@@ -57,56 +69,8 @@ const AppleList = ({navigation}) => {
 
   // 컴포넌트가 마운트되면 해당 함수를 호출해 초기 데이터 설정
   useEffect(() => {
-    getInitData(sort);
-  }, [sort]);
-
-  const updateList = async type => {
-    if (type === 'close') {
-      // API로부터 받아온 페이징 데이터를 이용해 다음 데이터를 로드
-      getCloseAppleList(sort, page, size)
-        .then(response => {
-          const fetchedData = response.data.body.content; // 피드 데이터 부분
-          if (fetchedData.length === 0) {
-            setLoading(true);
-            return;
-          }
-          // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.
-          const mergedData = closeList.concat(fetchedData);
-          if (fetchedData.length < size) {
-            setLoading(true);
-          }
-
-          setCloseList(mergedData);
-          setPage(page + 1);
-          setRoute('잠긴 사과');
-        })
-        .catch(error => {
-          console.log('error', error);
-        });
-    } else if (type === 'open') {
-      // API로부터 받아온 페이징 데이터를 이용해 다음 데이터를 로드
-      getOpenAppleList(sort, page2, size)
-        .then(response => {
-          const fetchedData = response.data.body.content; // 피드 데이터 부분
-          if (fetchedData.length === 0) {
-            setLoading2(true);
-            return;
-          }
-          // 기존 데이터 배열과 새로 받아온 데이터 배열을 합쳐 새 배열을 만들고 state에 저장한다.
-          const mergedData = openList.concat(fetchedData);
-          if (fetchedData.length < size) {
-            setLoading2(true);
-          }
-
-          setOpenList(mergedData);
-          setPage2(page2 + 1);
-          setRoute('열린 사과');
-        })
-        .catch(error => {
-          console.log('error', error);
-        });
-    }
-  };
+    getInitData();
+  }, []);
 
   var randomgroupImages = [
     require('../assets/pictures/listgroup1.png'),
@@ -191,34 +155,18 @@ const AppleList = ({navigation}) => {
     );
   };
 
-  function DropdownSelect() {
-    let countries = [];
-
-    if (route === '열린 사과') {
-      countries = ['오래된 순', '최신순'];
-    } else if (route === '잠긴 사과') {
-      countries = [
-        '오래된 순',
-        '최신순',
-        '적게 남은 시간 순',
-        '많이 남은 시간 순',
-      ];
-    }
-
+  function OpenDropdownSelect() {
+    let countries = ['오래된 순', '최신순'];
     return (
       <SelectDropdown
         data={countries}
         // defaultValueByIndex={1}
         defaultValue={routeSort}
         onSelect={(selectedItem, index) => {
-          setPage(1);
-          setSort(index);
-          setLoading(false);
-          setPage2(1);
-          setSort2(index);
-          setLoading2(false);
-          // console.log(selectedItem, index);
+          // console.log('열린 사과', index, countries[index]);
           setRouteSort(countries[index]);
+          // setSort(index);
+          getOpenData(index);
         }}
         buttonTextAfterSelection={(selectedItem, index) => {
           return selectedItem;
@@ -235,7 +183,42 @@ const AppleList = ({navigation}) => {
     );
   }
 
-  function HomeScreen() {
+  function CloseDropdownSelect() {
+    let countries = [
+      '오래된 순',
+      '최신순',
+      '적게 남은 시간 순',
+      '많이 남은 시간 순',
+    ];
+
+    return (
+      <SelectDropdown
+        data={countries}
+        // defaultValueByIndex={1}
+        defaultValue={routeSort2}
+        onSelect={(selectedItem, index) => {
+          // console.log('잠긴 사과');
+          setRouteSort2(countries[index]);
+          // setSort2(index);
+          getCloseData(index);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          return item;
+        }}
+        buttonStyle={styles.dropdown2BtnStyle}
+        buttonTextStyle={styles.dropdown2BtnTxtStyle}
+        dropdownStyle={styles.dropdown2DropdownStyle}
+        rowStyle={styles.dropdown2RowStyle}
+        rowTextStyle={styles.dropdown2RowTxtStyle}
+      />
+    );
+  }
+
+  // 잠긴사과
+  function CloseScreen() {
     return (
       <View
         style={{
@@ -244,33 +227,10 @@ const AppleList = ({navigation}) => {
           alignItems: 'center',
           backgroundColor: '#FBF8F6',
         }}>
-        <View style={{height: 100, alignItems: 'center'}}>
-          <DropdownSelect />
-        </View>
+        {/* <View style={{height: 100, alignItems: 'center'}}>
+          <CloseDropdownSelect />
+        </View> */}
         <ScrollView
-          // ref={scrollViewRef}
-          // onContentSizeChange={() =>
-          //   scrollViewRef.current.scrollToEnd({animated: false})
-          // }
-          onScroll={e => {
-            // 현재 스크롤 값
-            const updateScroll = e.nativeEvent.contentOffset.y;
-            if (updateScroll === 0) {
-              return;
-            }
-            // 전체 문서의 높이
-            const documentHeight = e.nativeEvent.contentSize.height;
-            // 현재 보여지는 화면 높이
-            const screenHeight = e.nativeEvent.layoutMeasurement.height;
-            // 원하는 로직을 시작하는 시점
-            const endPoint = 10;
-
-            if (screenHeight + updateScroll + endPoint >= documentHeight) {
-              if (!loading) {
-                updateList('close');
-              }
-            }
-          }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: 'row',
@@ -299,7 +259,8 @@ const AppleList = ({navigation}) => {
     );
   }
 
-  function SettingsScreen() {
+  // 열린사과
+  function OpenScreen() {
     return (
       <View
         style={{
@@ -308,28 +269,10 @@ const AppleList = ({navigation}) => {
           alignItems: 'center',
           backgroundColor: '#FBF8F6',
         }}>
-        <View style={{height: 90, alignItems: 'center'}}>
-          <DropdownSelect />
-        </View>
+        {/* <View style={{height: 90, alignItems: 'center'}}>
+          <OpenDropdownSelect />
+        </View> */}
         <ScrollView
-          onScroll={e => {
-            // 현재 스크롤 값
-            const updateScroll = e.nativeEvent.contentOffset.y;
-            if (updateScroll === 0) {
-              return;
-            }
-            // 전체 문서의 높이
-            const documentHeight = e.nativeEvent.contentSize.height;
-            // 현재 보여지는 화면 높이
-            const screenHeight = e.nativeEvent.layoutMeasurement.height;
-            // 원하는 로직을 시작하는 시점
-            const endPoint = 10;
-            if (screenHeight + updateScroll + endPoint >= documentHeight) {
-              if (!loading2) {
-                updateList('open');
-              }
-            }
-          }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexDirection: 'row',
@@ -378,7 +321,7 @@ const AppleList = ({navigation}) => {
           }}>
           <Tab.Screen
             name="열린 사과"
-            component={SettingsScreen}
+            component={OpenScreen}
             listeners={{
               tabPress: e => {
                 setRoute('열린 사과');
@@ -387,7 +330,7 @@ const AppleList = ({navigation}) => {
           />
           <Tab.Screen
             name="잠긴 사과"
-            component={HomeScreen}
+            component={CloseScreen}
             listeners={{
               tabPress: e => {
                 setRoute('잠긴 사과');
