@@ -18,10 +18,12 @@ import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import GroupSession from './sessions/GroupSession';
-import AppleDetail from './screens/AppleDetail';
+// import AppleDetail from './screens/AppleDetail';
+import Overview from './screens/unlock/Overview';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
-import SeedDetail from './screens/SeedDetail';
+// import SeedDetail from './screens/SeedDetail';
+import UnlockAppleDetail from './screens/unlock/UnlockAppleDetail';
 import HitApple from './sessions/AppleHitSession';
 import LockAppleDetail from './screens/lock/LockAppleDetail';
 import auth from '@react-native-firebase/auth';
@@ -114,8 +116,11 @@ export default function App() {
                 name="LockAppleDetail"
                 component={LockAppleDetail}
               />
-              <HomeStack.Screen name="AppleDetail" component={AppleDetail} />
-              <HomeStack.Screen name="SeedDetail" component={SeedDetail} />
+              <HomeStack.Screen name="Overview" component={Overview} />
+              <HomeStack.Screen
+                name="UnlockAppleDetail"
+                component={UnlockAppleDetail}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -137,8 +142,11 @@ export default function App() {
                 tabBarStyle: {display: 'none'},
               }}>
               <MapStack.Screen name="Map" component={Map} />
-              <MapStack.Screen name="AppleDetail" component={AppleDetail} />
-              <MapStack.Screen name="SeedDetail" component={SeedDetail} />
+              <MapStack.Screen name="Overview" component={Overview} />
+              <MapStack.Screen
+                name="UnlockAppleDetail"
+                component={UnlockAppleDetail}
+              />
               <MapStack.Screen name="HitApple" component={HitApple} />
               <MapStack.Screen
                 name="LockAppleDetail"
@@ -197,8 +205,11 @@ export default function App() {
                 headerShown: false,
               }}>
               <ListStack.Screen name="AppleList" component={AppleList} />
-              <ListStack.Screen name="AppleDetail" component={AppleDetail} />
-              <ListStack.Screen name="SeedDetail" component={SeedDetail} />
+              <ListStack.Screen name="Overview" component={Overview} />
+              <ListStack.Screen
+                name="UnlockAppleDetail"
+                component={UnlockAppleDetail}
+              />
               <ListStack.Screen name="HitApple" component={HitApple} />
               <ListStack.Screen
                 name="LockAppleDetail"
