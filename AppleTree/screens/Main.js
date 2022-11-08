@@ -157,11 +157,11 @@ const Main = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [apple, setApple] = useState();
   const [time, setTime] = useState();
-  auth()
-    .currentUser.getIdToken()
-    .then(idToken => {
-      storeToken(idToken);
-    });
+  // auth()
+  //   .currentUser.getIdToken()
+  //   .then(idToken => {
+  //     storeToken(idToken);
+  //   });
   useEffect(() => {
     let getFlag = true;
     const getApples = async () => {
