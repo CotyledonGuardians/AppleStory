@@ -7,7 +7,7 @@ import LoadingDefault from '../LoadingDefault';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MyPage = () => {
-  const [appleCnt, setAppleCnt] = useState();
+  const [appleCnt, setAppleCnt] = useState(-1);
   const email = auth().currentUser.email;
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const MyPage = () => {
     }
   };
 
-  return appleCnt ? (
+  return appleCnt !== -1 ? (
     <SafeAreaView style={styles.container}>
       <Text style={styles.name}>{email}</Text>
       <View>
