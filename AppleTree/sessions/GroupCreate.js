@@ -49,6 +49,7 @@ const GroupCreate = ({navigation, route}) => {
   const [imageIsPicked, setImageIsPicked] = useState(false);
   const [videoIsPicked, setVideoIsPicked] = useState(false);
   const [audioIsPicked, setAudioIsPicked] = useState(false);
+  // const [appleId, setAppleId] = useState(-1);
 
   let imagePathOnStorage = null;
   let videoPathOnStorage = null;
