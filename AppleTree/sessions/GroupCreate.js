@@ -25,6 +25,7 @@ import RNFS from 'react-native-fs';
 import RNFetchBlob from 'rn-fetch-blob';
 import {SendIfSubscribed} from '../stomp';
 import {DisconnectIfConnected} from '../stomp';
+import Loading from '../screens/LoadingDefault';
 // define enum for asset type
 const AssetType = {
   IMAGE: 'image',
@@ -49,6 +50,7 @@ const GroupCreate = ({navigation, route}) => {
   const [imageIsPicked, setImageIsPicked] = useState(false);
   const [videoIsPicked, setVideoIsPicked] = useState(false);
   const [audioIsPicked, setAudioIsPicked] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   let imagePathOnStorage = null;
   let videoPathOnStorage = null;
@@ -330,6 +332,7 @@ const GroupCreate = ({navigation, route}) => {
 
   const onSubmit = () => {
     console.log(videoPathOnDevice);
+    setLoading(true);
     Promise.all([
       imageUpload(image),
       videoUpload(video, videoPathOnDevice),
@@ -343,6 +346,7 @@ const GroupCreate = ({navigation, route}) => {
       })
       .then(() => {
         // console.log('isHost?', isHost);
+        setLoading(false);
         if (isHost) {
           Alert.alert('추억담기 완료!', '다시 세션으로 돌아갑니다.');
           navigation.pop();
@@ -385,7 +389,7 @@ const GroupCreate = ({navigation, route}) => {
       navigation.navigate('Home', {screen: 'Main'});
     });
   };
-  return (
+  return !loading ? (
     <ScrollView contentContainerStyle={styles.wrapper}>
       <SafeAreaView style={styles.container}>
         <Image
@@ -395,7 +399,8 @@ const GroupCreate = ({navigation, route}) => {
             height: 170,
             marginTop: 30,
             marginBottom: 10,
-          }}></Image>
+          }}
+        />
         <Text style={styles.txt}>닉네임</Text>
         <TextInput
           value={nickname}
@@ -548,6 +553,8 @@ const GroupCreate = ({navigation, route}) => {
         {/* 녹음기 모달 end */}
       </SafeAreaView>
     </ScrollView>
+  ) : (
+    <Loading />
   );
 };
 
