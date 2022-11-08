@@ -206,7 +206,11 @@ const GroupSession = ({navigation: {navigate}, route}) => {
                       alert('이미 작성을 완료했습니다.');
                     } else {
                       actAdding();
-                      navigate('GroupCreate', {roomId: roomId, isHost: isHost, appleId: appleId});
+                      navigate('GroupCreate', {
+                        roomId: roomId,
+                        isHost: isHost,
+                        appleId: appleId,
+                      });
                     }
                   }}
                   text="사과 내용쓰기"

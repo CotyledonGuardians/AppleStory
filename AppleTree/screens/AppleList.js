@@ -14,6 +14,7 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import SelectDropdown from 'react-native-select-dropdown';
 import {getCloseAppleList, getOpenAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
+import Loading from './LoadingDefault';
 
 const AppleList = ({navigation}) => {
   const [route, setRoute] = useState('열린 사과');
@@ -23,8 +24,8 @@ const AppleList = ({navigation}) => {
   // const [sort, setSort] = useState(0);
   // const [sort2, setSort2] = useState(0);
 
-  const [closeList, setCloseList] = useState([]);
-  const [openList, setOpenList] = useState([]);
+  const [closeList, setCloseList] = useState(0);
+  const [openList, setOpenList] = useState(0);
   const scrollViewRef = useRef();
   const size = 1000;
   const getInitData = async sort => {
@@ -280,7 +281,7 @@ const AppleList = ({navigation}) => {
   const Tab = createMaterialTopTabNavigator();
 
   function MyTabsTwo() {
-    return (
+    return openList !== 0 && closeList !== 0 ? (
       <NavigationContainer independent={true}>
         <Tab.Navigator
           initialRouteName={route}
@@ -315,6 +316,8 @@ const AppleList = ({navigation}) => {
           />
         </Tab.Navigator>
       </NavigationContainer>
+    ) : (
+      <Loading />
     );
   }
   return <MyTabsTwo />;
