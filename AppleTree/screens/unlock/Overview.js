@@ -351,7 +351,7 @@ const Overview = ({navigation, route}) => {
       {appleDetail && address ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header />
-          {/* <ContentSeed /> */}
+          <ContentSeed />
           {appleDetail.content.photo != null &&
             appleDetail.content.photo.length !== 0 && <Photo />}
           {/* {appleDetail.content.video != null &&
