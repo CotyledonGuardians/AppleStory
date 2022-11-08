@@ -4,9 +4,22 @@ import {Text, TextInput, Image, Pressable} from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 import {Button} from '../../components/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Register = ({navigation}) => {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+
+  //AsyncStorage 저장
+  const storeToken = async idToken => {
+    // removeToken();
+    try {
+      // console.log('storeToken:idToken:', idToken);
+      await AsyncStorage.setItem('idToken', idToken);
+      await AsyncStorage.getItem('idToken');
+    } catch (error) {
+      console.log('storeToken error' + error);
+    }
+  };
 
   //회원가입 함수
   const register = async () => {
@@ -16,6 +29,9 @@ const Register = ({navigation}) => {
         registerPassword,
       );
       console.log('User account created & signed in!' + user);
+      //AsyncStorage에 idToken저장
+      const idToken = await auth().currentUser.getIdToken();
+      storeToken(idToken);
     } catch (error) {
       console.log(error.message);
     }
@@ -53,7 +69,7 @@ const Register = ({navigation}) => {
             onChange={e => setRegisterPassword(e.nativeEvent.text)}
           />
         </View>
-        <Button onPress={() => register()} text="인증 요청" />
+        <Button onPress={() => register()} text="회원 가입" />
       </View>
       <View style={styles.marginTopBottom}>
         <Pressable onPress={() => navigation.navigate('Login')}>

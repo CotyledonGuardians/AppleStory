@@ -19,7 +19,6 @@ import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
 import LoadingDefault from './LoadingDefault';
 import AppleList from './AppleList';
-import auth from '@react-native-firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 남은 시간에 따라 사과 사진 변경
@@ -57,7 +56,7 @@ const Apple = ({
         onPress={() => {
           if (apple.isCatch) {
             Alert.alert('이미 사과가 따졌어요!');
-            navigation.navigate('AppleDetail', {
+            navigation.navigate('Overview', {
               id: apple.id,
             });
           } else {
@@ -88,7 +87,7 @@ const Apple = ({
           style={appleStyle[index]}
           onPress={() => {
             if (apple.isCatch) {
-              navigation.navigate('AppleDetail', {
+              navigation.navigate('Overview', {
                 id: apple.id,
               });
             } else {
@@ -162,7 +161,6 @@ const Main = ({navigation}) => {
   useEffect(() => {
     let getFlag = true;
     const getApples = async () => {
-      console.log('Main');
       setIdToken(await AsyncStorage.getItem('idToken'));
       const closeAppleList = await getCloseAppleList(1, 0, 6);
       const openAppleList = await getOpenAppleList(1, 0, 1);
@@ -178,17 +176,6 @@ const Main = ({navigation}) => {
       getFlag = false;
     };
   }, []);
-
-  //AsyncStorage 삭제
-  // const removeToken = async () => {
-  //   try {
-  //     await AsyncStorage.removeItem('idToken');
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // AsyncStorage 토큰 삭제 필요시
-  // removeToken();
 
   return (
     <SafeAreaView style={styles.container}>

@@ -9,7 +9,9 @@ pipeline {
     BACKEND_PRODUCTION = credentials('backend_production')
     FIREBASE_PRODUCTION = credentials('firebase_production')
     RABBIT_PRODUCTION = credentials('rabbit_production')
-    
+    REDIS_CONF_PRODUCTION = credentials('redis_conf_production')
+    REDIS_ACL_PRODUCTION = credentials('redis_acl_production')
+
     BACKEND_CONTAINER = 'api'
 
     // MM 플러그인, Blue Ocean 플러그인 관련
@@ -37,6 +39,10 @@ pipeline {
               steps {
                 sh 'cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml'
                 sh 'cp $FIREBASE_PRODUCTION backend/src/main/resources/'
+                sh 'cp $REDIS_CONF_PRODUCTION backend/redis.conf'
+                sh 'chmod 755 backend/redis.conf'
+                sh 'cp $REDIS_ACL_PRODUCTION backend/users.acl'
+                sh 'chmod 755 backend/users.acl'
                 sh 'cat $RABBIT_PRODUCTION >> backend/10-defaults.conf'
               }
             }

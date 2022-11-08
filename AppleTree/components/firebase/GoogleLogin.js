@@ -1,19 +1,18 @@
 import React from 'react';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {
-  Pressable,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import {StyleSheet, Image, TouchableOpacity, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GoogleLogin = props => {
   //구글소셜로그인
   const onGoogleButtonPress = async () => {
     const {idToken} = await GoogleSignin.signIn();
+    // console.log('GoogleLogin::idtoken', idToken);
+    // if (idToken === null) {
+    //   Alert.alert('잠깐스땁!', '잠시후 다시 시도해주세요');
+    //   return;
+    // }
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     //로컬 스토리지에 저장
     storeToken(idToken);
@@ -21,29 +20,21 @@ const GoogleLogin = props => {
   };
   //AsyncStorage 저장
   const storeToken = async idToken => {
-    // removeToken();
+    console.log('storeToken');
     try {
-      // console.log('storeToken:idToken:', idToken);
+      console.log('googleLogin:idToken:', idToken);
       await AsyncStorage.setItem('idToken', idToken);
     } catch (error) {
-      console.log('storeToken error' + error);
+      console.log('googleLogin::storeToken error ' + error);
     }
   };
-  // //AsyncStorage 삭제
-  // const removeToken = async () => {
-  //   try {
-  //     await AsyncStorage.removeItem('idToken');
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   return (
     <TouchableOpacity
-      onPress={() =>
-        onGoogleButtonPress().then(() => {
-          props.propFunction(true);
-          console.log('Google login success');
-        })
+      onPress={
+        () => onGoogleButtonPress()
+        // .then(() => {
+        //   props.propFunction(true);
+        // })
       }>
       <Image
         style={styles.icon}

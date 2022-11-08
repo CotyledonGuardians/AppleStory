@@ -4,6 +4,7 @@ import {Text, Image, ImageBackground} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {getMyAppleCount} from '../../api/AppleAPI';
 import LoadingDefault from '../LoadingDefault';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MyPage = () => {
   const [appleCnt, setAppleCnt] = useState(-1);
@@ -19,6 +20,16 @@ const MyPage = () => {
       });
   });
 
+  //AsyncStorage 삭제
+  const removeToken = async () => {
+    try {
+      await AsyncStorage.removeItem('idToken');
+      console.log('logout: token remove succeed');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return appleCnt !== -1 ? (
     <SafeAreaView style={styles.container}>
       <Text style={styles.name}>{email}</Text>
@@ -31,6 +42,15 @@ const MyPage = () => {
           <Text style={styles.txt}>입니다 !</Text>
         </ImageBackground>
       </View>
+      <Text
+        style={styles.logout}
+        onPress={() => {
+          auth()
+            .signOut()
+            .then(() => removeToken(), console.log('User signed out!'));
+        }}>
+        로그아웃
+      </Text>
       <Image
         source={require('AppleTree/assets/pictures/aegommypage.png')}
         style={styles.image}
@@ -84,6 +104,11 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#3A5C83',
     fontSize: 32,
+  },
+  logout: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#3A5C83',
+    fontSize: 15,
   },
 });
 
