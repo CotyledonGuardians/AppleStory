@@ -50,8 +50,8 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const scrollViewRef = useRef();
   // 메세지 컨버터
   const stateMessage = (nick, state) => {
-    console.log('stateMessage');
-    console.log(nick);
+    // console.log('stateMessage');
+    // console.log(nick);
     switch (state) {
       case 'JOINED':
         return nick + '님께서 입장 하셨습니다❣';

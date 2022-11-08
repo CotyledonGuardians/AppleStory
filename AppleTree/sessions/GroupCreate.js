@@ -297,7 +297,7 @@ const GroupCreate = ({navigation, route}) => {
     let imageFlag = false;
     let videoFlag = false;
     results.forEach(result => {
-      console.log(result);
+      // console.log(result);
       if (!result) {
         return;
       }
