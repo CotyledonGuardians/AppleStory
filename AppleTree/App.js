@@ -160,6 +160,11 @@ export default function App() {
                 name="LockAppleDetail"
                 component={LockAppleDetail}
               />
+              <MapStack.Screen
+                options={{headerShown: false}}
+                name="AppleUnlockGIF"
+                component={AppleUnlockGIF}
+              />
             </MapStack.Navigator>
           )}
         </Tab.Screen>

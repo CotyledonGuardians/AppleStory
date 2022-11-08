@@ -131,7 +131,6 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             },
             () => {
               console.log('make room failed', roomId);
-              navigate('GroupSession');
             },
           );
         };
