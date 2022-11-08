@@ -346,7 +346,6 @@ const GroupCreate = ({navigation, route}) => {
       })
       .then(() => {
         // console.log('isHost?', isHost);
-        setLoading(false);
         if (isHost) {
           Alert.alert('추억담기 완료!', '다시 세션으로 돌아갑니다.');
           navigation.pop();
