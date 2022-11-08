@@ -128,6 +128,11 @@ export default function App() {
                 name="UnlockAppleDetail"
                 component={UnlockAppleDetail}
               />
+              <HomeStack.Screen
+                options={{headerShown: false}}
+                name="AppleUnlockGIF"
+                component={AppleUnlockGIF}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
