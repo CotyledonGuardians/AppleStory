@@ -8,11 +8,6 @@ const GoogleLogin = props => {
   //구글소셜로그인
   const onGoogleButtonPress = async () => {
     const {idToken} = await GoogleSignin.signIn();
-    // console.log('GoogleLogin::idtoken', idToken);
-    // if (idToken === null) {
-    //   Alert.alert('잠깐스땁!', '잠시후 다시 시도해주세요');
-    //   return;
-    // }
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     //로컬 스토리지에 저장
     storeToken(idToken);
@@ -20,9 +15,9 @@ const GoogleLogin = props => {
   };
   //AsyncStorage 저장
   const storeToken = async idToken => {
-    console.log('storeToken');
+    // console.log('storeToken');
     try {
-      console.log('googleLogin:idToken:', idToken);
+      // console.log('googleLogin:idToken:', idToken);
       await AsyncStorage.setItem('idToken', idToken);
     } catch (error) {
       console.log('googleLogin::storeToken error ' + error);

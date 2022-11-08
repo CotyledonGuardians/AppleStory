@@ -55,7 +55,7 @@ const Map = ({navigation}) => {
         Geolocation.getCurrentPosition(
           position => {
             const {latitude, longitude} = position.coords;
-            console.log(latitude, longitude);
+            // console.log(latitude, longitude);
             setUseLocation({
               latitude,
               longitude,
