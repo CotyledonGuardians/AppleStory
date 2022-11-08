@@ -30,9 +30,10 @@ const AppleList = ({navigation}) => {
   const [openList, setOpenList] = useState([]);
   const scrollViewRef = useRef();
   const size = 100;
-  const getInitData = async sort => {
-    getOpenAppleList(sort, 0, size)
+  const getInitData = async => {
+    getOpenAppleList(0, 0, size)
       .then(response => {
+        console.log('너 뭐야');
         // console.log(response.data);
         setOpenList(response.data.body.content);
         if (response.data.body.content.length < size) {
@@ -43,8 +44,38 @@ const AppleList = ({navigation}) => {
         console.log('error', error);
       });
 
-    getCloseAppleList(sort, 0, size)
+    getCloseAppleList(0, 0, size)
       .then(response => {
+        console.log('너 뭐야2');
+        setCloseList(response.data.body.content);
+        if (response.data.body.content.length < size) {
+          setLoading(true);
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  };
+
+  const getOpenData = async => {
+    getOpenAppleList(sort, 0, size)
+      .then(response => {
+        console.log('너 뭐야3');
+        // console.log(response.data);
+        setOpenList(response.data.body.content);
+        if (response.data.body.content.length < size) {
+          setLoading2(true);
+        }
+      })
+      .catch(error => {
+        console.log('error', error);
+      });
+  };
+
+  const getCloseData = async => {
+    getCloseAppleList(sort2, 0, size)
+      .then(response => {
+        console.log('너 뭐야4');
         setCloseList(response.data.body.content);
         if (response.data.body.content.length < size) {
           setLoading(true);
@@ -57,14 +88,15 @@ const AppleList = ({navigation}) => {
 
   // 컴포넌트가 마운트되면 해당 함수를 호출해 초기 데이터 설정
   useEffect(() => {
-    getInitData(sort);
-  }, [sort]);
+    getInitData();
+  }, []);
 
   const updateList = async type => {
     if (type === 'close') {
       // API로부터 받아온 페이징 데이터를 이용해 다음 데이터를 로드
       getCloseAppleList(sort, page, size)
         .then(response => {
+          console.log('너 뭐야5');
           const fetchedData = response.data.body.content; // 피드 데이터 부분
           if (fetchedData.length === 0) {
             setLoading(true);
@@ -87,6 +119,7 @@ const AppleList = ({navigation}) => {
       // API로부터 받아온 페이징 데이터를 이용해 다음 데이터를 로드
       getOpenAppleList(sort, page2, size)
         .then(response => {
+          console.log('너 뭐야6');
           const fetchedData = response.data.body.content; // 피드 데이터 부분
           if (fetchedData.length === 0) {
             setLoading2(true);
@@ -211,13 +244,20 @@ const AppleList = ({navigation}) => {
         // defaultValueByIndex={1}
         defaultValue={routeSort}
         onSelect={(selectedItem, index) => {
-          setPage(1);
-          setSort(index);
-          setLoading(false);
-          setPage2(1);
-          setSort2(index);
-          setLoading2(false);
-          // console.log(selectedItem, index);
+          if (route === '열린 사과') {
+            console.log('열린 사과');
+            setPage(1);
+            setSort(index);
+            getOpenData();
+            setLoading(false);
+          } else {
+            console.log('잠긴 사과');
+            setPage2(1);
+            setSort2(index);
+            getCloseData();
+            setLoading2(false);
+            // console.log(selectedItem, index);
+          }
           setRouteSort(countries[index]);
         }}
         buttonTextAfterSelection={(selectedItem, index) => {
