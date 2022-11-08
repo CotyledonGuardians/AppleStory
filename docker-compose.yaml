@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 services:
   db:
@@ -13,7 +13,7 @@ services:
     volumes:
       - ${DB_BACKUP}:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - '3306:3306'
 
   rabbitmq:
     container_name: rabbitmq
@@ -22,21 +22,23 @@ services:
       context: ./backend
       dockerfile: rabbit-dockerfile
     environment:
-      RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
+      RABBITMQ_ERLANG_COOKIE: 'RabbitMQ-My-Cookies'
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
-      - "5672:5672"
-      - "61613:61613"
+      - '5672:5672'
+      - '61613:61613'
 
   redis:
     container_name: redis
-    image: redis/redis-stack:latest
+    build:
+      context: ./backend
+      dockerfile: redis-dockerfile
     restart: always
     environment:
       REDIS_ARG: ${REDIS_ARG}
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
   api:
     container_name: api
@@ -48,7 +50,7 @@ services:
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "8080:8080"
+      - '8080:8080'
     depends_on:
       - db
       - rabbitmq
