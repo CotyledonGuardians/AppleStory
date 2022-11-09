@@ -166,10 +166,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('apple-story-debug-secret.keystore')
-            storePassword 'applestory'
-            keyAlias 'apple-story-debug'
-            keyPassword 'applestory'
+            storeFile file('apple-story.jks')
+            storePassword '#7zB201#'
+            keyAlias 'apple-story'
+            keyPassword '#7zB201#'
         }
     }
     buildTypes {
