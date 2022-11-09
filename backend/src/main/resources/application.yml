@@ -30,3 +30,14 @@ com:
       firebase-service-account-secret: classpath:firebase-service-account-production-secret.json
       rabbitmq:
         stomp-port: 61613
+
+logging:
+  file:
+    name: logs/production.log
+  level:
+    com.cotyledon.appletree: DEBUG
+    org:
+      hibernate:
+        SQL: DEBUG
+        type.descriptor.sql.BasicBinder: TRACE
+      springframework.web: DEBUG
