@@ -154,6 +154,7 @@ const Overview = ({navigation, route}) => {
       } else {
         setAddress(response.data.plus_code.compound_code);
       }
+      if (!address) setAddress(' ');
     });
   };
 
@@ -163,7 +164,8 @@ const Overview = ({navigation, route}) => {
         <View style={styles.headerLeft}>
           <Image
             source={
-              randomImages[Math.floor(Math.random() * randomImages.length)]
+              randomImages[route.params.id % 7]
+              // randomImages[Math.floor(Math.random() * randomImages.length)]
             }
             style={styles.headerImg}
           />
@@ -187,7 +189,7 @@ const Overview = ({navigation, route}) => {
                 <Text>{appleDetail.creator.member.length}</Text>
               </View>
             </View>
-            {address && (
+            {address && address != ' ' && (
               <View style={styles.nameBox}>
                 <Text style={[styles.textFont, styles.smallText]}>
                   {address}
@@ -257,7 +259,12 @@ const Overview = ({navigation, route}) => {
           style={{width: 80, height: 80}}
           resizeMode="contain"
         />
-        <Text style={styles.seedDetail}>{nickname}님의 씨앗</Text>
+        <Text style={styles.seedDetail}>
+          {nickname.length > 6
+            ? nickname.substr(0, 5).trim() + '...'
+            : nickname}
+          님의 씨앗
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -354,6 +361,7 @@ const Overview = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       {appleDetail &&
+      photoURLs &&
       (appleDetail.location === null || (appleDetail.location && address)) ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header />
