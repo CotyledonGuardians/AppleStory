@@ -18,7 +18,6 @@ import {
 import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
 import LoadingDefault from './LoadingDefault';
-import AppleList from './AppleList';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 남은 시간에 따라 사과 사진 변경

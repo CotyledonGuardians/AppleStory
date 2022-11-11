@@ -4,7 +4,7 @@ import {Text, TextInput, Pressable, Alert} from 'react-native';
 import {Button} from '../../components/Button';
 import auth from '@react-native-firebase/auth';
 import GoogleLogin from '../../components/firebase/GoogleLogin';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Login = ({navigation}) => {
   //하위컴포넌트(GoogleLogin)=>상위컴포넌트(Login)으로 props 전달하기 위한 함수
   const getLoginState = isLogin => {
@@ -12,18 +12,7 @@ const Login = ({navigation}) => {
   };
   const [email, setEmail] = useState(null);
   const [pwd, setPwd] = useState(null);
-  const [errMsg, setErrMsg] = useState('');
-  //AsyncStorage 저장
-  const storeToken = async idToken => {
-    // removeToken();
-    try {
-      // console.log('storeToken:idToken:', idToken);
-      await AsyncStorage.setItem('idToken', idToken);
-      await AsyncStorage.getItem('idToken');
-    } catch (error) {
-      console.log('storeToken error' + error);
-    }
-  };
+
   //로그인 함수
   const onLogin = async () => {
     if (!checkLoginInput()) {
@@ -31,12 +20,9 @@ const Login = ({navigation}) => {
       return;
     }
     try {
-      const user = await auth()
+      await auth()
         .signInWithEmailAndPassword(email, pwd)
-        .then(() => {
-          // const idToken = auth().currentUser.getIdToken();
-          // storeToken(idToken);
-        })
+        .then(() => {})
         .catch(error => {
           switch (error.code) {
             case 'auth/invalid-email':
@@ -57,7 +43,9 @@ const Login = ({navigation}) => {
             case 'auth/user-not-found':
               Alert.alert('알 수 없는 사용자', '회원가입을 해주세요.');
               break;
-
+            case 'auth/wrong-password':
+              Alert.alert('유효하지 않은 비밀번호', '비밀번호를 확인하세요.');
+              break;
             default:
               Alert.alert('error', '알 수 없는 에러 콘솔확인 요망');
               console.log('register::error' + error);
@@ -163,13 +151,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginBottom: 10,
     width: '100%',
-    height: 260,
+    height: 200,
   },
   imageTitle: {
     resizeMode: 'contain',
     marginBottom: 10,
-    width: 140,
-    height: 80,
+    width: '100%',
+    height: 100,
   },
   button: {
     width: 300,
