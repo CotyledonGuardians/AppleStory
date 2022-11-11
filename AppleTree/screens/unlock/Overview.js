@@ -349,7 +349,8 @@ const Overview = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {appleDetail && address ? (
+      {appleDetail &&
+      (appleDetail.location === null || (appleDetail.location && address)) ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header />
           <ContentSeed />
