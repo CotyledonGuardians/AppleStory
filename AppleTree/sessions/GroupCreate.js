@@ -569,7 +569,8 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
-    // justifyContent: 'center',
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   txt: {
     color: '#4C4036',
