@@ -19,7 +19,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import {add} from 'react-native-reanimated';
 
 var randomImages = [
   require('../../assets/pictures/aegom1.png'),
