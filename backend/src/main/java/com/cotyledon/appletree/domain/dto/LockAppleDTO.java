@@ -29,7 +29,7 @@ public class LockAppleDTO {
     private List<String> content;
 
     public static LockAppleDTO of(Apple apple){
-        List<String> list = contentType(apple.getContent(), apple.getUseSpace());
+        List<String> list = contentType(apple.getContent(), apple.getLocation());
         return LockAppleDTO.builder()
                 .type(apple.getType())
                 .title(apple.getTitle())
@@ -41,7 +41,7 @@ public class LockAppleDTO {
                 .build();
     }
 
-    private static List<String> contentType(Content content, boolean useSpace){
+    private static List<String> contentType(Content content, GeoLocation location){
         List<String> list = new ArrayList<>();
         if(content.getAudio() != null && content.getAudio().size()!=0)
             list.add("audio");
@@ -51,7 +51,7 @@ public class LockAppleDTO {
             list.add("text");
         if(content.getVideo() != null && content.getVideo().size()!=0)
             list.add("video");
-        if(useSpace)
+        if(location != null)
             list.add("space");
         return list;
     }
