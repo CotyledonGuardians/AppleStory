@@ -161,7 +161,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
 
   // inpust valid handler end
   return !loading ? (
-    <ScrollView>
+    <ScrollView contentContainerStyle={styles.scroll}>
       <SafeAreaView style={styles.container}>
         <Image
           source={require('../assets/pictures/listgroup1.png')}
@@ -239,8 +239,15 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
 };
 
 const styles = StyleSheet.create({
+  scroll: {
+    backgroundColor: '#FBF8F6',
+    padding: 10,
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
-    flex: 1,
+    height: '100%',
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
     justifyContent: 'center',
