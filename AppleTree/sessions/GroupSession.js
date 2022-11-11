@@ -77,7 +77,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
     const myid = auth().currentUser.uid;
     const messageListeners = {
       onChange: ({uidToIndex, statuses, hostUid, appleId}) => {
-        console.log("_appleId::::::",appleId);
+        console.log('_appleId::::::', appleId);
         setReservedAppleId(appleId);
         //방장인지 체크
         if (myid === hostUid) {
@@ -161,9 +161,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
               source={require('../assets/icons/copy.png')}
               style={styles.copyIcon}
             />
-            <Text style={styles.copyText}>
-              방 번호를 복사해서 친구를 초대하세요!
-            </Text>
+            <Text style={styles.copyText}>{roomId}</Text>
           </View>
         </Pressable>
         <View style={styles.view}>
@@ -264,7 +262,7 @@ const styles = StyleSheet.create({
   },
   copyText: {
     fontSize: 13,
-    color: '#A6A6A6',
+    color: '#4C4036',
     fontFamily: 'UhBee Se_hyun Bold',
     marginTop: 10,
     textAlign: 'center',
