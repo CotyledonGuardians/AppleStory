@@ -19,6 +19,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {add} from 'react-native-reanimated';
 
 var randomImages = [
   require('../../assets/pictures/aegom1.png'),
@@ -152,9 +153,12 @@ const Overview = ({navigation, route}) => {
       if (response.data.status === 'OK') {
         setAddress(response.data.results[0].formatted_address);
       } else {
-        setAddress(response.data.plus_code.compound_code);
+        if (response.data.plus_code.compound_code) {
+          setAddress(response.data.plus_code.compound_code);
+        } else {
+          setAddress(' ');
+        }
       }
-      if (!address) setAddress(' ');
     });
   };
 
