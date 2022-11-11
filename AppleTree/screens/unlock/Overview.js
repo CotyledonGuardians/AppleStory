@@ -100,8 +100,10 @@ const Overview = ({navigation, route}) => {
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(async response => {
+        console.log(response.data.body);
         setAppleDetail(response.data.body);
         if (response.data.body.location != null) {
+          console.log('FWEFWEFEWFWEF');
           getAddressLatLng(response.data.body.location);
         }
         await auth().currentUser.getIdTokenResult(true);
@@ -349,7 +351,8 @@ const Overview = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {appleDetail && address ? (
+      {appleDetail &&
+      (appleDetail.location === null || (appleDetail.location && address)) ? (
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header />
           <ContentSeed />
