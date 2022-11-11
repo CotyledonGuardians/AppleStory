@@ -15,6 +15,10 @@ import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import Loading from '../LoadingDefault';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 var randomImages = [
   require('../../assets/pictures/aegom1.png'),
@@ -487,10 +491,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   headerImg: {
-    marginLeft: 20,
+    marginLeft: wp('5%'),
     marginTop: 10,
-    width: '80%',
-    height: '90%',
+    width: 140,
+    height: 180,
   },
   photoImg: {
     margin: 3,
