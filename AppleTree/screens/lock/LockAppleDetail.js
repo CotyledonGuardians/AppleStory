@@ -6,6 +6,10 @@ import {Button} from '../../components/Button';
 import Loading from '../LoadingDefault';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
 import {UseStomp, DisconnectIfConnected} from '../../stomp';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const LockAppleDetail = ({route, navigation}) => {
   const {id} = route.params;
@@ -113,19 +117,23 @@ const LockAppleDetail = ({route, navigation}) => {
         <View style={styles.appleDetailBox}>
           <View style={styles.oneBox}>
             <Text style={[styles.textFont, styles.nameText]}>
-              {apple.title}
+              {apple.title.length > 15
+                ? apple.title.substr(0, 10).trim() + '...'
+                : apple.title}
             </Text>
           </View>
           <View style={styles.nameBox}>
             <Text style={[styles.textFont, styles.nameText]}>
-              {apple.teamName}
+              {apple.teamName.length > 15
+                ? apple.teamName.substr(0, 10).trim() + '...'
+                : apple.teamName}
             </Text>
             <View style={styles.countBox}>
               <Image
                 style={styles.countIcon}
                 source={require('../../assets/icons/usercount.png')}
               />
-              <Text>{apple.number}</Text>
+              <Text style={styles.number}>{apple.number}</Text>
             </View>
           </View>
           <View style={styles.contentBox}>
@@ -224,15 +232,15 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun',
   },
   defaultText: {
-    fontSize: 20,
+    fontSize: wp('5%'),
     color: '#4C4036',
   },
   nameText: {
-    fontSize: 18,
+    fontSize: wp('5%'),
     color: '#4C4036',
   },
   secondText: {
-    fontSize: 15,
+    fontSize: wp('4%'),
     color: '#4C4036',
   },
   timeBox: {
@@ -240,11 +248,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   timeText: {
-    fontSize: 30,
+    fontSize: wp('8%'),
     justifyContent: 'center',
   },
   smallText: {
-    fontSize: 12,
+    fontSize: wp('3%'),
     color: '#AAA19B',
   },
   contentBox: {
@@ -252,8 +260,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconBox: {
-    marginTop: 5,
-    marginBottom: 15,
+    marginTop: '2%',
+    marginBottom: '4%',
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -262,25 +270,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   countBox: {
-    height: '40%',
+    height: wp('6%'),
     backgroundColor: 'rgba(0, 0, 0, 0.17)',
     alignItems: 'center',
     flexDirection: 'row',
     borderRadius: 30,
-    paddingRight: 8,
-    marginTop: 7,
-    paddingLeft: 8,
-    marginLeft: 8,
+    paddingRight: wp('2.5%'),
+    marginTop: hp('1%'),
+    paddingLeft: wp('2%'),
+    marginLeft: wp('2%'),
   },
   countIcon: {
-    width: 12,
-    height: 12,
+    width: wp('3.7%'),
+    height: wp('4%'),
+  },
+  number: {
+    fontSize: wp('3%'),
   },
   contentIcon: {
-    width: 28,
-    height: 28,
-    marginRight: 3,
-    marginLeft: 3,
+    width: wp('6%'),
+    height: wp('6%'),
+    marginRight: wp('1%'),
+    marginLeft: wp('1%'),
   },
 });
 
