@@ -61,10 +61,10 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = date => {
+    hideDatePicker();
     setUnlockDate(moment(date).format('YYYY-MM-DD'));
     onChangeText(moment(date).format('YYYY-MM-DD'));
     setDateValid(true);
-    hideDatePicker();
   };
 
   // location
