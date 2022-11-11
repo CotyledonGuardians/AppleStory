@@ -100,10 +100,8 @@ const Overview = ({navigation, route}) => {
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(async response => {
-        console.log(response.data.body);
         setAppleDetail(response.data.body);
         if (response.data.body.location != null) {
-          console.log('FWEFWEFEWFWEF');
           getAddressLatLng(response.data.body.location);
         }
         await auth().currentUser.getIdTokenResult(true);
