@@ -63,7 +63,7 @@ const Apple = ({
               UseStomp(
                 () => {
                   console.log('make room succeed', apple.id);
-                  navigation.navigate('HitApple', {
+                  navigation.replace('HitApple', {
                     id: apple.id,
                   });
                 },

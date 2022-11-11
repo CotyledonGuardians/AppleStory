@@ -4,7 +4,7 @@ import {SafeAreaView, StyleSheet, Image} from 'react-native';
 const AppleUnlockGIF = ({navigation, route}) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('Overview', {
+      navigation.replace('Overview', {
         // screen: 'AppleDetail',
         id: route.params.id,
       });
