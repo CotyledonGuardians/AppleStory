@@ -4,33 +4,12 @@ import {
   StyleSheet,
   Text,
   View,
-  Platform,
-  PermissionsAndroid,
   Image,
-  TouchableOpacity,
-  Alert,
   Button,
 } from 'react-native';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
-import Geolocation from 'react-native-geolocation-service';
 import {getMapAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
-
-async function requestPermission() {
-  try {
-    if (Platform.OS === 'ios') {
-      return await Geolocation.requestAuthorization('always');
-    }
-    // 안드로이드 위치 정보 수집 권한 요청
-    if (Platform.OS === 'android') {
-      return await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      );
-    }
-  } catch (e) {
-    console.log(e);
-  }
-}
 
 // 남은 시간에 따라 사과 사진 변경
 const imgUrl = [
@@ -49,44 +28,14 @@ const Map = ({navigation}) => {
   const [appleList, setAppleList] = useState([]);
   const [appleImg, setAppleImg] = useState();
   useEffect(() => {
-    // 사용자 위치 가져오기
-    requestPermission().then(result => {
-      // console.log({result});
-      if (result === 'granted') {
-        Geolocation.getCurrentPosition(
-          position => {
-            const {latitude, longitude} = position.coords;
-            // console.log(latitude, longitude);
-            setUseLocation({
-              latitude,
-              longitude,
-            });
-          },
-          error => {
-            console.log(error.code, error.message);
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-        );
-      }
-    });
-
     getMapAppleList()
       .then(response => {
-        console.log(response.data.body);
         setAppleList(response.data.body);
       })
       .catch(error => {
         console.log('error', error);
       });
   }, []);
-
-  if (!useLocation) {
-    return (
-      <View>
-        <Text>Splash Screen</Text>
-      </View>
-    );
-  }
 
   const appleDetail = id => {
     navigation.navigate('Overview', {screen: 'Overview', id: id});
