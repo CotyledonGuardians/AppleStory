@@ -1,14 +1,88 @@
-import React from 'react';
-import {SafeAreaView, View, StyleSheet} from 'react-native';
-import {Text, TextInput, Image} from 'react-native';
-import {Pressable} from 'react-native';
-
-// import joinImg from '../../assets/pictures/aegomjoin.png';
+import React, {useState, useEffect} from 'react';
+import {
+  SafeAreaView,
+  View,
+  StyleSheet,
+  Text,
+  TextInput,
+  Image,
+  Pressable,
+  Alert,
+} from 'react-native';
+import auth from '@react-native-firebase/auth';
 import {Button} from '../../components/Button';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Register = ({navigation}) => {
-  const [email] = React.useState(null);
-
+  const [registerEmail, setRegisterEmail] = useState('');
+  const [registerPassword, setRegisterPassword] = useState('');
+  const [errMsg, setErrMsg] = useState('');
+  //AsyncStorage 저장
+  const storeToken = async idToken => {
+    // removeToken();
+    try {
+      // console.log('storeToken:idToken:', idToken);
+      await AsyncStorage.setItem('idToken', idToken);
+      await AsyncStorage.getItem('idToken');
+    } catch (error) {
+      console.log('storeToken error' + error);
+    }
+  };
+  const checkRegisterInput = () => {
+    if (registerEmail !== null && registerPassword !== null) {
+      if (!registerEmail.trim()) {
+        Alert.alert('빈 값', '이메일을 입력해주세요.');
+        return false;
+      }
+      if (!registerPassword.trim()) {
+        Alert.alert('빈 값', '비밀번호를 입력해주세요.');
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  };
+  //회원가입 함수
+  const register = async () => {
+    if (!checkRegisterInput()) {
+      return;
+    }
+    try {
+      const user = await auth()
+        .createUserWithEmailAndPassword(registerEmail, registerPassword)
+        .then(() => {
+          console.log('User account created & signed in!' + user);
+          //AsyncStorage에 idToken저장
+          // const idToken = auth().currentUser.getIdToken();
+          // storeToken(idToken);
+        })
+        .catch(error => {
+          switch (error.code) {
+            case 'auth/invalid-email':
+              Alert.alert(
+                '유효하지 않은 형식',
+                ' 이메일 형식이 유효하지 않습니다.',
+              );
+              break;
+            case 'auth/email-already-in-use':
+              Alert.alert('등록된 메일', ' 이미 등록된 이메일입니다.');
+              break;
+            case 'auth/weak-password':
+              Alert.alert(
+                '약한 비밀번호',
+                '비밀번호는 6글자 이상이어야합니다.',
+              );
+              break;
+            default:
+              Alert.alert('error', '알 수 없는 에러 콘솔확인 요망');
+              console.log('register::error' + error);
+              break;
+          }
+        });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -21,43 +95,36 @@ const Register = ({navigation}) => {
       />
       <View style={styles.marginTopBottom}>
         <View style={styles.email}>
-          <Text
-            style={{
-              flex: 0.3,
-              textAlign: 'center',
-              fontSize: 15,
-              fontFamily: 'UhBee Se_hyun Bold',
-              color: '#4C4036',
-            }}>
-            이메일
-          </Text>
+          <Text style={styles.txt}>이메일</Text>
           <TextInput
-            value={email}
+            value={registerEmail}
             autoCapitalize={'none'}
             keyboardType={'email-address'}
             style={styles.input}
+            placeholder="email"
+            onChange={e => setRegisterEmail(e.nativeEvent.text)}
           />
         </View>
-        <Button onPress={onCertify} text="인증 요청" />
+        <View style={styles.email}>
+          <Text style={styles.txt}>비밀번호</Text>
+          <TextInput
+            value={registerPassword}
+            autoCapitalize={'none'}
+            style={styles.input}
+            placeholder="password"
+            secureTextEntry
+            onChange={e => setRegisterPassword(e.nativeEvent.text)}
+          />
+        </View>
+        <Button onPress={() => register()} text="회원 가입" />
       </View>
       <View style={styles.marginTopBottom}>
-        <Pressable onPress={() => navigation.goBack()}>
-          <Text
-            style={{
-              color: '#ABABAB',
-              textDecorationLine: 'underline',
-              fontFamily: 'UhBee Se_hyun',
-            }}>
-            뒤로 가기
-          </Text>
+        <Pressable onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.backtxt}>로그인</Text>
         </Pressable>
       </View>
     </SafeAreaView>
   );
-};
-
-const onCertify = () => {
-  alert('이멜인증보내기함수');
 };
 
 const styles = StyleSheet.create({
@@ -108,6 +175,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  txt: {
+    flex: 0.3,
+    textAlign: 'center',
+    fontSize: 15,
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
+  },
+  backtxt: {
+    color: '#ABABAB',
+    textDecorationLine: 'underline',
+    fontFamily: 'UhBee Se_hyun',
   },
 });
 

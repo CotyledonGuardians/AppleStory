@@ -25,6 +25,7 @@ public class Apple extends BaseEntity{
     private Boolean type;
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     @Convert(converter = CreatorConverter.class)
     private Creator creator;
 

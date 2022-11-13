@@ -88,13 +88,15 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     // join 이벤트 발행
     @Override
     public boolean enterRoomAndSaveRoomUser(String uid, String roomId) {
-        Optional<LockAppleRoom> room = lockAppleRoomRepository.findById(roomId);
+        Optional<LockAppleRoom> roomOptional = lockAppleRoomRepository.findById(roomId);
 
-        if (room.isEmpty()) {
+        if (roomOptional.isEmpty()) {
             return false;
         }
 
         log.info("방 찾음");
+
+        LockAppleRoom room = roomOptional.get();
 
         AppleRoomUser user = AppleRoomUser.builder().uid(uid).roomId(roomId).build();
         appleRoomUserRepository.save(user);
@@ -104,7 +106,10 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
         lockAppleRoomGroupRepository.putGroup(roomId, group);
 
         // change 이벤트 발행
-        lockAppleRoomNotifier.notifyForJoined(roomId, uid, ChangeMessageData.withHostUid(room.get().getHostUid()));
+        lockAppleRoomNotifier.notifyForJoined(
+                roomId,
+                uid,
+                ChangeMessageData.withHostUidAndAppleId(room.getHostUid(), room.getAppleId()));
 
         return true;
     }

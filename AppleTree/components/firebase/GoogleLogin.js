@@ -1,13 +1,7 @@
 import React from 'react';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {
-  Pressable,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Text,
-} from 'react-native';
+import {StyleSheet, Image, TouchableOpacity, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GoogleLogin = props => {
@@ -21,36 +15,31 @@ const GoogleLogin = props => {
   };
   //AsyncStorage 저장
   const storeToken = async idToken => {
-    // removeToken();
+    // console.log('storeToken');
     try {
-      // console.log('storeToken:idToken:', idToken);
+      // console.log('googleLogin:idToken:', idToken);
       await AsyncStorage.setItem('idToken', idToken);
     } catch (error) {
-      console.log('storeToken error' + error);
+      console.log('googleLogin::storeToken error ' + error);
     }
   };
-  // //AsyncStorage 삭제
-  // const removeToken = async () => {
-  //   try {
-  //     await AsyncStorage.removeItem('idToken');
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   return (
     <TouchableOpacity
-      onPress={() =>
-        onGoogleButtonPress().then(() => {
-          props.propFunction(true);
-          console.log('Google login success');
-        })
-      }
-      style={styles.buttonShape}>
+      onPress={
+        () => onGoogleButtonPress()
+        // .then(() => {
+        //   props.propFunction(true);
+        // })
+      }>
       <Image
+        style={styles.icon}
+        source={require('../../assets/icons/google.png')}
+      />
+      {/* <Image
         style={styles.icon}
         source={require('../../assets/icons/googleIcon.png')}
       />
-      <Text style={styles.buttonText}>구글로 로그인하기</Text>
+      <Text style={styles.buttonText}>구글로 로그인하기</Text> */}
     </TouchableOpacity>
   );
 };
@@ -65,8 +54,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   icon: {
-    height: 30,
-    width: 30,
+    height: 50,
+    width: 50,
   },
   buttonShape: {
     width: 300,

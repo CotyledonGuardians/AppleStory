@@ -137,11 +137,11 @@ android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.appletree"
+        applicationId "com.cotyledon.appletree"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "0.1.1"
     }
     splits {
         abi {
@@ -152,11 +152,24 @@ android {
         }
     }
     signingConfigs {
+        //릴리즈환경
+        // release {
+        //     storeFile file("signing key 경로")
+        //     storePassword "암호"
+        //     keyAlias "이름"
+        //     keyPassword "암호"
+        // }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+        release {
+            storeFile file('apple-story.jks')
+            storePassword '#7zB201#'
+            keyAlias 'apple-story'
+            keyPassword '#7zB201#'
         }
     }
     buildTypes {
@@ -165,19 +178,22 @@ android {
             //빌드환경설정
             matchingFallbacks = ['debug', 'release']
         }
+        //릴리즈환경
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
     //빌드환경설정
-    flavorDimensions "default"
+    flavorDimensions "version"
     productFlavors {
         local {}
-        production {}
+        production {
+            dimension "version"
+        }
         staging {
         // 여기서 빌드별 구성을 할 수 있습니다.
         }

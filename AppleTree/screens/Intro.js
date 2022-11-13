@@ -2,7 +2,7 @@ import React from 'react';
 import {SafeAreaView, View, StyleSheet} from 'react-native';
 import {Text, Image} from 'react-native';
 import {Pressable} from 'react-native';
-
+import Register from './auth/Register';
 const IntroFirst = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>

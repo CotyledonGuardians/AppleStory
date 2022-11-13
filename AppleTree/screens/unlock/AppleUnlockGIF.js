@@ -1,12 +1,15 @@
 import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, Image} from 'react-native';
 
-const AppleUnlockGIF = ({navigation}) => {
+const AppleUnlockGIF = ({navigation, route}) => {
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('Home', {screen: 'Main'});
+      navigation.replace('Overview', {
+        // screen: 'AppleDetail',
+        id: route.params.id,
+      });
     }, 3000);
-  }, [navigation]);
+  }, []);
   return (
     <SafeAreaView style={styles.container}>
       <Image
@@ -20,7 +23,7 @@ const AppleUnlockGIF = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E4F5D8',
+    backgroundColor: '#F0CAC7',
     alignItems: 'center',
     justifyContent: 'center',
   },

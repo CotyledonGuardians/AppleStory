@@ -18,14 +18,20 @@ import MakeRoomForm from './screens/MakeRoomForm';
 import GroupCreate from './sessions/GroupCreate';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import GroupSession from './sessions/GroupSession';
-import AppleDetail from './screens/AppleDetail';
+// import AppleDetail from './screens/AppleDetail';
+import Overview from './screens/unlock/Overview';
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import RecordVoice from './screens/RecordVoice';
-import SeedDetail from './screens/SeedDetail';
+// import SeedDetail from './screens/SeedDetail';
+import UnlockAppleDetail from './screens/unlock/UnlockAppleDetail';
 import HitApple from './sessions/AppleHitSession';
 import LockAppleDetail from './screens/lock/LockAppleDetail';
 import auth from '@react-native-firebase/auth';
 import JoinSession from './screens/test/JoinSession';
+import AppleUnlockGIF from './screens/unlock/AppleUnlockGIF';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Config from 'react-native-config';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -44,8 +50,14 @@ const styles = StyleSheet.create({
 export default function App() {
   const [login, setLogin] = useState(false);
 
+  const setToken = async () => {
+    const idToken = await auth().currentUser.getIdToken();
+    await AsyncStorage.setItem('idToken', idToken);
+  };
+
   auth().onAuthStateChanged(user => {
     if (user) {
+      setToken();
       setLogin(true);
     } else {
       setLogin(false);
@@ -61,10 +73,10 @@ export default function App() {
         {/* 인트로 3개 */}
         <Stack.Screen name="IntroFirst" component={IntroFirst} />
         <Stack.Screen name="IntroSecond" component={IntroSecond} />
-        {/* 로그인 페이지 */}
-        <Stack.Screen name="Login" component={Login} />
         {/* 회원가입 페이지 */}
         <Stack.Screen name="Register" component={Register} />
+        {/* 로그인 페이지 */}
+        <Stack.Screen name="Login" component={Login} />
       </Stack.Navigator>
     );
   }
@@ -72,15 +84,22 @@ export default function App() {
   function MyTabs() {
     return (
       <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: {
-            height: hp('9%'),
-          },
+        screenOptions={({route}) => ({
+          tabBarStyle: (route => {
+            const routeName = getFocusedRouteNameFromRoute(route);
+            if (
+              routeName === 'AppleUnlockGIF' ||
+              routeName === 'AppleLockGIF'
+            ) {
+              return {display: 'none', height: hp('9%')};
+            }
+            return {height: hp('9%')};
+          })(route),
           headerShown: false,
           tabBarShowLabel: false,
           tabBarInactiveBackgroundColor: '#ECE5E0',
           tabBarActiveBackgroundColor: '#c3b8ae',
-        }}>
+        })}>
         <Tab.Screen
           name="Home"
           // component={Main}
@@ -105,8 +124,16 @@ export default function App() {
                 name="LockAppleDetail"
                 component={LockAppleDetail}
               />
-              <HomeStack.Screen name="AppleDetail" component={AppleDetail} />
-              <HomeStack.Screen name="SeedDetail" component={SeedDetail} />
+              <HomeStack.Screen name="Overview" component={Overview} />
+              <HomeStack.Screen
+                name="UnlockAppleDetail"
+                component={UnlockAppleDetail}
+              />
+              <HomeStack.Screen
+                options={{headerShown: false}}
+                name="AppleUnlockGIF"
+                component={AppleUnlockGIF}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -128,12 +155,20 @@ export default function App() {
                 tabBarStyle: {display: 'none'},
               }}>
               <MapStack.Screen name="Map" component={Map} />
-              <MapStack.Screen name="AppleDetail" component={AppleDetail} />
-              <MapStack.Screen name="SeedDetail" component={SeedDetail} />
+              <MapStack.Screen name="Overview" component={Overview} />
+              <MapStack.Screen
+                name="UnlockAppleDetail"
+                component={UnlockAppleDetail}
+              />
               <MapStack.Screen name="HitApple" component={HitApple} />
               <MapStack.Screen
                 name="LockAppleDetail"
                 component={LockAppleDetail}
+              />
+              <MapStack.Screen
+                options={{headerShown: false}}
+                name="AppleUnlockGIF"
+                component={AppleUnlockGIF}
               />
             </MapStack.Navigator>
           )}
@@ -173,7 +208,6 @@ export default function App() {
         </Tab.Screen>
         <Tab.Screen
           name="List"
-          // component={AppleList}
           options={{
             tabBarIcon: () => (
               <Image
@@ -189,12 +223,20 @@ export default function App() {
                 headerShown: false,
               }}>
               <ListStack.Screen name="AppleList" component={AppleList} />
-              <ListStack.Screen name="AppleDetail" component={AppleDetail} />
-              <ListStack.Screen name="SeedDetail" component={SeedDetail} />
+              <ListStack.Screen name="Overview" component={Overview} />
+              <ListStack.Screen
+                name="UnlockAppleDetail"
+                component={UnlockAppleDetail}
+              />
               <ListStack.Screen name="HitApple" component={HitApple} />
               <ListStack.Screen
                 name="LockAppleDetail"
                 component={LockAppleDetail}
+              />
+              <ListStack.Screen
+                options={{headerShown: false}}
+                name="AppleUnlockGIF"
+                component={AppleUnlockGIF}
               />
             </ListStack.Navigator>
           )}
@@ -227,28 +269,25 @@ export default function App() {
   //     console.log('getToken error' + error);
   //   }
   // };
-
-  //componentDidMount할때 해줘야되는거
-  GoogleSignin.configure({});
-  //구글 로그인 연동 환경세팅
-  const googleSigninConfigure = () => {
-    GoogleSignin.configure({
-      webClientId:
-        '103053283303-sob35ej0b5bqottv2rsv4ic0jdidcn0e.apps.googleusercontent.com',
-    });
-  };
-
   useEffect(() => {
+    //componentDidMount할때 해줘야되는거
+    GoogleSignin.configure({});
+    //구글 로그인 연동 환경세팅
+    const googleSigninConfigure = () => {
+      GoogleSignin.configure({
+        webClientId: Config.GOOGLE_WEB_CLIENT_ID,
+      });
+    };
     try {
+      googleSigninConfigure();
       setTimeout(() => {
         SplashScreen.hide();
       }, 500); /** 스플래시 시간 조절 (0.5초) **/
-      googleSigninConfigure();
     } catch (e) {
       // console.warn('에러발생');
       console.warn(e);
     }
-  }, []);
+  });
 
   return (
     <NavigationContainer>

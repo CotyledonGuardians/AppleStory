@@ -7,6 +7,8 @@ import {
   TextInput,
   Pressable,
   Image,
+  Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import moment from 'moment';
 import 'moment/locale/ko';
@@ -14,9 +16,26 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
 import {makeRoomAPI} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
-import GroupSession from '../sessions/GroupSession';
-import JoinSession from './test/JoinSession';
 import {ScrollView} from 'react-native-gesture-handler';
+import Geolocation from 'react-native-geolocation-service';
+import Loading from './LoadingDefault';
+
+async function requestPermission() {
+  try {
+    if (Platform.OS === 'ios') {
+      return await Geolocation.requestAuthorization('always');
+    }
+    // 안드로이드 위치 정보 수집 권한 요청
+    if (Platform.OS === 'android') {
+      return await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 const MakeRoomForm = ({navigation: {navigate}}) => {
   //inputs
   const [title, setTitle] = useState(null);
@@ -31,6 +50,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   const [titleValid, setTitleValid] = useState(false);
   const [teamNameValid, setTeamNameValid] = useState(false);
   const [dateValid, setDateValid] = useState(false);
+  const [loading, setLoading] = useState(false);
   //date picker start
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -39,19 +59,53 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = date => {
-    setUnlockDate(moment(date).format('YYYY-MM-DD'));
-    onChangeText(moment(date).format('YYYY-MM-DD'));
-    setDateValid(true);
-    hideDatePicker();
+    // console.log('date::', date);
+    let today = new Date();
+    if (date <= today) {
+      alert('오늘 또는 과거의 날짜는 선택할 수 없습니다.');
+      showDatePicker();
+    } else {
+      hideDatePicker();
+      setUnlockDate(moment(date).format('YYYY-MM-DD'));
+      onChangeText(moment(date).format('YYYY-MM-DD'));
+      setDateValid(true);
+    }
   };
+
+  // location
+  const [useLocation, setUseLocation] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+
   //date picker end
   let today = new Date();
-  // useEffect(()=>{
+  var tomorrow = new Date(today.setDate(today.getDate() + 1));
 
-  // },[]);
+  useEffect(() => {
+    requestPermission().then(result => {
+      console.log({result});
+      if (result === 'granted') {
+        Geolocation.getCurrentPosition(
+          position => {
+            const {latitude, longitude} = position.coords;
+            setUseLocation({
+              latitude,
+              longitude,
+            });
+          },
+          error => {
+            console.log(error.code, error.message);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }
+    });
+  }, []);
+
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
-    console.log('makeRoom:::');
+    // console.log('makeRoom:::');
     // api connect start
     const tempAppleDTO = {
       title: title,
@@ -60,28 +114,28 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
       },
       unlockAt: unlockDate,
       location: {
-        lat: 37.5,
-        lng: 127.5,
+        lat: useLocation.latitude !== 0 ? useLocation.latitude : null,
+        lng: useLocation.longitude !== 0 ? useLocation.longitude : null,
       },
     };
     setAppleDTO(tempAppleDTO);
+    setLoading(true);
     // console.log('tempAppleDTO', tempAppleDTO);
     makeRoomAPI(tempAppleDTO)
       .then(response => {
         console.log('makeRoom::response', response);
-        // console.log('makeRoom::response.data', response.data);
+        console.log('makeRoom::response.data', response.data);
         return response.data;
       })
-      .then(({roomId}) => {
+      .then(({roomId, appleId}) => {
         const connect = () => {
           UseStomp(
             () => {
-              console.log('make room succeed', roomId);
-              navigate('GroupSession', {roomId: roomId});
+              console.log('make room succeed', roomId, appleId);
+              navigate('GroupSession', {roomId: roomId, appleId: appleId});
             },
             () => {
               console.log('make room failed', roomId);
-              navigate('GroupSession');
             },
           );
         };
@@ -111,8 +165,8 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   };
 
   // inpust valid handler end
-  return (
-    <ScrollView>
+  return !loading ? (
+    <ScrollView contentContainerStyle={styles.scroll}>
       <SafeAreaView style={styles.container}>
         <Image
           source={require('../assets/pictures/listgroup1.png')}
@@ -151,42 +205,47 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
                 value={text}
               />
               <DateTimePickerModal
-                headerTextIOS={placeholder}
                 isVisible={isDatePickerVisible}
                 mode="date"
+                minimumDate={tomorrow}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
               />
             </Pressable>
           </View>
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            minimumDate={today}
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-          />
           <View style={styles.buttonWrap}>
             <SmallButton
               onPress={() => makeRoom()}
               text="방 만들기"
               disabled={!titleValid || !teamNameValid || !dateValid}
             />
-            <SmallButton
+            {/* <SmallButton
               onPress={() => navigate('JoinSession')}
-              text="입장하기"
+              text="방 번호로   입장하기"
               disabled={false}
-            />
+            /> */}
           </View>
+          <Text onPress={() => navigate('JoinSession')} style={styles.copyText}>
+            here! 방 번호로 참여하기
+          </Text>
         </View>
       </SafeAreaView>
     </ScrollView>
+  ) : (
+    <Loading />
   );
 };
 
 const styles = StyleSheet.create({
+  scroll: {
+    backgroundColor: '#FBF8F6',
+    padding: 10,
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
-    flex: 1,
+    height: '100%',
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
     justifyContent: 'center',
@@ -245,6 +304,14 @@ const styles = StyleSheet.create({
   buttonWrap: {
     flexDirection: 'row',
     justifyContent: 'center',
+  },
+  copyText: {
+    fontSize: 13,
+    color: '#373043',
+    fontFamily: 'UhBee Se_hyun Bold',
+    marginTop: 10,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   },
 });
 export default MakeRoomForm;
