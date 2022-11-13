@@ -15,6 +15,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button} from '../components/Button';
 import RecordVoice from '../screens/RecordVoice';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -24,6 +25,7 @@ import RNFS from 'react-native-fs';
 import RNFetchBlob from 'rn-fetch-blob';
 import {SendIfSubscribed} from '../stomp';
 import {DisconnectIfConnected} from '../stomp';
+import Loading from '../screens/LoadingDefault';
 // define enum for asset type
 const AssetType = {
   IMAGE: 'image',
@@ -37,6 +39,7 @@ const GroupCreate = ({navigation, route}) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const [nickname, setNickName] = useState(null);
+  const [nickNameValid, setNickNameValid] = useState(false);
   const [content, setContent] = useState(null);
   const [image, setImage] = useState(null);
   const [video, setVideo] = useState(null);
@@ -47,6 +50,7 @@ const GroupCreate = ({navigation, route}) => {
   const [imageIsPicked, setImageIsPicked] = useState(false);
   const [videoIsPicked, setVideoIsPicked] = useState(false);
   const [audioIsPicked, setAudioIsPicked] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   let imagePathOnStorage = null;
   let videoPathOnStorage = null;
@@ -56,7 +60,19 @@ const GroupCreate = ({navigation, route}) => {
   const {roomId} = route.params;
   // GroupCreate에서 넘겨준 isHost
   const {isHost} = route.params;
-  // console.log('isHost:::::', isHost);
+  // GroupCreate에서 넘겨준 appleId
+  const {appleId} = route.params;
+  console.log(appleId);
+
+  //닉네임 입력됬는지
+  const nickNameChangeHandler = text => {
+    if (text.trim().length === 0) {
+      setNickNameValid(false);
+    } else {
+      setNickNameValid(true);
+    }
+    setNickName(text);
+  };
   const actAdded = () => {
     console.log('actAdded');
     SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
@@ -68,7 +84,7 @@ const GroupCreate = ({navigation, route}) => {
             content: content,
           },
         ],
-        image: [
+        photo: [
           {
             author: nickname,
             content: imagePathOnStorage,
@@ -90,7 +106,6 @@ const GroupCreate = ({navigation, route}) => {
     });
   };
   const getPathForFirebaseStorage = async uri => {
-    // console.log(uri, "asdfasdfasdfasdf");
     if (Platform.OS === 'ios') {
       return uri;
     }
@@ -223,7 +238,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (asset && currentUid) {
-      const reference = storage().ref(`/test/images/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/images/${currentUid}`);
 
       if (Platform.OS === 'android') {
         const result = await reference
@@ -246,7 +261,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (asset && currentUid) {
-      const reference = storage().ref(`/test/videos/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/videos/${currentUid}`);
       const staticUrl = await getPathForFirebaseStorage(asset.uri).catch(
         err => {
           throw err;
@@ -266,7 +281,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (audioPathOnDevice && currentUid) {
-      const reference = storage().ref(`/test/audios/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/audios/${currentUid}`);
       return reference
         .putFile(audioPathOnDevice, {
           contentType: 'audio/mp4',
@@ -282,7 +297,7 @@ const GroupCreate = ({navigation, route}) => {
     let imageFlag = false;
     let videoFlag = false;
     results.forEach(result => {
-      console.log(result);
+      // console.log(result);
       if (!result) {
         return;
       }
@@ -317,6 +332,7 @@ const GroupCreate = ({navigation, route}) => {
 
   const onSubmit = () => {
     console.log(videoPathOnDevice);
+    setLoading(true);
     Promise.all([
       imageUpload(image),
       videoUpload(video, videoPathOnDevice),
@@ -372,7 +388,7 @@ const GroupCreate = ({navigation, route}) => {
       navigation.navigate('Home', {screen: 'Main'});
     });
   };
-  return (
+  return !loading ? (
     <ScrollView contentContainerStyle={styles.wrapper}>
       <SafeAreaView style={styles.container}>
         <Image
@@ -382,7 +398,8 @@ const GroupCreate = ({navigation, route}) => {
             height: 170,
             marginTop: 30,
             marginBottom: 10,
-          }}></Image>
+          }}
+        />
         <Text style={styles.txt}>닉네임</Text>
         <TextInput
           value={nickname}
@@ -390,7 +407,7 @@ const GroupCreate = ({navigation, route}) => {
           placeholder="자기만의 닉네임을 입력해주세요"
           placeholderTextColor={'#AAA19B'}
           maxLength={20}
-          onChangeText={text => setNickName(text)}
+          onChangeText={text => nickNameChangeHandler(text)}
         />
         <Text style={styles.txt}>사과에 담고 싶은 내용을 써주세요!</Text>
         <TextInput
@@ -430,9 +447,10 @@ const GroupCreate = ({navigation, route}) => {
             <Pressable
               style={styles.add}
               onPress={() => {
-                addAsset(AssetType.VIDEO).catch(err => {
-                  console.log('Error in addAsset: ', err.message);
-                });
+                // addAsset(AssetType.VIDEO).catch(err => {
+                //   console.log('Error in addAsset: ', err.message);
+                // });
+                Alert.alert("추후 추가될 기능이에요.");
               }}>
               <Image
                 source={require('AppleTree/assets/icons/videoadd.png')}
@@ -477,7 +495,7 @@ const GroupCreate = ({navigation, route}) => {
               <Text style={styles.button}>추가하기</Text>
             </Pressable>
           )}
-          {audioIsPicked ? (
+          { audioIsPicked ? (
             <View>
               <View style={styles.add}>
                 <Image
@@ -500,8 +518,8 @@ const GroupCreate = ({navigation, route}) => {
             <Pressable
               style={styles.add}
               onPress={
-                () => setModalVisible(true)
-                // navigation.navigate('RecordVoice', {screen: 'RecordVoice'})
+                // () => setModalVisible(true)
+                () => Alert.alert("추후 추가될 기능이에요.")
               }>
               <Image
                 source={require('AppleTree/assets/icons/mic.png')}
@@ -511,7 +529,7 @@ const GroupCreate = ({navigation, route}) => {
             </Pressable>
           )}
         </View>
-        <Button onPress={onSubmit} text="추억 만들기" />
+        <Button onPress={onSubmit} disabled={!nickNameValid} text="완료" />
         {/* 녹음기 모달 start */}
         <View style={styles.centeredView}>
           <Modal animationType="fade" transparent={true} visible={modalVisible}>
@@ -535,6 +553,8 @@ const GroupCreate = ({navigation, route}) => {
         {/* 녹음기 모달 end */}
       </SafeAreaView>
     </ScrollView>
+  ) : (
+    <Loading />
   );
 };
 
@@ -549,7 +569,8 @@ const styles = StyleSheet.create({
   wrapper: {
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
-    // justifyContent: 'center',
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   txt: {
     color: '#4C4036',

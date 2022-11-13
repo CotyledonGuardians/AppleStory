@@ -3,22 +3,27 @@ import {SafeAreaView, StyleSheet} from 'react-native';
 import {TextInput, Image} from 'react-native';
 import {Text} from 'react-native';
 import {View} from 'react-native-animatable';
-import {UseStomp} from '../../stomp';
+import {UseStomp, DisconnectIfConnected} from '../../stomp';
 import {SmallButton} from '../../components/Button';
-const JoinSession = ({navigation: {navigate}}) => {
+const JoinSession = ({navigation, route}) => {
   const [roomId, setRoomID] = useState('');
+  console.log("route::::",route);
   function joinLockApple() {
-    console.log('roomId', roomId);
-    UseStomp(
-      () => {
-        console.log('session join succeed : ', roomId);
-        navigate('GroupSession', {roomId: roomId});
-      },
-      () => {
-        console.log('session join failed', roomId);
-        alert('방번호를 다시 확인해주세요.');
-      },
-    );
+    const connect = () => {
+      console.log('roomId', roomId);
+      UseStomp(
+        () => {
+          console.log('session join succeed : ', roomId);
+          navigation.navigate('GroupSession', {roomId: roomId});
+        },
+        () => {
+          console.log('session join failed', roomId);
+          alert('방번호를 다시 확인해주세요.');
+          navigation.navigate('JoinSession')
+        },
+      );
+    }
+    DisconnectIfConnected(connect, {}, connect);
   }
 
   return (

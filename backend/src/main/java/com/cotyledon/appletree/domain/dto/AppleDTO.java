@@ -106,10 +106,11 @@ public class AppleDTO {
                 this.creator.getTeamName().isBlank() ||
                 this.unlockAt == null ||
                 // TODO: Timestamp.valueOf(LocalDateTime.now())로 교체
-                this.unlockAt.before(new Date()) ||
-                this.location == null ||
-                this.location.getLat() == null ||
-                this.location.getLng() == null) {
+                this.unlockAt.before(new Date()) // ||
+                // this.location == null ||
+                // this.location.getLat() == null ||
+                // this.location.getLng() == null
+        ) {
             return false;
         }
 

@@ -11,7 +11,7 @@ public class GeoLocationConverter implements AttributeConverter<GeoLocation, Str
 
     @Override
     public String convertToDatabaseColumn(GeoLocation attribute) {
-        if(attribute==null){
+        if(attribute == null || attribute.getLat() == null || attribute.getLng() == null){
             return null;
         }
         return String.join(",", attribute.getLat().toString(), attribute.getLng().toString());

@@ -14,7 +14,7 @@ import java.io.IOException;
 @Configuration
 public class FirebaseAuthConfiguration {
 
-    @Value("classpath:firebase-service-account-secret.json")
+    @Value("${com.cotyledon.appletree.firebase-service-account-secret}")
     private Resource serviceAccount;
 
     @Bean
