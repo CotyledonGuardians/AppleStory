@@ -1,5 +1,9 @@
 import React from 'react';
 import {Pressable, Text, StyleSheet} from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 // 1. button 생성
 const Button = ({onPress, text, disabled}) => {
@@ -16,7 +20,7 @@ const SmallButton = ({onPress, text, disabled}) => {
       onPress={onPress}
       style={styles.smallButtonShape}
       disabled={disabled}>
-      <Text style={styles.buttonText}>{text}</Text>
+      <Text style={styles.smallButtonText}>{text}</Text>
     </Pressable>
   );
 };
@@ -42,8 +46,8 @@ const SmallWhiteButton = ({onPress, text}) => {
 // 2. style 적용
 const styles = StyleSheet.create({
   buttonShape: {
-    width: 300,
-    height: 50,
+    width: wp('72%'),
+    height: hp('7%'),
     borderRadius: 100,
     backgroundColor: '#373043',
     paddingHorizontal: 10,
@@ -88,7 +92,13 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: 'center',
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: wp('4%'),
+    fontFamily: 'UhBee Se_hyun Bold',
+  },
+  smallButtonText: {
+    textAlign: 'center',
+    color: '#FFFFFF',
+    fontSize: wp('2%'),
     fontFamily: 'UhBee Se_hyun Bold',
   },
   hangButtonText: {

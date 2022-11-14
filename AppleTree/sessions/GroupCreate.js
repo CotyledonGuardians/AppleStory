@@ -447,10 +447,10 @@ const GroupCreate = ({navigation, route}) => {
             <Pressable
               style={styles.add}
               onPress={() => {
-                // addAsset(AssetType.VIDEO).catch(err => {
-                //   console.log('Error in addAsset: ', err.message);
-                // });
-                Alert.alert("추후 추가될 기능이에요.");
+                addAsset(AssetType.VIDEO).catch(err => {
+                  console.log('Error in addAsset: ', err.message);
+                });
+                // Alert.alert("추후 추가될 기능이에요.");
               }}>
               <Image
                 source={require('AppleTree/assets/icons/videoadd.png')}
@@ -495,7 +495,7 @@ const GroupCreate = ({navigation, route}) => {
               <Text style={styles.button}>추가하기</Text>
             </Pressable>
           )}
-          { audioIsPicked ? (
+          {audioIsPicked ? (
             <View>
               <View style={styles.add}>
                 <Image
@@ -519,7 +519,7 @@ const GroupCreate = ({navigation, route}) => {
               style={styles.add}
               onPress={
                 // () => setModalVisible(true)
-                () => Alert.alert("추후 추가될 기능이에요.")
+                () => Alert.alert('추후 추가될 기능이에요.')
               }>
               <Image
                 source={require('AppleTree/assets/icons/mic.png')}
