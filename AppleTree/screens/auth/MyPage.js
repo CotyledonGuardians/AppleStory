@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     padding: '3%',
     marginBottom: '5%',
-    width: wp('60%'),
+    width: wp('65%'),
     height: hp('6%'),
   },
   talk: {
