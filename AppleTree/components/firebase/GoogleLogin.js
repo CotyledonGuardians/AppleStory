@@ -1,12 +1,9 @@
 import React from 'react';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {StyleSheet, Image, TouchableOpacity, Alert} from 'react-native';
+import {StyleSheet, Image, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 const GoogleLogin = props => {
   //구글소셜로그인
