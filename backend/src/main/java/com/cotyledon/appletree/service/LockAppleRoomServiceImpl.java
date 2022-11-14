@@ -36,8 +36,6 @@ public class LockAppleRoomServiceImpl implements LockAppleRoomService {
     @Override
     public RoomDTO reserveRoomAndGetRoomDTO(String hostUid, AppleDTO apple, long appleId) {
 
-        log.debug("~~~~~~~~~reserveRoomAndGetRoomDTO~~~~~~~~~");
-
         // 필수 속성 있는지 검사 & 다른 속성 초기화
         if (!apple.validateAndCleanWithHostUidForReservingRoom(hostUid)) {
             throw new IllegalArgumentException("Invalid MakeLockAppleRoom Request");
