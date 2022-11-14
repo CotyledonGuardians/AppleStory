@@ -107,8 +107,8 @@ public class AppleDTO {
                 this.creator.getTeamName() == null ||
                 this.creator.getTeamName().isBlank() ||
                 this.unlockAt == null ||
-                // 해제일이 어제보다 이전이라면
-                this.unlockAt.before(Timestamp.valueOf(LocalDateTime.now().minusDays(1))) // ||
+                // 해제일 제한 풂
+                // this.unlockAt.before(Timestamp.valueOf(LocalDateTime.now().minusDays(1))) // ||
                 // this.location == null ||
                 // this.location.getLat() == null ||
                 // this.location.getLng() == null
