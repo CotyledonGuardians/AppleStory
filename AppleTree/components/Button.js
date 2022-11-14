@@ -55,11 +55,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   smallButtonShape: {
-    width: 135,
-    height: 60,
+    width: wp('30%'),
+    height: hp('5%'),
     borderRadius: 25,
     paddingHorizontal: 10,
-    margin: 5,
+    margin: wp('1%'),
     elevation: 2,
     backgroundColor: '#373043',
     flex: 0.4,
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   smallButtonText: {
     textAlign: 'center',
     color: '#FFFFFF',
-    fontSize: wp('2%'),
+    fontSize: wp('2.5%'),
     fontFamily: 'UhBee Se_hyun Bold',
   },
   hangButtonText: {
