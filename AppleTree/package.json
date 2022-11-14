@@ -44,6 +44,7 @@
     "react-native-audio-recorder-player": "^3.5.1",
     "react-native-calendars": "^1.1290.0",
     "react-native-config": "^1.4.11",
+    "react-native-create-thumbnail": "^1.6.3",
     "react-native-fade-in-out": "^1.0.6",
     "react-native-fontawesome": "^7.0.0",
     "react-native-fs": "^2.20.0",
