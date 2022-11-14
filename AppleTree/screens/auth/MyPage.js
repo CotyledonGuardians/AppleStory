@@ -110,11 +110,13 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#3A5C83',
     fontSize: wp('4%'),
+    marginTop: '2%',
   },
   cnt: {
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#3A5C83',
     fontSize: wp('7%'),
+    marginTop: '2%',
   },
   logout: {
     fontFamily: 'UhBee Se_hyun Bold',
