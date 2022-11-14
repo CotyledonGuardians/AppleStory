@@ -15,6 +15,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import * as Animatable from 'react-native-animatable';
 import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
 import LoadingDefault from './LoadingDefault';
@@ -150,12 +151,21 @@ const openModal = (apple, diff, setApple, setModalVisible, setTime) => {
 };
 
 const Main = ({navigation}) => {
-  const [openApples, setOpenApples] = useState();
-  const [closeApples, setCloseApples] = useState();
+  const [openApples, setOpenApples] = useState(null);
+  const [closeApples, setCloseApples] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [apple, setApple] = useState();
   const [time, setTime] = useState();
   const [idToken, setIdToken] = useState();
+
+  const slideInDown = {
+    from: {
+      translateY: -30,
+    },
+    to: {
+      translateY: 0,
+    },
+  };
 
   useEffect(() => {
     let getFlag = true;
@@ -178,7 +188,7 @@ const Main = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {openApples && closeApples ? (
+      {openApples !== null && closeApples !== null ? (
         <ImageBackground
           style={styles.backgroundImg}
           source={require('../assets/pictures/main.png')}>
@@ -275,6 +285,27 @@ const Main = ({navigation}) => {
             style={styles.bear}
             source={require('../assets/gifs/eatingApple.gif')}
           />
+          {closeApples.length === 0 && openApples.length === 0 ? (
+            <View style={styles.comment}>
+              <ImageBackground
+                source={require('../assets/pictures/balloon.png')}
+                style={styles.talk}>
+                <Text style={styles.txt}>사과를</Text>
+                <Text style={styles.txt}>만들어보세요!</Text>
+              </ImageBackground>
+              <Animatable.View>
+                <Animatable.Image
+                  source={require('../assets/icons/arrow.png')}
+                  style={styles.arrow}
+                  animation={slideInDown}
+                  iterationCount={Infinity}
+                  direction="alternate"
+                />
+              </Animatable.View>
+            </View>
+          ) : (
+            <></>
+          )}
         </ImageBackground>
       ) : (
         <LoadingDefault />
@@ -390,6 +421,28 @@ const styles = StyleSheet.create({
     width: wp('28%'),
     height: wp('29%'),
   },
+  comment: {
+    top: hp('68%'),
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  arrow: {
+    resizeMode: 'contain',
+    width: wp('12%'),
+    height: wp('12%'),
+  },
+  talk: {
+    resizeMode: 'contain',
+    width: wp('25%'),
+    height: wp('25%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  txt: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: wp('3.5%'),
+  },
+
   //모달 스타일 start
   centeredView: {
     flex: 1,

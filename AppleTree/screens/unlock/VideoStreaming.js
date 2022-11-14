@@ -12,8 +12,9 @@ import {
 import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 
-const VideoStreaming = ({navigation, route}) => {
+const VideoStreaming = ({route}) => {
   const url = route.params.url;
+
   const videoPlayer = useRef(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -21,7 +22,7 @@ const VideoStreaming = ({navigation, route}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [paused, setPaused] = useState(false);
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
-  const [screenType, setScreenType] = useState('cover');
+  const [screenType, setScreenType] = useState('contain');
 
   const onSeek = seek => {
     //Handler for change in seekbar
@@ -66,8 +67,8 @@ const VideoStreaming = ({navigation, route}) => {
 
   const onFullScreen = () => {
     setIsFullScreen(isFullScreen);
-    if (screenType == 'content') setScreenType('cover');
-    else setScreenType('content');
+    if (screenType == 'cover') setScreenType('contain');
+    else setScreenType('cover');
   };
 
   const renderToolbar = () => (

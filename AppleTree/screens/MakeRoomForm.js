@@ -61,15 +61,15 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   const handleConfirm = date => {
     // console.log('date::', date);
     let today = new Date();
-    if (date <= today) {
-      alert('오늘 또는 과거의 날짜는 선택할 수 없습니다.');
-      showDatePicker();
-    } else {
+    // if (date <= today) {
+    //   alert('오늘 또는 과거의 날짜는 선택할 수 없습니다.');
+    //   showDatePicker();
+    // } else {
       hideDatePicker();
       setUnlockDate(moment(date).format('YYYY-MM-DD'));
       onChangeText(moment(date).format('YYYY-MM-DD'));
       setDateValid(true);
-    }
+    // }
   };
 
   // location
@@ -80,8 +80,11 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
 
   //date picker end
   let today = new Date();
-  var tomorrow = new Date(today.setDate(today.getDate() + 1));
+  let tomorrow = new Date(today.setDate(today.getDate() + 1));
+  let yesterday = new Date(today.setDate(today.getDate() - 1));
 
+  let endDate = new Date(2022, 10, 21);
+  console.log('endDate', endDate);
   useEffect(() => {
     requestPermission().then(result => {
       console.log({result});
@@ -194,8 +197,9 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
             />
           </View>
           <Text style={styles.txt}>해제 날짜</Text>
-          <View style={styles.form}>
-            <Pressable onPress={showDatePicker}>
+
+          <Pressable onPress={showDatePicker}>
+            <View style={styles.form}>
               <TextInput
                 pointerEvents="none"
                 style={styles.input}
@@ -207,12 +211,16 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
-                minimumDate={tomorrow}
+                // minimumDate={tomorrow}
+                minimumDate={yesterday}
+                // mm배포용
+                maximumDate={endDate}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
               />
-            </Pressable>
-          </View>
+            </View>
+          </Pressable>
+
           <View style={styles.buttonWrap}>
             <SmallButton
               onPress={() => makeRoom()}

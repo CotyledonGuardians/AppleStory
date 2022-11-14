@@ -135,6 +135,11 @@ export default function App() {
                 name="AppleUnlockGIF"
                 component={AppleUnlockGIF}
               />
+              <HomeStack.Screen
+                options={{headerShown: false}}
+                name="VideoStreaming"
+                component={VideoStreaming}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -170,6 +175,11 @@ export default function App() {
                 options={{headerShown: false}}
                 name="AppleUnlockGIF"
                 component={AppleUnlockGIF}
+              />
+              <MapStack.Screen
+                options={{headerShown: false}}
+                name="VideoStreaming"
+                component={VideoStreaming}
               />
             </MapStack.Navigator>
           )}

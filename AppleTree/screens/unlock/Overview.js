@@ -45,6 +45,7 @@ const Overview = ({navigation, route}) => {
   const [screenType, setScreenType] = useState('content');
   const [photoURLs, setPhotoURLs] = useState([]);
   const [thumbnail, setThumbnail] = useState([]);
+  const [videoURLs, setVideoURLs] = useState([]);
 
   const onSeek = seek => {
     //Handler for change in seekbar
@@ -113,18 +114,26 @@ const Overview = ({navigation, route}) => {
           getAddressLatLng(response.data.body.location);
         }
 
-        if (response.data.body.content.video)
-          getThumbnail(response.data.body.content.video);
+        // if (response.data.body.content.video)
+        //   getThumbnail(response.data.body.content.video);
         await auth().currentUser.getIdTokenResult(true);
-        return response.data.body.content;
+        return {
+          photo: response.data.body.content.photo,
+          video: response.data.body.content.video,
+        };
       })
-      .then(content =>
-        content.photo.map((photo, idx) =>
-          storage().ref(photo.content).getDownloadURL(),
-        ),
-      )
+      .then(contents => {
+        return {
+          photo: contents.photo.map((photo, idx) =>
+            storage().ref(photo.content).getDownloadURL(),
+          ),
+          video: contents.video.map((video, idx) =>
+            storage().ref(video.content).getDownloadURL(),
+          ),
+        };
+      })
       .then(promises => {
-        promises.forEach(promise => {
+        promises.photo.forEach(promise => {
           promise
             .then(url => {
               setPhotoURLs(oldPhotoURLs => {
@@ -133,6 +142,37 @@ const Overview = ({navigation, route}) => {
                 newPhotoURLs.push(url);
 
                 return newPhotoURLs;
+              });
+            })
+            .catch(err => {
+              console.log('err on url promises foreach:::', err);
+            });
+        });
+        promises.video.forEach(promise => {
+          promise
+            .then(url => {
+              console.log('rulrrururururu', url);
+              createThumbnail({
+                url: url,
+              })
+                .then(response => {
+                  console.log(url);
+                  setThumbnail(oldThumbnail => {
+                    const newThumbnail = [...oldThumbnail];
+                    newThumbnail.push({url: response.path, video: url});
+                    return newThumbnail;
+                  });
+                })
+                .catch(err =>
+                  console.log('이미지 썸네일 가져오기 에러', {err}),
+                );
+
+              setVideoURLs(oldVideoURLs => {
+                const newVideoURLs = [...oldVideoURLs];
+
+                newVideoURLs.push(url);
+
+                return newVideoURLs;
               });
             })
             .catch(err => {
@@ -396,7 +436,7 @@ const Overview = ({navigation, route}) => {
         <View style={{height: 230, width: '100%'}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {thumbnail.map((item, index) => {
-              console.log('item!!!: ', item.url);
+              console.log('item!!!: ', item);
               return (
                 <TouchableOpacity
                   key={index}
@@ -426,7 +466,6 @@ const Overview = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       {appleDetail &&
-      thumbnail &&
       photoURLs &&
       (appleDetail.location === null || (appleDetail.location && address)) ? (
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -434,7 +473,7 @@ const Overview = ({navigation, route}) => {
           <ContentSeed />
           {appleDetail.content.photo != null &&
             appleDetail.content.photo.length !== 0 && <Photo />}
-          <Thumbnail />
+          {thumbnail.length != 0 && <Thumbnail />}
           {/* {appleDetail.content.video != null &&
             appleDetail.content.video.length != 0 && <VideoRecord />} */}
         </ScrollView>

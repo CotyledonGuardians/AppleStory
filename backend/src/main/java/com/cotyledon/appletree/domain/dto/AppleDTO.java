@@ -4,6 +4,8 @@ import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Builder
@@ -104,9 +106,9 @@ public class AppleDTO {
                 this.creator == null ||
                 this.creator.getTeamName() == null ||
                 this.creator.getTeamName().isBlank() ||
-                this.unlockAt == null ||
-                // TODO: Timestamp.valueOf(LocalDateTime.now())로 교체
-                this.unlockAt.before(new Date()) // ||
+                this.unlockAt == null // ||
+                // 해제일 제한 풂
+                // this.unlockAt.before(Timestamp.valueOf(LocalDateTime.now().minusDays(1))) // ||
                 // this.location == null ||
                 // this.location.getLat() == null ||
                 // this.location.getLng() == null

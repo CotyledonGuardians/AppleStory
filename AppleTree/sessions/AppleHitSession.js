@@ -120,9 +120,19 @@ const AppleHitSession = ({navigation, route}) => {
         borderRadius={15}
         borderWidth={5}
       />
+      {/* <Animatable.Text
+        style={styles.toptxt}
+        animation="pulse"
+        easing="ease-out"
+        iterationCount="infinite">
+        사과가 열리기까지 이 정도 남았어요!
+      </Animatable.Text> */}
       <Text style={styles.toptxt}>사과가 열리기까지 이 정도 남았어요!</Text>
       <Pressable onPress={pressHandler}>
-        <Image
+        <Animatable.Image
+          animation="pulse"
+          easing="ease-out"
+          iterationCount="infinite"
           source={require('../assets/pictures/apple4.png')}
           style={{resizeMode: 'contain', width: 300, height: 300}}
         />
@@ -139,12 +149,16 @@ const AppleHitSession = ({navigation, route}) => {
                 width: 100,
                 position: 'absolute',
                 left: punchPosition.x - 100,
-                top: punchPosition.y - 600,
+                top: punchPosition.y - 550,
               }}
             />
           </Animatable.View>
         )}
       </Pressable>
+      {/* <Animatable.Image
+        animation="MakeItRain"
+        iterationCount="infinite"
+        source={require('../assets/pictures/apple4.png')}></Animatable.Image> */}
       <Text style={styles.bottomtxt}>함께 때리면 더 빨리 열 수 있어요!</Text>
     </SafeAreaView>
   );
