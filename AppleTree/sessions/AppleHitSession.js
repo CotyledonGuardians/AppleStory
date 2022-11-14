@@ -1,4 +1,3 @@
-import {TestScheduler} from 'jest';
 import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
@@ -15,7 +14,10 @@ import {
   DisconnectIfConnected,
   SendIfSubscribed,
 } from '../stomp/';
-
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 const AppleHitSession = ({navigation, route}) => {
   const [showPunch, setShowPunch] = useState(false);
   const [clickProgress, SetClickProgress] = useState(1);
@@ -23,9 +25,21 @@ const AppleHitSession = ({navigation, route}) => {
     x: 0,
     y: 0,
   });
-
+  const [showExpression, setShowExpression] = useState(false);
+  const [showText, setShowText] = useState(false);
   const [apple, setApple] = useState(0);
   const [party, setParty] = useState(0);
+
+  let randomFace = [
+    require('../assets/pictures/expression1.png'),
+    require('../assets/pictures/expression2.png'),
+  ];
+  let randomText = [
+    require('../assets/pictures/hittext1.png'),
+    require('../assets/pictures/hittext2.png'),
+    require('../assets/pictures/hittext3.png'),
+  ];
+  // let randomXY = ['hittext1', 'hittext2', 'hittext3'];
   const roomId = route.params.id;
 
   // session start
@@ -38,7 +52,6 @@ const AppleHitSession = ({navigation, route}) => {
         // console.log(
         //   `totalHealth: ${totalHealth}, appleSize: ${appleSize}, partySize: ${partySize}`,
         // );
-
         totalHp = totalHealth;
         // console.log('onPartyChange::totalHealth', totalHp);
         setApple(appleSize);
@@ -47,6 +60,8 @@ const AppleHitSession = ({navigation, route}) => {
         SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
       },
       onHealthChange: ({currentHealth}) => {
+        setExpression();
+        setText();
         // console.log(`currentHealth: ${currentHealth}`);
         SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
       },
@@ -72,6 +87,19 @@ const AppleHitSession = ({navigation, route}) => {
     SendIfSubscribed(`/unlock-apple-room.${roomId}.attack`, {});
   };
 
+  //다른사람이 applehit했을때
+  const setExpression = () => {
+    setShowExpression(true);
+    setTimeout(() => {
+      setShowExpression(false);
+    }, 300);
+  };
+  const setText = () => {
+    setShowText(true);
+    setTimeout(() => {
+      setShowText(false);
+    }, 300);
+  };
   const pressHandler = e => {
     // console.log(e.nativeEvent.pageX);
     // console.log(e.nativeEvent.pageY);
@@ -154,6 +182,20 @@ const AppleHitSession = ({navigation, route}) => {
             />
           </Animatable.View>
         )}
+        {showExpression && (
+          <Image
+            style={styles.face}
+            source={
+              randomFace[Math.floor(Math.random() * randomFace.length)]
+            }></Image>
+        )}
+        {showText && (
+          <Image
+            style={styles.hittext2}
+            source={
+              randomText[Math.floor(Math.random() * randomText.length)]
+            }></Image>
+        )}
       </Pressable>
       {/* <Animatable.Image
         animation="MakeItRain"
@@ -212,6 +254,50 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun Bold',
     fontSize: 16,
     color: '#4C4036',
+  },
+  face: {
+    width: wp('65%'),
+    height: wp('65%'),
+    position: 'absolute',
+    // top: hp('1%'),
+    bottom: hp('-1.5%'),
+    left: wp('7%'),
+  },
+  hittext1: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    width: wp('20%'),
+    height: wp('15%'),
+    position: 'absolute',
+    // top: hp('1%'),
+    bottom: hp('30%'),
+    left: wp('0%'),
+  },
+  hittext2: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    width: wp('20%'),
+    height: wp('15%'),
+    position: 'absolute',
+    // top: hp('1%'),
+    bottom: hp('0%'),
+    left: wp('60%'),
+  },
+  hittext3: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    width: wp('20%'),
+    height: wp('15%'),
+    position: 'absolute',
+    // top: hp('1%'),
+    bottom: hp('30%'),
+    left: wp('60%'),
+  },
+  hittext4: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    width: wp('20%'),
+    height: wp('15%'),
+    position: 'absolute',
+    // top: hp('1%'),
+    bottom: hp('0%'),
+    left: wp('0%'),
   },
 });
 
