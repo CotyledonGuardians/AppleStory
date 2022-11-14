@@ -15,6 +15,10 @@ import SelectDropdown from 'react-native-select-dropdown';
 import {getCloseAppleList, getOpenAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
 import Loading from './LoadingDefault';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP,
+} from 'react-native-responsive-screen';
 
 const AppleList = ({navigation}) => {
   const [route, setRoute] = useState('열린 사과');
@@ -286,14 +290,18 @@ const AppleList = ({navigation}) => {
         <Tab.Navigator
           initialRouteName={route}
           screenOptions={{
-            tabBarLabelStyle: {fontSize: 18, fontFamily: 'UhBee Se_hyun Bold'},
+            tabBarLabelStyle: {
+              paddingTop: hp('0.5%'),
+              fontSize: hp('2.5%'),
+              fontFamily: 'UhBee Se_hyun Bold',
+            },
             tabBarStyle: {
               backgroundColor: '#ECE5E0',
-              // height: 60,
+              height: hp('9%'),
             },
             tabBarIndicatorStyle: {
               backgroundColor: '#AAA19B',
-              height: 5,
+              height: hp('1%'),
             },
           }}>
           <Tab.Screen
