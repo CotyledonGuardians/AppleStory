@@ -81,6 +81,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   //date picker end
   let today = new Date();
   let tomorrow = new Date(today.setDate(today.getDate() + 1));
+  let yesterday = new Date(today.setDate(today.getDate() - 1));
 
   let endDate = new Date(2022, 10, 21);
   console.log('endDate', endDate);
@@ -211,7 +212,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
                 isVisible={isDatePickerVisible}
                 mode="date"
                 // minimumDate={tomorrow}
-                minimumDate={today}
+                minimumDate={yesterday}
                 // mm배포용
                 maximumDate={endDate}
                 onConfirm={handleConfirm}
