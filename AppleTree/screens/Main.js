@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     height: wp('29%'),
   },
   comment: {
-    top: hp('65.5%'),
+    top: hp('66%'),
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
