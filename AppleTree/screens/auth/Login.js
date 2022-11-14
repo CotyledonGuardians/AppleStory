@@ -16,7 +16,7 @@ const Login = ({navigation}) => {
   //로그인 함수
   const onLogin = async () => {
     if (!checkLoginInput()) {
-      Alert.alert('엽슈!', '모든 값을 입력해야합니다.');
+      Alert.alert('유효하지 않은 입력', '모든 값을 입력해야합니다.');
       return;
     }
     try {
@@ -28,7 +28,7 @@ const Login = ({navigation}) => {
             case 'auth/invalid-email':
               Alert.alert(
                 '유효하지 않은 형식',
-                ' 이메일 형식이 유효하지 않습니다.',
+                '이메일 형식이 유효하지 않습니다.',
               );
               break;
             case 'auth/email-already-in-use':

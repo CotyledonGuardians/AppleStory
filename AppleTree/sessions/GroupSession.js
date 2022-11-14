@@ -73,7 +73,6 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   };
   // session start
   useEffect(() => {
-    alert(roomId);
     const myid = auth().currentUser.uid;
     const messageListeners = {
       onChange: ({uidToIndex, statuses, hostUid, appleId}) => {
