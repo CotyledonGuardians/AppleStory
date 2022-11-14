@@ -12,6 +12,11 @@ import {
 import auth from '@react-native-firebase/auth';
 import {Button} from '../../components/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
 const Register = ({navigation}) => {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
@@ -85,15 +90,17 @@ const Register = ({navigation}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={require('AppleTree/assets/pictures/title.png')}
-        style={styles.imageTitle}
-      />
-      <Image
-        source={require('AppleTree/assets/pictures/aegomjoin.png')}
-        style={styles.image}
-      />
-      <View style={styles.marginTopBottom}>
+      <View style={styles.imgBox}>
+        <Image
+          source={require('AppleTree/assets/pictures/title.png')}
+          style={styles.imageTitle}
+        />
+        <Image
+          source={require('AppleTree/assets/pictures/aegomjoin.png')}
+          style={styles.image}
+        />
+      </View>
+      <View style={styles.formBox}>
         <View style={styles.email}>
           <Text style={styles.txt}>이메일</Text>
           <TextInput
@@ -116,9 +123,13 @@ const Register = ({navigation}) => {
             onChange={e => setRegisterPassword(e.nativeEvent.text)}
           />
         </View>
-        <Button onPress={() => register()} text="회원 가입" />
+        <Button
+          style={styles.registerButton}
+          onPress={() => register()}
+          text="회원 가입"
+        />
       </View>
-      <View style={styles.marginTopBottom}>
+      <View style={styles.loginBox}>
         <Pressable onPress={() => navigation.navigate('Login')}>
           <Text style={styles.backtxt}>로그인</Text>
         </Pressable>
@@ -129,57 +140,65 @@ const Register = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 20,
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
   },
-  marginTopBottom: {
-    marginTop: 10,
-    marginBottom: 10,
+  imgBox: {
+    flex: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  formBox: {
+    flex: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loginBox: {
+    flex: 2,
+    alignItems: 'center',
   },
   email: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
-    width: 300,
-    height: 50,
+    marginBottom: hp('1%'),
+    width: wp('72%'),
+    height: hp('7%'),
     backgroundColor: '#ECE5E0',
     borderRadius: 100,
+  },
+  registerButton: {
+    width: wp('72%'),
+    height: hp('7%'),
   },
   input: {
     flex: 0.7,
     backgroundColor: '#ECE5E0',
     borderRadius: 100,
     color: '#4C4036',
-    fontSize: 15,
+    fontSize: wp('3%'),
   },
   image: {
+    flex: 7,
     resizeMode: 'contain',
-    marginBottom: 10,
-    height: 260,
+    width: wp('75%'),
+    height: wp('75%'),
+    marginTop: hp('2%'),
   },
   imageTitle: {
+    flex: 3,
     resizeMode: 'contain',
-    marginBottom: 10,
-    width: 140,
-    height: 80,
-  },
-  button: {
-    width: 300,
-    height: 50,
-    borderRadius: 100,
-    backgroundColor: '#373043',
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: wp('40%'),
+    height: wp('35%'),
+    marginTop: hp('5%'),
   },
   txt: {
     flex: 0.3,
     textAlign: 'center',
-    fontSize: 15,
+    fontSize: wp('3.5%'),
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
   },
@@ -187,6 +206,7 @@ const styles = StyleSheet.create({
     color: '#ABABAB',
     textDecorationLine: 'underline',
     fontFamily: 'UhBee Se_hyun',
+    fontSize: wp('3.5%'),
   },
 });
 
