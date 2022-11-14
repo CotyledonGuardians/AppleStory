@@ -80,7 +80,7 @@ pipeline {
       steps {
         dir('backend') {
           sh "chmod +x gradlew"
-          sh "./gradlew bootjar"
+          sh "./gradlew clean bootjar"
         }
       }
     }

@@ -2,6 +2,7 @@ package com.cotyledon.appletree.domain.dto;
 
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
@@ -14,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Slf4j
 public class AppleDTO {
 
     private Long id;
@@ -106,9 +108,9 @@ public class AppleDTO {
                 this.creator == null ||
                 this.creator.getTeamName() == null ||
                 this.creator.getTeamName().isBlank() ||
-                this.unlockAt == null ||
-                // 해제일이 어제보다 이전이라면
-                this.unlockAt.before(Timestamp.valueOf(LocalDateTime.now().minusDays(1))) // ||
+                this.unlockAt == null // ||
+                // 해제일 제한 풂
+                // this.unlockAt.before(Timestamp.valueOf(LocalDateTime.now().minusDays(1))) // ||
                 // this.location == null ||
                 // this.location.getLat() == null ||
                 // this.location.getLng() == null
