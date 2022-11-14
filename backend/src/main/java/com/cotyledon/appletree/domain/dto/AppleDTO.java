@@ -103,11 +103,6 @@ public class AppleDTO {
 
     public boolean validateAndCleanWithHostUidForReservingRoom(String hostUid) {
 
-        log.debug("찍어보자~~~~~~~~~~~~~~~~~~~~~~~");
-        log.debug("title: {}", title);
-        log.debug("creator: {}", creator);
-        log.debug("unlockAt: {}", unlockAt);
-
         if (this.title == null ||
                 this.title.isBlank() ||
                 this.creator == null ||
