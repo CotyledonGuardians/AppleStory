@@ -19,6 +19,10 @@ import {UseStomp, DisconnectIfConnected} from '../stomp';
 import {ScrollView} from 'react-native-gesture-handler';
 import Geolocation from 'react-native-geolocation-service';
 import Loading from './LoadingDefault';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 async function requestPermission() {
   try {
@@ -65,10 +69,10 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
     //   alert('오늘 또는 과거의 날짜는 선택할 수 없습니다.');
     //   showDatePicker();
     // } else {
-      hideDatePicker();
-      setUnlockDate(moment(date).format('YYYY-MM-DD'));
-      onChangeText(moment(date).format('YYYY-MM-DD'));
-      setDateValid(true);
+    hideDatePicker();
+    setUnlockDate(moment(date).format('YYYY-MM-DD'));
+    onChangeText(moment(date).format('YYYY-MM-DD'));
+    setDateValid(true);
     // }
   };
 
@@ -175,7 +179,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
           source={require('../assets/pictures/listgroup1.png')}
           style={styles.image}
         />
-        <View style={styles.marginTopBottom}>
+        <View style={styles.formBox}>
           <Text style={styles.txt}>제목</Text>
           <View style={styles.form}>
             <TextInput
@@ -217,6 +221,7 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
                 maximumDate={endDate}
                 onConfirm={handleConfirm}
                 onCancel={hideDatePicker}
+                style={styles.calendar}
               />
             </View>
           </Pressable>
@@ -227,11 +232,6 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
               text="방 만들기"
               disabled={!titleValid || !teamNameValid || !dateValid}
             />
-            {/* <SmallButton
-              onPress={() => navigate('JoinSession')}
-              text="방 번호로   입장하기"
-              disabled={false}
-            /> */}
           </View>
           <Text onPress={() => navigate('JoinSession')} style={styles.copyText}>
             here! 방 번호로 참여하기
@@ -253,59 +253,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   container: {
-    height: '100%',
+    flex: 10,
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
   },
-  marginTopBottom: {
+  formBox: {
+    flex: 6,
     justifyContent: 'center',
-    marginTop: 10,
-    marginBottom: 10,
   },
   form: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
-    width: 300,
-    height: 50,
+    marginBottom: hp('1%'),
+    width: wp('70%'),
+    height: hp('7%'),
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
   },
   input: {
     justifyContent: 'center',
-    flex: 0.7,
+    flex: 0.8,
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
-    fontSize: 13,
+    fontSize: wp('3%'),
     fontFamily: 'UhBee Se_hyun',
     textAlign: 'center',
   },
   image: {
+    flex: 4,
     resizeMode: 'contain',
     marginBottom: 10,
-    height: 260,
-  },
-  imageTitle: {
-    resizeMode: 'contain',
-    marginBottom: 10,
-    width: 140,
-    height: 80,
-  },
-  button: {
-    width: 300,
-    height: 50,
-    borderRadius: 100,
-    backgroundColor: '#373043',
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: wp('60%'),
+    height: wp('60%'),
   },
   txt: {
     textAlign: 'left',
-    fontSize: 15,
+    fontSize: wp('4%'),
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
   },
@@ -314,12 +300,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   copyText: {
-    fontSize: 13,
+    fontSize: wp('3.5%'),
     color: '#373043',
     fontFamily: 'UhBee Se_hyun Bold',
-    marginTop: 10,
+    marginTop: hp('4%'),
     textAlign: 'center',
     textDecorationLine: 'underline',
+  },
+  calendar: {
+    width: wp('90%'),
   },
 });
 export default MakeRoomForm;
