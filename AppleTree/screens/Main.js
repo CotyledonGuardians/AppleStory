@@ -15,6 +15,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import * as Animatable from 'react-native-animatable';
 import {getOpenAppleList, getCloseAppleList} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
 import LoadingDefault from './LoadingDefault';
@@ -157,6 +158,15 @@ const Main = ({navigation}) => {
   const [time, setTime] = useState();
   const [idToken, setIdToken] = useState();
 
+  const slideInDown = {
+    from: {
+      translateY: -30,
+    },
+    to: {
+      translateY: 0,
+    },
+  };
+
   useEffect(() => {
     let getFlag = true;
     const getApples = async () => {
@@ -276,15 +286,6 @@ const Main = ({navigation}) => {
             source={require('../assets/gifs/eatingApple.gif')}
           />
           {closeApples.length === 0 && openApples.length === 0 ? (
-            // <View>
-            //   <ImageBackground
-            //     source={require('AppleTree/assets/pictures/talkingballoon.png')}
-            //     style={styles.talk}>
-            //     <Text style={styles.txt2}>아래에서</Text>
-            //     <Text style={styles.txt2}>사과를</Text>
-            //     <Text style={styles.txt2}>만들어보세요!</Text>
-            //   </ImageBackground>
-            // </View>
             <View style={styles.comment}>
               <ImageBackground
                 source={require('../assets/pictures/balloon.png')}
@@ -292,10 +293,15 @@ const Main = ({navigation}) => {
                 <Text style={styles.txt}>사과를</Text>
                 <Text style={styles.txt}>만들어보세요!</Text>
               </ImageBackground>
-              <Image
-                source={require('../assets/icons/arrow.png')}
-                style={styles.arrow}
-              />
+              <Animatable.View>
+                <Animatable.Image
+                  source={require('../assets/icons/arrow.png')}
+                  style={styles.arrow}
+                  animation={slideInDown}
+                  iterationCount={Infinity}
+                  direction="alternate"
+                />
+              </Animatable.View>
             </View>
           ) : (
             <></>
@@ -416,7 +422,7 @@ const styles = StyleSheet.create({
     height: wp('29%'),
   },
   comment: {
-    top: hp('66%'),
+    top: hp('68%'),
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
