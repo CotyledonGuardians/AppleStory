@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import Video from 'react-native-video';
 import {getAppleDetail} from '../../api/AppleAPI';
@@ -19,6 +20,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import {createThumbnail} from 'react-native-create-thumbnail';
 
 var randomImages = [
   require('../../assets/pictures/aegom1.png'),
@@ -42,6 +44,7 @@ const Overview = ({navigation, route}) => {
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
   const [screenType, setScreenType] = useState('content');
   const [photoURLs, setPhotoURLs] = useState([]);
+  const [thumbnail, setThumbnail] = useState([]);
 
   const onSeek = seek => {
     //Handler for change in seekbar
@@ -104,15 +107,19 @@ const Overview = ({navigation, route}) => {
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(async response => {
+        console.log(response.data.body);
         setAppleDetail(response.data.body);
         if (response.data.body.location != null) {
           getAddressLatLng(response.data.body.location);
         }
+
+        if (response.data.body.content.video)
+          getThumbnail(response.data.body.content.video);
         await auth().currentUser.getIdTokenResult(true);
-        return response.data.body.content.photo;
+        return response.data.body.content;
       })
-      .then(photo =>
-        photo.map((photo, idx) =>
+      .then(content =>
+        content.photo.map((photo, idx) =>
           storage().ref(photo.content).getDownloadURL(),
         ),
       )
@@ -144,6 +151,26 @@ const Overview = ({navigation, route}) => {
       nickname: nickname,
       uid: uid,
       data: appleDetail,
+    });
+  };
+
+  const getThumbnail = async video => {
+    const url = [];
+    await video.map((video, idx) => {
+      console.log('video', video);
+      createThumbnail({
+        url: video.content,
+      })
+        .then(response => {
+          // url.push();
+          console.log(url);
+          setThumbnail(oldThumbnail => {
+            const newThumbnail = [...oldThumbnail];
+            newThumbnail.push({url: response.path, video: video.content});
+            return newThumbnail;
+          });
+        })
+        .catch(err => console.log({err}));
     });
   };
 
@@ -361,9 +388,45 @@ const Overview = ({navigation, route}) => {
     );
   }
 
+  function Thumbnail() {
+    console.log('thundfefwe', thumbnail);
+    return (
+      <View style={{padding: 20}}>
+        <Text style={styles.textFontBold}>기록된 영상</Text>
+        <View style={{height: 230, width: '100%'}}>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {thumbnail.map((item, index) => {
+              console.log('item!!!: ', item.url);
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    navigation.navigate('VideoStreaming', {
+                      screen: 'VideoStreaming',
+                      url: item.video,
+                    });
+                    // seedDetail(nickname, uid);
+                  }}>
+                  <Image
+                    key={index}
+                    style={styles.photoImg}
+                    source={{
+                      uri: item.url,
+                    }}
+                  />
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {appleDetail &&
+      thumbnail &&
       photoURLs &&
       (appleDetail.location === null || (appleDetail.location && address)) ? (
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -371,6 +434,7 @@ const Overview = ({navigation, route}) => {
           <ContentSeed />
           {appleDetail.content.photo != null &&
             appleDetail.content.photo.length !== 0 && <Photo />}
+          <Thumbnail />
           {/* {appleDetail.content.video != null &&
             appleDetail.content.video.length != 0 && <VideoRecord />} */}
         </ScrollView>

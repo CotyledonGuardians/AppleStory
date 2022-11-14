@@ -32,6 +32,7 @@ import AppleUnlockGIF from './screens/unlock/AppleUnlockGIF';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
+import VideoStreaming from './screens/unlock/VideoStreaming';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -237,6 +238,11 @@ export default function App() {
                 options={{headerShown: false}}
                 name="AppleUnlockGIF"
                 component={AppleUnlockGIF}
+              />
+              <ListStack.Screen
+                options={{headerShown: false}}
+                name="VideoStreaming"
+                component={VideoStreaming}
               />
             </ListStack.Navigator>
           )}
