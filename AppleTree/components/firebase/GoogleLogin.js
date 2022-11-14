@@ -3,10 +3,22 @@ import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {StyleSheet, Image, TouchableOpacity, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from "@react-native-community/netinfo";
+import { err } from 'react-native-svg/lib/typescript/xml';
 
 const GoogleLogin = props => {
   //구글소셜로그인
   const onGoogleButtonPress = async () => {
+    // Network check
+    const state = await NetInfo.fetch().catch((err) => {
+      console.log("err in getting network info:::", err);
+    });
+
+    if(!state.isConnected) {
+      Alert.alert('네트워크 연결 상태를 확인해주세요.');
+      return;
+    }
+
     const {idToken} = await GoogleSignin.signIn();
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     //로컬 스토리지에 저장
