@@ -150,8 +150,8 @@ const openModal = (apple, diff, setApple, setModalVisible, setTime) => {
 };
 
 const Main = ({navigation}) => {
-  const [openApples, setOpenApples] = useState();
-  const [closeApples, setCloseApples] = useState();
+  const [openApples, setOpenApples] = useState(null);
+  const [closeApples, setCloseApples] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [apple, setApple] = useState();
   const [time, setTime] = useState();
@@ -178,7 +178,7 @@ const Main = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {openApples && closeApples ? (
+      {openApples !== null && closeApples !== null ? (
         <ImageBackground
           style={styles.backgroundImg}
           source={require('../assets/pictures/main.png')}>
@@ -275,6 +275,31 @@ const Main = ({navigation}) => {
             style={styles.bear}
             source={require('../assets/gifs/eatingApple.gif')}
           />
+          {closeApples.length === 0 && openApples.length === 0 ? (
+            // <View>
+            //   <ImageBackground
+            //     source={require('AppleTree/assets/pictures/talkingballoon.png')}
+            //     style={styles.talk}>
+            //     <Text style={styles.txt2}>아래에서</Text>
+            //     <Text style={styles.txt2}>사과를</Text>
+            //     <Text style={styles.txt2}>만들어보세요!</Text>
+            //   </ImageBackground>
+            // </View>
+            <View style={styles.comment}>
+              <ImageBackground
+                source={require('../assets/pictures/balloon.png')}
+                style={styles.talk}>
+                <Text style={styles.txt}>사과를</Text>
+                <Text style={styles.txt}>만들어보세요!</Text>
+              </ImageBackground>
+              <Image
+                source={require('../assets/icons/arrow.png')}
+                style={styles.arrow}
+              />
+            </View>
+          ) : (
+            <></>
+          )}
         </ImageBackground>
       ) : (
         <LoadingDefault />
@@ -390,6 +415,28 @@ const styles = StyleSheet.create({
     width: wp('28%'),
     height: wp('29%'),
   },
+  comment: {
+    top: hp('65.5%'),
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  arrow: {
+    resizeMode: 'contain',
+    width: wp('12%'),
+    height: wp('12%'),
+  },
+  talk: {
+    resizeMode: 'contain',
+    width: wp('25%'),
+    height: wp('25%'),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  txt: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: wp('3.5%'),
+  },
+
   //모달 스타일 start
   centeredView: {
     flex: 1,
