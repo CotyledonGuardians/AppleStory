@@ -2,6 +2,7 @@ package com.cotyledon.appletree.domain.dto;
 
 import com.cotyledon.appletree.domain.entity.jpa.Apple;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
@@ -14,6 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@Slf4j
 public class AppleDTO {
 
     private Long id;

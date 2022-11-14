@@ -15,6 +15,7 @@ import {
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
+import storage from "@react-native-firebase/storage";
 // import Slider from '@react-native-community/slider';
 
 const img_speaker = require('../../assets/icons/mic.png');
@@ -61,7 +62,11 @@ export default class PlayerScreen extends React.Component {
     if (data.content.photo != null) {
       for (let i = 0; i < data.content.photo.length; i++) {
         if (data.content.photo[i].author === uid) {
-          this.image = data.content.photo[i].content;
+          const imageRef = storage().ref(data.content.photo[i].content);
+          imageRef.getDownloadURL().then(url => {
+            // console.log(url);
+            this.image = url;
+          });
           break;
         }
       }
@@ -70,7 +75,11 @@ export default class PlayerScreen extends React.Component {
     if (data.content.video != null) {
       for (let i = 0; i < data.content.video.length; i++) {
         if (data.content.video[i].author === uid) {
-          this.video = data.content.video[i].content;
+          const videoRef = storage().ref(data.content.video[i].content);
+          videoRef.getDownloadURL().then(url => {
+            // console.log(url);
+            this.video = url;
+          });
           break;
         }
       }
@@ -79,7 +88,11 @@ export default class PlayerScreen extends React.Component {
     if (data.content.audio != null) {
       for (let i = 0; i < data.content.audio.length; i++) {
         if (data.content.audio[i].author === uid) {
-          this.audio = data.content.audio[i].content;
+          const audioRef = storage().ref(data.content.audio[i].content);
+          audioRef.getDownloadURL().then(url => {
+            // console.log(url);
+            this.audio = url;
+          });
           break;
         }
       }

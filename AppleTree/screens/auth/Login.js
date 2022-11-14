@@ -3,6 +3,7 @@ import {SafeAreaView, View, StyleSheet, Image} from 'react-native';
 import {Text, TextInput, Pressable, Alert} from 'react-native';
 import {Button} from '../../components/Button';
 import auth from '@react-native-firebase/auth';
+import NetInfo from '@react-native-community/netinfo';
 import GoogleLogin from '../../components/firebase/GoogleLogin';
 import {
   widthPercentageToDP as wp,
@@ -19,6 +20,15 @@ const Login = ({navigation}) => {
 
   //로그인 함수
   const onLogin = async () => {
+    // Network check
+    const state = await NetInfo.fetch().catch(err => {
+      console.log('err in getting network info:::', err);
+    });
+
+    if (!state.isConnected) {
+      Alert.alert('네트워크 연결 상태를 확인해주세요.');
+      return;
+    }
     if (!checkLoginInput()) {
       Alert.alert('유효하지 않은 입력', '모든 값을 입력해야합니다.');
       return;
@@ -176,15 +186,6 @@ const styles = StyleSheet.create({
     width: wp('40%'),
     height: wp('35%'),
     marginTop: hp('5%'),
-  },
-  button: {
-    width: 300,
-    height: 50,
-    borderRadius: 100,
-    backgroundColor: '#373043',
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   txt: {
     flex: 0.3,
