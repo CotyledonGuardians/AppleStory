@@ -61,15 +61,15 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   const handleConfirm = date => {
     // console.log('date::', date);
     let today = new Date();
-    if (date <= today) {
-      alert('오늘 또는 과거의 날짜는 선택할 수 없습니다.');
-      showDatePicker();
-    } else {
+    // if (date <= today) {
+    //   alert('오늘 또는 과거의 날짜는 선택할 수 없습니다.');
+    //   showDatePicker();
+    // } else {
       hideDatePicker();
       setUnlockDate(moment(date).format('YYYY-MM-DD'));
       onChangeText(moment(date).format('YYYY-MM-DD'));
       setDateValid(true);
-    }
+    // }
   };
 
   // location
@@ -210,7 +210,8 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date"
-                minimumDate={tomorrow}
+                // minimumDate={tomorrow}
+                minimumDate={today}
                 // mm배포용
                 maximumDate={endDate}
                 onConfirm={handleConfirm}
