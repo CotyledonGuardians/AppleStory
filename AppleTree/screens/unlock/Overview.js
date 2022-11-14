@@ -42,6 +42,7 @@ const Overview = ({navigation, route}) => {
   const [playerState, setPlayerState] = useState(PLAYER_STATES.PLAYING);
   const [screenType, setScreenType] = useState('content');
   const [photoURLs, setPhotoURLs] = useState([]);
+  const [videoURLs, setVideoURLs] = useState([]);
 
   const onSeek = seek => {
     //Handler for change in seekbar
@@ -109,15 +110,26 @@ const Overview = ({navigation, route}) => {
           getAddressLatLng(response.data.body.location);
         }
         await auth().currentUser.getIdTokenResult(true);
-        return response.data.body.content.photo;
+        return {
+          "photo" : response.data.body.content.photo, 
+          "video" : response.data.body.content.video
+        };
       })
-      .then(photo =>
-        photo.map((photo, idx) =>
+      .then(contents => {
+        return {
+          "photo" : 
+          contents.photo.map((photo, idx) =>
           storage().ref(photo.content).getDownloadURL(),
-        ),
+          ),
+          "video" :
+          contents.video.map((video, idx) =>
+          storage().ref(video.content).getDownloadURL(),
+          ),
+        }
+      }
       )
       .then(promises => {
-        promises.forEach(promise => {
+        promises.photo.forEach(promise => {
           promise
             .then(url => {
               setPhotoURLs(oldPhotoURLs => {
@@ -126,6 +138,21 @@ const Overview = ({navigation, route}) => {
                 newPhotoURLs.push(url);
 
                 return newPhotoURLs;
+              });
+            })
+            .catch(err => {
+              console.log('err on url promises foreach:::', err);
+            });
+        });
+        promises.video.forEach(promise => {
+          promise
+            .then(url => {
+              setVideoURLs(oldVideoURLs => {
+                const newVideoURLs = [...oldVideoURLs];
+
+                newVideoURLs.push(url);
+
+                return newVideoURLs;
               });
             })
             .catch(err => {
