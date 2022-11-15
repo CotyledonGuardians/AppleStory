@@ -278,7 +278,7 @@ const MakeRoomForm = ({navigation}) => {
               <View style={styles.modalView}>
                 <Text style={styles.modalText}>
                   '사과나무 추억걸렸네' 는 사과를 만드는 상황에서 사과에 위치를
-                  기록하기 위해 위치 정보를 수집/전송/동기화/저장합니다.
+                  기록하기 위해 위치 정보를 수집/전송/저장합니다.
                 </Text>
                 <View style={styles.buttonBox}>
                   <SmallButton
