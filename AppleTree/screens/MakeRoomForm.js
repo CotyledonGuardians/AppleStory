@@ -278,6 +278,8 @@ const styles = StyleSheet.create({
     flex: 0.8,
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
+    width: wp('70%'),
+    height: hp('7%'),
     fontSize: wp('3%'),
     fontFamily: 'UhBee Se_hyun',
     textAlign: 'center',
