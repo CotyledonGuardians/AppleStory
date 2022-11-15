@@ -302,6 +302,7 @@ const styles = StyleSheet.create({
     fontSize: wp('3.5%'),
     color: '#4c4036',
     textAlign: 'center',
+    margin: hp('1.2%'),
   },
   buttonBox: {
     flex: 1.2,

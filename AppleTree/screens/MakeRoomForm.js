@@ -173,85 +173,76 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
 
   // inpust valid handler end
   return !loading ? (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <SafeAreaView style={styles.container}>
-        <Image
-          source={require('../assets/pictures/listgroup1.png')}
-          style={styles.image}
-        />
-        <View style={styles.formBox}>
-          <Text style={styles.txt}>제목</Text>
-          <View style={styles.form}>
-            <TextInput
-              value={title}
-              autoCapitalize={'none'}
-              style={styles.input}
-              placeholder="제목을 입력하세요."
-              onChangeText={text => titleChangeHandler(text)}
-            />
-          </View>
-          <Text style={styles.txt}>팀 이름</Text>
-          <View style={styles.form}>
-            <TextInput
-              value={teamName}
-              autoCapitalize={'none'}
-              style={styles.input}
-              placeholder="팀 명을 입력하세요."
-              onChangeText={text => teamNameChangeHandler(text)}
-            />
-          </View>
-          <Text style={styles.txt}>해제 날짜</Text>
-
-          <Pressable onPress={showDatePicker}>
-            <View style={styles.form}>
-              <TextInput
-                pointerEvents="none"
-                style={styles.input}
-                placeholder={placeholder}
-                underlineColorAndroid="transparent"
-                editable={false}
-                value={text}
-              />
-              <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                // minimumDate={tomorrow}
-                minimumDate={yesterday}
-                // mm배포용
-                maximumDate={endDate}
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
-                style={styles.calendar}
-              />
-            </View>
-          </Pressable>
-
-          <View style={styles.buttonWrap}>
-            <SmallButton
-              onPress={() => makeRoom()}
-              text="방 만들기"
-              disabled={!titleValid || !teamNameValid || !dateValid}
-            />
-          </View>
-          <Text onPress={() => navigate('JoinSession')} style={styles.copyText}>
-            here! 방 번호로 참여하기
-          </Text>
+    <SafeAreaView style={styles.container}>
+      <Image
+        source={require('../assets/pictures/listgroup1.png')}
+        style={styles.image}
+      />
+      <View style={styles.formBox}>
+        <Text style={styles.txt}>제목</Text>
+        <View style={styles.form}>
+          <TextInput
+            value={title}
+            autoCapitalize={'none'}
+            style={styles.input}
+            placeholder="제목을 입력하세요."
+            onChangeText={text => titleChangeHandler(text)}
+          />
         </View>
-      </SafeAreaView>
-    </ScrollView>
+        <Text style={styles.txt}>팀 이름</Text>
+        <View style={styles.form}>
+          <TextInput
+            value={teamName}
+            autoCapitalize={'none'}
+            style={styles.input}
+            placeholder="팀 명을 입력하세요."
+            onChangeText={text => teamNameChangeHandler(text)}
+          />
+        </View>
+        <Text style={styles.txt}>해제 날짜</Text>
+
+        <Pressable onPress={showDatePicker}>
+          <View style={styles.form}>
+            <TextInput
+              pointerEvents="none"
+              style={styles.input}
+              placeholder={placeholder}
+              underlineColorAndroid="transparent"
+              editable={false}
+              value={text}
+            />
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              // minimumDate={tomorrow}
+              minimumDate={yesterday}
+              // mm배포용
+              maximumDate={endDate}
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+              style={styles.calendar}
+            />
+          </View>
+        </Pressable>
+
+        <View style={styles.buttonWrap}>
+          <SmallButton
+            onPress={() => makeRoom()}
+            text="방 만들기"
+            disabled={!titleValid || !teamNameValid || !dateValid}
+          />
+        </View>
+        <Text onPress={() => navigate('JoinSession')} style={styles.copyText}>
+          here! 방 번호로 참여하기
+        </Text>
+      </View>
+    </SafeAreaView>
   ) : (
     <Loading />
   );
 };
 
 const styles = StyleSheet.create({
-  scroll: {
-    backgroundColor: '#FBF8F6',
-    padding: 10,
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   container: {
     flex: 10,
     backgroundColor: '#FBF8F6',
@@ -305,7 +296,7 @@ const styles = StyleSheet.create({
     fontSize: wp('3.5%'),
     color: '#373043',
     fontFamily: 'UhBee Se_hyun Bold',
-    marginTop: hp('4%'),
+    marginTop: hp('1.5%'),
     textAlign: 'center',
     textDecorationLine: 'underline',
   },
