@@ -160,13 +160,17 @@ const Overview = ({navigation, route}) => {
                   style={styles.countIcon}
                   source={require('../../assets/icons/usercount.png')}
                 />
-                <Text>{appleDetail.creator.member.length}</Text>
+                <Text style={{fontSize: wp('3%')}}>
+                  {appleDetail.creator.member.length}
+                </Text>
               </View>
             </View>
             {address && address != ' ' && (
               <View style={styles.nameBox}>
                 <Text style={[styles.textFont, styles.smallText]}>
-                  {address}
+                  {address.length > 21
+                    ? address.substr(0, 20).trim() + '...'
+                    : address}
                 </Text>
               </View>
             )}
@@ -230,11 +234,7 @@ const Overview = ({navigation, route}) => {
         }}>
         <Image
           source={require('../../assets/pictures/seed.png')}
-          style={{
-            resizeMode: 'contain',
-            width: wp('16%'),
-            height: hp('12%'),
-          }}
+          style={styles.seedImg}
           resizeMode="contain"
         />
         <Text style={styles.seedDetail}>
@@ -249,17 +249,10 @@ const Overview = ({navigation, route}) => {
 
   function ContentSeed() {
     return (
-      <View
-        style={{flexDirection: 'row', flexWrap: 'wrap', paddingTop: hp('4%')}}>
+      <View style={styles.seedRow}>
         {appleDetail.creator.member.map((item, index) => {
           return (
-            <View
-              style={{
-                width: wp('33.3%'),
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-              }}
-              key={index}>
+            <View style={styles.seedOne} key={index}>
               <Card key="{index}" nickname={item.nickname} uid={item.uid} />
             </View>
           );
@@ -354,6 +347,7 @@ const styles = StyleSheet.create({
   },
   card: {
     height: hp('20%'),
+    // margin: 30,
     flex: 1,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -381,12 +375,13 @@ const styles = StyleSheet.create({
   header: {
     // width: '100%',
     height: hp('22%'),
-    marginTop: wp('3%'),
+    margin: wp('5%'),
     // top: 30,
     flexDirection: 'row',
   },
   headerLeft: {
     flex: 1,
+    marginRight: wp('10%'),
   },
   headerRight: {
     flex: 1.5,
@@ -394,6 +389,7 @@ const styles = StyleSheet.create({
   detailBox: {
     top: hp('2%'),
     height: hp('50%'),
+    // margin: wp('5%'),
     // alignItems: 'center',
   },
   oneBox: {
@@ -405,6 +401,7 @@ const styles = StyleSheet.create({
     marginBottom: wp('1%'),
     paddingLeft: wp('1%'),
     paddingRight: wp('1%'),
+
     // justifyContent: 'center',
   },
   textFont: {
@@ -478,6 +475,7 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun',
     color: '#4C4036',
     fontSize: wp('3%'),
+    // margin: wp('5%'),
   },
   headerImg: {
     marginLeft: wp('5%'),
@@ -493,6 +491,23 @@ const styles = StyleSheet.create({
     // width: wp('10%'),
     aspectRatio: 1.5,
     flex: 1,
+  },
+  seedImg: {
+    resizeMode: 'contain',
+    width: wp('16%'),
+    height: hp('12%'),
+  },
+  seedOne: {
+    // marginLeft: wp('5%'),
+    width: wp('30%'),
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  seedRow: {
+    marginLeft: wp('5%'),
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingTop: hp('2%'),
   },
 });
 
