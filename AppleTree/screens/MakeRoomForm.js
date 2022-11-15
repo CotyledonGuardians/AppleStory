@@ -9,6 +9,7 @@ import {
   Image,
   Platform,
   PermissionsAndroid,
+  Modal,
 } from 'react-native';
 import moment from 'moment';
 import 'moment/locale/ko';
@@ -24,23 +25,7 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-async function requestPermission() {
-  try {
-    if (Platform.OS === 'ios') {
-      return await Geolocation.requestAuthorization('always');
-    }
-    // 안드로이드 위치 정보 수집 권한 요청
-    if (Platform.OS === 'android') {
-      return await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      );
-    }
-  } catch (e) {
-    console.log(e);
-  }
-}
-
-const MakeRoomForm = ({navigation: {navigate}}) => {
+const MakeRoomForm = ({navigation}) => {
   //inputs
   const [title, setTitle] = useState(null);
   const [teamName, setTeamName] = useState(null);
@@ -55,6 +40,9 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
   const [teamNameValid, setTeamNameValid] = useState(false);
   const [dateValid, setDateValid] = useState(false);
   const [loading, setLoading] = useState(false);
+  //modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalOk, setModalOk] = useState(false);
   //date picker start
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -81,34 +69,61 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
     latitude: 0,
     longitude: 0,
   });
-
+  async function requestPermission() {
+    try {
+      if (modalOk && Platform.OS === 'ios') {
+        return await Geolocation.requestAuthorization('always');
+      }
+      // 안드로이드 위치 정보 수집 권한 요청
+      if (modalOk && Platform.OS === 'android') {
+        return await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
   //date picker end
   let today = new Date();
   let tomorrow = new Date(today.setDate(today.getDate() + 1));
   let yesterday = new Date(today.setDate(today.getDate() - 1));
 
   let endDate = new Date(2022, 10, 21);
-  console.log('endDate', endDate);
+  // console.log('endDate', endDate);
+
   useEffect(() => {
+    //권한 설정 전에 모달 띄워주기
     requestPermission().then(result => {
-      console.log({result});
-      if (result === 'granted') {
-        Geolocation.getCurrentPosition(
-          position => {
-            const {latitude, longitude} = position.coords;
-            setUseLocation({
-              latitude,
-              longitude,
-            });
-          },
-          error => {
-            console.log(error.code, error.message);
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-        );
+      console.log('location permission: ', {result});
+      if (result !== 'granted' && !modalVisible) {
+        console.log('모달');
+        setModalVisible(true);
       }
     });
   }, []);
+  useEffect(() => {
+    if (modalOk) {
+      requestPermission().then(result => {
+        console.log('location permission: ', {result});
+        if (result === 'granted') {
+          Geolocation.getCurrentPosition(
+            position => {
+              const {latitude, longitude} = position.coords;
+              setUseLocation({
+                latitude,
+                longitude,
+              });
+            },
+            error => {
+              console.log(error.code, error.message);
+            },
+            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+          );
+        }
+      });
+    }
+  }, [modalOk]);
 
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
@@ -139,7 +154,10 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
           UseStomp(
             () => {
               console.log('make room succeed', roomId, appleId);
-              navigate('GroupSession', {roomId: roomId, appleId: appleId});
+              navigation.navigate('GroupSession', {
+                roomId: roomId,
+                appleId: appleId,
+              });
             },
             () => {
               console.log('make room failed', roomId);
@@ -233,9 +251,48 @@ const MakeRoomForm = ({navigation: {navigate}}) => {
               disabled={!titleValid || !teamNameValid || !dateValid}
             />
           </View>
-          <Text onPress={() => navigate('JoinSession')} style={styles.copyText}>
+          <Text
+            onPress={() => navigation.navigate('JoinSession')}
+            style={styles.copyText}>
             here! 방 번호로 참여하기
           </Text>
+        </View>
+        {/* 모달 start */}
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              setModalVisible(!modalVisible);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>
+                  '사과나무 추억걸렸네' 는 사과를 만드는 상황에서 사과에 위치를
+                  기록하기 위해 위치 정보를 수집/전송/동기화/저장합니다.
+                </Text>
+                <View style={styles.buttonBox}>
+                  <SmallButton
+                    onPress={() => {
+                      setModalVisible(false);
+                      navigation.goBack();
+                    }}
+                    text="취소"
+                    disabled={false}
+                  />
+                  <SmallButton
+                    onPress={() => {
+                      setModalOk(true);
+                      setModalVisible(false);
+                    }}
+                    text="동의"
+                    disabled={false}
+                  />
+                </View>
+              </View>
+            </View>
+          </Modal>
         </View>
       </SafeAreaView>
     </ScrollView>
@@ -310,5 +367,59 @@ const styles = StyleSheet.create({
   calendar: {
     width: wp('90%'),
   },
+  //모달 스타일 start
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: wp('10%'),
+  },
+  buttonView: {
+    flexDirection: 'row',
+  },
+  modalView: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    margin: wp('5%'),
+    backgroundColor: '#ECE5E0',
+    borderRadius: 20,
+    padding: wp('5%'),
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonBox: {
+    flexDirection: 'row',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalImg: {
+    resizeMode: 'contain',
+    width: wp('35%'),
+    height: wp('40%'),
+  },
+  modalText: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: wp('4.5%'),
+    color: '#373043',
+    marginBottom: wp('5%'),
+    textAlign: 'center',
+    flexDirection: 'column',
+  },
+  timeText: {
+    fontFamily: 'UhBee Se_hyun Bold',
+    fontSize: wp('8%'),
+    color: '#4c4036',
+    textAlign: 'center',
+  },
+  //모달 스타일 end
 });
 export default MakeRoomForm;
