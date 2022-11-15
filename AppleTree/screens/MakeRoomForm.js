@@ -16,7 +16,6 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
 import {makeRoomAPI} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
-import {ScrollView} from 'react-native-gesture-handler';
 import Geolocation from 'react-native-geolocation-service';
 import Loading from './LoadingDefault';
 import {
@@ -276,7 +275,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   image: {
-    flex: 4,
+    flex: 3.5,
     resizeMode: 'contain',
     marginBottom: 10,
     width: wp('60%'),

@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imgBox: {
-    flex: 6,
+    flex: 5,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
   },
   image: {
     resizeMode: 'contain',
-    width: wp('65%'),
-    height: wp('70%'),
+    width: wp('50%'),
+    height: wp('60%'),
     marginTop: hp('5%'),
   },
   form: {
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: hp('1%'),
-    width: wp('72%'),
+    width: wp('50%'),
     height: hp('7%'),
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 0.7,
-    width: wp('72%'),
+    width: wp('50%'),
     height: hp('7%'),
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
