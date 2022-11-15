@@ -78,12 +78,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   smallWhiteButtonShape: {
-    width: 135,
-    height: 60,
+    width: wp('36%'),
+    height: hp('7%'),
     borderColor: 'black',
     borderRadius: 25,
     paddingHorizontal: 10,
-    margin: 5,
+    margin: wp('1%'),
     elevation: 2,
     backgroundColor: '#FBF8F6',
     flex: 0.4,
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   whilteButtonText: {
     textAlign: 'center',
     color: '#373043',
-    fontSize: 15,
+    fontSize: wp('3.5%'),
     fontFamily: 'UhBee Se_hyun Bold',
   },
 });

@@ -39,6 +39,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const [myHasUpload, setMyHasUpload] = useState(false);
   // 클립보드 복사
   const copyToClipboard = () => {
+    Alert.alert('코드가 복사되었습니다!');
     Clipboard.setString(roomId);
   };
   // 사과매달기
