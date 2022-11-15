@@ -24,7 +24,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-
+import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
 const MakeRoomForm = ({navigation}) => {
   //inputs
   const [title, setTitle] = useState(null);
@@ -93,19 +93,27 @@ const MakeRoomForm = ({navigation}) => {
   // console.log('endDate', endDate);
 
   useEffect(() => {
-    //권한 설정 전에 모달 띄워주기
-    requestPermission().then(result => {
-      console.log('location permission: ', {result});
-      if (result !== 'granted' && !modalVisible) {
-        console.log('모달');
-        setModalVisible(true);
-      }
-    });
+    //권한 체크
+    check(PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION)
+      .then(result => {
+        switch (result) {
+          case RESULTS.DENIED:
+            setModalVisible(true);
+            break;
+          case RESULTS.GRANTED:
+            console.log('The permission is granted');
+            break;
+        }
+      })
+      .catch(error => {
+        console.log('location permission error: ', error);
+      });
   }, []);
   useEffect(() => {
+    //위치사용 모달에서 확인을 누른 경우
     if (modalOk) {
       requestPermission().then(result => {
-        console.log('location permission: ', {result});
+        console.log('모달확인후: ', {result});
         if (result === 'granted') {
           Geolocation.getCurrentPosition(
             position => {
