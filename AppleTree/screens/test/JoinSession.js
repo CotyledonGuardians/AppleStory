@@ -1,38 +1,42 @@
 import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import {TextInput, Image} from 'react-native';
+import {TextInput, Image, Alert} from 'react-native';
 import {Text} from 'react-native';
 import {View} from 'react-native-animatable';
 import {UseStomp, DisconnectIfConnected} from '../../stomp';
 import {SmallButton} from '../../components/Button';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
 const JoinSession = ({navigation, route}) => {
   const [roomId, setRoomID] = useState('');
-  console.log("route::::",route);
+
   function joinLockApple() {
     const connect = () => {
-      console.log('roomId', roomId);
       UseStomp(
         () => {
-          console.log('session join succeed : ', roomId);
           navigation.navigate('GroupSession', {roomId: roomId});
         },
         () => {
-          console.log('session join failed', roomId);
-          alert('방번호를 다시 확인해주세요.');
-          navigation.navigate('JoinSession')
+          Alert.alert('방번호를 다시 확인해주세요.');
+          navigation.navigate('JoinSession');
         },
       );
-    }
+    };
     DisconnectIfConnected(connect, {}, connect);
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={require('../../assets/pictures/aegom3.png')}
-        style={styles.image}
-      />
-      <View style={styles.marginTopBottom}>
+      <View style={styles.imgBox}>
+        <Image
+          source={require('../../assets/pictures/aegom3.png')}
+          style={styles.image}
+        />
+      </View>
+      <View style={styles.formBox}>
         <Text style={styles.txt}>방 번호</Text>
         <View style={styles.form}>
           <TextInput
@@ -42,9 +46,9 @@ const JoinSession = ({navigation, route}) => {
             onChangeText={text => setRoomID(text)}
           />
         </View>
-        <View style={styles.buttonWrap}>
-          <SmallButton onPress={() => joinLockApple()} text="입장하기" />
-        </View>
+      </View>
+      <View style={styles.buttonWrap}>
+        <SmallButton onPress={() => joinLockApple()} text="입장하기" />
       </View>
     </SafeAreaView>
   );
@@ -52,52 +56,58 @@ const JoinSession = ({navigation, route}) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 10,
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
   },
-  marginTopBottom: {
+  imgBox: {
+    flex: 5,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  formBox: {
+    flex: 2,
     justifyContent: 'center',
-    marginTop: 10,
-    marginBottom: 10,
   },
-  input: {
-    width: 300,
-    height: 50,
-    backgroundColor: '#ECE5E0',
-    borderRadius: 10,
-    justifyContent: 'center',
-    color: '#4C4036',
-    fontSize: 13,
-    fontFamily: 'UhBee Se_hyun',
-    textAlign: 'center',
-    margin: 10,
-  },
-  txt: {
-    fontSize: 15,
-    fontFamily: 'UhBee Se_hyun Bold',
-    color: '#4C4036',
+  image: {
+    resizeMode: 'contain',
+    width: wp('50%'),
+    height: wp('60%'),
+    marginTop: hp('5%'),
   },
   form: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
-    width: 300,
-    height: 50,
+    marginBottom: hp('1%'),
+    width: wp('50%'),
+    height: hp('7%'),
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
   },
-  buttonWrap: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+  txt: {
+    textAlign: 'left',
+    fontSize: wp('4%'),
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
   },
-  image: {
-    resizeMode: 'contain',
-    marginBottom: 10,
-    height: 260,
+  input: {
+    flex: 0.7,
+    width: wp('50%'),
+    height: hp('7%'),
+    backgroundColor: '#ECE5E0',
+    borderRadius: 10,
+    justifyContent: 'center',
+    color: '#4C4036',
+    fontSize: wp('3%'),
+    fontFamily: 'UhBee Se_hyun',
+    textAlign: 'center',
+    margin: hp('2%'),
+  },
+  buttonWrap: {
+    flex: 2,
+    justifyContent: 'flex-start',
   },
 });
 

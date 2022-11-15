@@ -17,7 +17,6 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
 import {makeRoomAPI} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
-import {ScrollView} from 'react-native-gesture-handler';
 import Geolocation from 'react-native-geolocation-service';
 import Loading from './LoadingDefault';
 import {
@@ -199,124 +198,120 @@ const MakeRoomForm = ({navigation}) => {
 
   // inpust valid handler end
   return !loading ? (
-    <ScrollView contentContainerStyle={styles.scroll}>
-      <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.imageBox}>
         <Image
           source={require('../assets/pictures/listgroup1.png')}
           style={styles.image}
         />
-        <View style={styles.formBox}>
-          <Text style={styles.txt}>제목</Text>
-          <View style={styles.form}>
-            <TextInput
-              value={title}
-              autoCapitalize={'none'}
-              style={styles.input}
-              placeholder="제목을 입력하세요."
-              onChangeText={text => titleChangeHandler(text)}
-            />
-          </View>
-          <Text style={styles.txt}>팀 이름</Text>
-          <View style={styles.form}>
-            <TextInput
-              value={teamName}
-              autoCapitalize={'none'}
-              style={styles.input}
-              placeholder="팀 명을 입력하세요."
-              onChangeText={text => teamNameChangeHandler(text)}
-            />
-          </View>
-          <Text style={styles.txt}>해제 날짜</Text>
-
-          <Pressable onPress={showDatePicker}>
-            <View style={styles.form}>
-              <TextInput
-                pointerEvents="none"
-                style={styles.input}
-                placeholder={placeholder}
-                underlineColorAndroid="transparent"
-                editable={false}
-                value={text}
-              />
-              <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                // minimumDate={tomorrow}
-                minimumDate={yesterday}
-                // mm배포용
-                maximumDate={endDate}
-                onConfirm={handleConfirm}
-                onCancel={hideDatePicker}
-                style={styles.calendar}
-              />
-            </View>
-          </Pressable>
-
-          <View style={styles.buttonWrap}>
-            <SmallButton
-              onPress={() => makeRoom()}
-              text="방 만들기"
-              disabled={!titleValid || !teamNameValid || !dateValid}
-            />
-          </View>
-          <Text
-            onPress={() => navigation.navigate('JoinSession')}
-            style={styles.copyText}>
-            here! 방 번호로 참여하기
-          </Text>
+      </View>
+      <View style={styles.formBox}>
+        <Text style={styles.txt}>제목</Text>
+        <View style={styles.form}>
+          <TextInput
+            value={title}
+            autoCapitalize={'none'}
+            style={styles.input}
+            placeholder="제목을 입력하세요."
+            onChangeText={text => titleChangeHandler(text)}
+          />
         </View>
-        {/* 모달 start */}
+        <Text style={styles.txt}>팀 이름</Text>
+        <View style={styles.form}>
+          <TextInput
+            value={teamName}
+            autoCapitalize={'none'}
+            style={styles.input}
+            placeholder="팀 명을 입력하세요."
+            onChangeText={text => teamNameChangeHandler(text)}
+          />
+        </View>
+        <Text style={styles.txt}>해제 날짜</Text>
+
+        <Pressable onPress={showDatePicker}>
+          <View style={styles.form}>
+            <TextInput
+              pointerEvents="none"
+              style={styles.input}
+              placeholder={placeholder}
+              underlineColorAndroid="transparent"
+              editable={false}
+              value={text}
+            />
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              // minimumDate={tomorrow}
+              minimumDate={yesterday}
+              // mm배포용
+              maximumDate={endDate}
+              onConfirm={handleConfirm}
+              onCancel={hideDatePicker}
+              style={styles.calendar}
+            />
+          </View>
+        </Pressable>
+
+        <View style={styles.buttonWrap}>
+          <SmallButton
+            onPress={() => makeRoom()}
+            text="방 만들기"
+            disabled={!titleValid || !teamNameValid || !dateValid}
+          />
+        </View>
+        <Text
+          onPress={() => navigation.navigate('JoinSession')}
+          style={styles.copyText}>
+          here! 방 번호로 참여하기
+        </Text>
+      </View>
+      {/* 모달 start */}
+      {/* <View style={styles.centeredView}> */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
         <View style={styles.centeredView}>
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              setModalVisible(!modalVisible);
-            }}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>
-                  '사과나무 추억걸렸네' 는 사과를 만드는 상황에서 사과에 위치를
-                  기록하기 위해 위치 정보를 수집/전송/저장합니다.
-                </Text>
-                <View style={styles.buttonBox}>
-                  <SmallButton
-                    onPress={() => {
-                      setModalVisible(false);
-                      navigation.goBack();
-                    }}
-                    text="취소"
-                    disabled={false}
-                  />
-                  <SmallButton
-                    onPress={() => {
-                      setModalOk(true);
-                      setModalVisible(false);
-                    }}
-                    text="동의"
-                    disabled={false}
-                  />
-                </View>
-              </View>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>'사과나무 추억걸렸네' 는</Text>
+
+            <Text style={styles.modalText}>사과를 만드는 상황에서 </Text>
+            <Text style={styles.modalText}>사과에 위치를 기록하기 위해</Text>
+            <Text style={styles.modalText}>
+              위치 정보를 수집/전송/저장합니다.
+            </Text>
+            <View style={styles.buttonBox}>
+              <SmallButton
+                onPress={() => {
+                  setModalVisible(false);
+                  navigation.goBack();
+                }}
+                text="취소"
+                disabled={false}
+              />
+              <SmallButton
+                onPress={() => {
+                  setModalOk(true);
+                  setModalVisible(false);
+                }}
+                text="동의"
+                disabled={false}
+              />
             </View>
-          </Modal>
+          </View>
         </View>
-      </SafeAreaView>
-    </ScrollView>
+      </Modal>
+      {/* </View> */}
+    </SafeAreaView>
   ) : (
     <Loading />
   );
 };
 
 const styles = StyleSheet.create({
-  scroll: {
-    backgroundColor: '#FBF8F6',
-    padding: 10,
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   container: {
     flex: 10,
     backgroundColor: '#FBF8F6',
@@ -343,16 +338,20 @@ const styles = StyleSheet.create({
     flex: 0.8,
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
+    width: wp('70%'),
+    height: hp('7%'),
     fontSize: wp('3%'),
     fontFamily: 'UhBee Se_hyun',
     textAlign: 'center',
   },
+  imageBox: {
+    flex: 3.5,
+    justifyContent: 'flex-end',
+  },
   image: {
-    flex: 4,
     resizeMode: 'contain',
-    marginBottom: 10,
-    width: wp('60%'),
-    height: wp('60%'),
+    width: wp('50%'),
+    height: wp('50%'),
   },
   txt: {
     textAlign: 'left',
@@ -368,7 +367,7 @@ const styles = StyleSheet.create({
     fontSize: wp('3.5%'),
     color: '#373043',
     fontFamily: 'UhBee Se_hyun Bold',
-    marginTop: hp('4%'),
+    marginTop: hp('1.5%'),
     textAlign: 'center',
     textDecorationLine: 'underline',
   },
@@ -409,24 +408,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  modalImg: {
-    resizeMode: 'contain',
-    width: wp('35%'),
-    height: wp('40%'),
-  },
   modalText: {
     fontFamily: 'UhBee Se_hyun Bold',
     fontSize: wp('4.5%'),
     color: '#373043',
-    marginBottom: wp('5%'),
+    marginBottom: wp('2%'),
     textAlign: 'center',
     flexDirection: 'column',
-  },
-  timeText: {
-    fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: wp('8%'),
-    color: '#4c4036',
-    textAlign: 'center',
   },
   //모달 스타일 end
 });

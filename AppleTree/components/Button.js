@@ -66,11 +66,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   hangButtonShape: {
-    width: 135,
-    height: 60,
+    width: wp('36%'),
+    height: hp('7%'),
     borderRadius: 25,
     paddingHorizontal: 10,
-    margin: 5,
+    margin: wp('1%'),
     elevation: 2,
     backgroundColor: '#A6B0D5',
     color: 'black',
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   hangButtonText: {
     textAlign: 'center',
     color: '#373043',
-    fontSize: 15,
+    fontSize: wp('3.5%'),
     fontFamily: 'UhBee Se_hyun Bold',
   },
   whilteButtonText: {
