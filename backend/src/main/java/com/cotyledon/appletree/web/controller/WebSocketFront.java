@@ -33,8 +33,6 @@ public class WebSocketFront {
     @PostMapping("/lock-apple-room")
     public ResponseEntity<?> reserveLockAppleRoom(Principal principal, @RequestBody AppleDTO apple) {
 
-        log.info("제발요......................................................");
-
         long appleId = multiAppleService.reserveAppleAndGetId();
 
         apple.setId(appleId);
