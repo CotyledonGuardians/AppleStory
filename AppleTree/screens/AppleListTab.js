@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
   },
   card: {
     height: hp('25%'),
+    // width: wp('20%'),
     flex: 1,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
     height: hp('20%'),
   },
   appleView: {
-    width: wp('48%'),
+    width: wp('47%'),
     flexDirection: 'row',
   },
   titleFont: {
