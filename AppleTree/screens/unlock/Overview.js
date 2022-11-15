@@ -166,7 +166,9 @@ const Overview = ({navigation, route}) => {
             {address && address != ' ' && (
               <View style={styles.nameBox}>
                 <Text style={[styles.textFont, styles.smallText]}>
-                  {address}
+                  {address.length > 21
+                    ? address.substr(0, 20).trim() + '...'
+                    : address}
                 </Text>
               </View>
             )}
