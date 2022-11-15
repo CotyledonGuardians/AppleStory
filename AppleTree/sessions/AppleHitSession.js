@@ -30,16 +30,15 @@ const AppleHitSession = ({navigation, route}) => {
   const [apple, setApple] = useState(0);
   const [party, setParty] = useState(0);
 
-  let randomFace = [
-    require('../assets/pictures/expression1.png'),
-    require('../assets/pictures/expression2.png'),
-  ];
-  let randomText = [
-    require('../assets/pictures/hittext1.png'),
-    require('../assets/pictures/hittext2.png'),
-    require('../assets/pictures/hittext3.png'),
-  ];
-  // let randomXY = ['hittext1', 'hittext2', 'hittext3'];
+  // let randomFace = [
+  //   require('../assets/pictures/expression1.png'),
+  //   require('../assets/pictures/expression2.png'),
+  // ];
+  // let randomText = [
+  //   require('../assets/pictures/hittext1.png'),
+  //   require('../assets/pictures/hittext2.png'),
+  //   require('../assets/pictures/hittext3.png'),
+  // ];
   const roomId = route.params.id;
 
   // session start
@@ -104,6 +103,8 @@ const AppleHitSession = ({navigation, route}) => {
     // console.log(e.nativeEvent.pageX);
     // console.log(e.nativeEvent.pageY);
     setShowPunch(true);
+    setShowText(false);
+    setShowExpression(false);
     setPunchPosition({
       x: e.nativeEvent.pageX,
       y: e.nativeEvent.pageY,
@@ -139,12 +140,12 @@ const AppleHitSession = ({navigation, route}) => {
 
       <Progress.Bar
         progress={clickProgress}
-        width={300}
+        width={wp('80%')}
         animated={true}
         color="#4C4036"
         unfilledColor="#ECE5E0"
         style={styles.progress}
-        height={30}
+        height={wp('7%')}
         borderRadius={15}
         borderWidth={5}
       />
@@ -162,7 +163,7 @@ const AppleHitSession = ({navigation, route}) => {
           easing="ease-out"
           iterationCount="infinite"
           source={require('../assets/pictures/apple4.png')}
-          style={{resizeMode: 'contain', width: 300, height: 300}}
+          style={styles.appleimg}
         />
         {/* 클릭이벤트일때 주먹 사진 가져오기 */}
         {showPunch && (
@@ -173,11 +174,11 @@ const AppleHitSession = ({navigation, route}) => {
               duration={300}
               source={require('../assets/icons/punch.png')}
               style={{
-                height: 100,
-                width: 100,
+                width: wp('20%'),
+                height: wp('20%'),
                 position: 'absolute',
-                left: punchPosition.x - 100,
-                top: punchPosition.y - 550,
+                left: punchPosition.x - wp('25%'),
+                top: punchPosition.y - wp('140%'),
               }}
             />
           </Animatable.View>
@@ -185,16 +186,12 @@ const AppleHitSession = ({navigation, route}) => {
         {showExpression && (
           <Image
             style={styles.face}
-            source={
-              randomFace[Math.floor(Math.random() * randomFace.length)]
-            }></Image>
+            source={require('../assets/pictures/expression2.png')}></Image>
         )}
         {showText && (
           <Image
             style={styles.hittext2}
-            source={
-              randomText[Math.floor(Math.random() * randomText.length)]
-            }></Image>
+            source={require('../assets/pictures/hittext1.png')}></Image>
         )}
       </Pressable>
       {/* <Animatable.Image
@@ -213,12 +210,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  box: {
-    width: 350,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   progress: {
     marginTop: 20,
     marginBottom: 5,
@@ -227,16 +218,17 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun',
     textAlign: 'left',
     marginBottom: 10,
+    fontSize: wp('4%'),
   },
   bottomtxt: {
     fontFamily: 'UhBee Se_hyun Bold',
     textAlign: 'center',
     marginTop: 20,
-    fontSize: 20,
+    fontSize: wp('5%'),
   },
   countBox: {
-    width: 100,
-    height: 30,
+    width: wp('27%'),
+    height: wp('10%'),
     alignItems: 'center',
     flexDirection: 'row',
     borderRadius: 30,
@@ -246,8 +238,8 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   countIcon: {
-    width: 20,
-    height: 20,
+    width: wp('5%'),
+    height: wp('5%'),
     marginRight: 10,
   },
   countText: {
@@ -261,7 +253,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     // top: hp('1%'),
     bottom: hp('-1.5%'),
-    left: wp('7%'),
+    left: wp('4%'),
   },
   hittext1: {
     fontFamily: 'UhBee Se_hyun Bold',
@@ -273,7 +265,6 @@ const styles = StyleSheet.create({
     left: wp('0%'),
   },
   hittext2: {
-    fontFamily: 'UhBee Se_hyun Bold',
     width: wp('20%'),
     height: wp('15%'),
     position: 'absolute',
@@ -282,7 +273,6 @@ const styles = StyleSheet.create({
     left: wp('60%'),
   },
   hittext3: {
-    fontFamily: 'UhBee Se_hyun Bold',
     width: wp('20%'),
     height: wp('15%'),
     position: 'absolute',
@@ -291,7 +281,6 @@ const styles = StyleSheet.create({
     left: wp('60%'),
   },
   hittext4: {
-    fontFamily: 'UhBee Se_hyun Bold',
     width: wp('20%'),
     height: wp('15%'),
     position: 'absolute',
@@ -299,6 +288,7 @@ const styles = StyleSheet.create({
     bottom: hp('0%'),
     left: wp('0%'),
   },
+  appleimg: {width: wp('70%'), height: wp('70%')},
 });
 
 export default AppleHitSession;
