@@ -211,8 +211,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   progress: {
-    marginTop: 20,
-    marginBottom: 5,
+    marginTop: wp('4%'),
+    marginBottom: wp('1%'),
   },
   toptxt: {
     fontFamily: 'UhBee Se_hyun',
@@ -232,26 +232,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     borderRadius: 30,
-    marginTop: 5,
     backgroundColor: '#ECE5E0',
-    paddingRight: 10,
-    paddingLeft: 15,
+    paddingRight: wp('5%'),
+    paddingLeft: wp('5%'),
   },
   countIcon: {
     width: wp('5%'),
     height: wp('5%'),
-    marginRight: 10,
+    marginLeft: wp('1%'),
+    marginRight: wp('2%'),
   },
   countText: {
     fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: 16,
+    fontSize: wp('3%'),
     color: '#4C4036',
   },
   face: {
     width: wp('65%'),
     height: wp('65%'),
     position: 'absolute',
-    // top: hp('1%'),
     bottom: hp('-1.5%'),
     left: wp('4%'),
   },
@@ -276,7 +275,6 @@ const styles = StyleSheet.create({
     width: wp('20%'),
     height: wp('15%'),
     position: 'absolute',
-    // top: hp('1%'),
     bottom: hp('30%'),
     left: wp('60%'),
   },
@@ -284,11 +282,15 @@ const styles = StyleSheet.create({
     width: wp('20%'),
     height: wp('15%'),
     position: 'absolute',
-    // top: hp('1%'),
     bottom: hp('0%'),
     left: wp('0%'),
   },
-  appleimg: {width: wp('70%'), height: wp('70%')},
+  appleimg: {
+    resizeMode: 'contain',
+    width: wp('80%'),
+    height: wp('70%'),
+    marginTop: wp('2%'),
+  },
 });
 
 export default AppleHitSession;
