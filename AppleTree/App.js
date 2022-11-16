@@ -13,7 +13,6 @@ import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
-import VideoStreaming from './screens/unlock/VideoStreaming';
 
 //bottom tab navigator
 import Main from './screens/Main';
@@ -37,6 +36,8 @@ import JoinSession from './sessions/JoinSession';
 import Overview from './screens/unlock/Overview';
 import UnlockAppleDetail from './screens/unlock/UnlockAppleDetail';
 import LockAppleDetail from './screens/lock/LockAppleDetail';
+import VideoStreaming from './screens/unlock/VideoStreaming';
+import ImageFullScreen from './screens/unlock/ImageFullScreen';
 // GIF
 import AppleLockGIF from './screens/lock/AppleLockGIF';
 import AppleUnlockGIF from './screens/unlock/AppleUnlockGIF';
@@ -147,6 +148,11 @@ export default function App() {
                 name="VideoStreaming"
                 component={VideoStreaming}
               />
+              <HomeStack.Screen
+                options={{headerShown: false}}
+                name="ImageFullScreen"
+                component={ImageFullScreen}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -187,6 +193,11 @@ export default function App() {
                 options={{headerShown: false}}
                 name="VideoStreaming"
                 component={VideoStreaming}
+              />
+              <MapStack.Screen
+                options={{headerShown: false}}
+                name="ImageFullScreen"
+                component={ImageFullScreen}
               />
             </MapStack.Navigator>
           )}
@@ -260,6 +271,11 @@ export default function App() {
                 options={{headerShown: false}}
                 name="VideoStreaming"
                 component={VideoStreaming}
+              />
+              <ListStack.Screen
+                options={{headerShown: false}}
+                name="ImageFullScreen"
+                component={ImageFullScreen}
               />
             </ListStack.Navigator>
           )}

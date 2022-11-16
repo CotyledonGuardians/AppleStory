@@ -266,6 +266,7 @@ export default class PlayerScreen extends React.Component {
   onSeeking = currentTime => this.setState({currentTime});
 
   render() {
+    const {navigate} = this.props.navigation;
     const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
     const durationString = this.getAudioTimeString(this.state.duration2);
     return (
@@ -296,19 +297,26 @@ export default class PlayerScreen extends React.Component {
           )}
           {this.state.image !== '' && (
             <View style={styles.imageBox}>
-              <Image
-                style={{
-                  // marginTop: hp('1%'),
-                  height: '100%',
-                  aspectRatio: 1.6,
-                  flex: 1,
-                  width: '100%',
-                  resizeMode: 'contain',
-                }}
-                source={{
-                  uri: this.state.image,
-                }}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  navigate('ImageFullScreen', {
+                    url: this.state.image,
+                  });
+                }}>
+                <Image
+                  style={{
+                    // marginTop: hp('1%'),
+                    height: '100%',
+                    aspectRatio: 1.6,
+                    flex: 1,
+                    width: '100%',
+                    resizeMode: 'contain',
+                  }}
+                  source={{
+                    uri: this.state.image,
+                  }}
+                />
+              </TouchableOpacity>
             </View>
           )}
           {this.state.video !== '' && (
