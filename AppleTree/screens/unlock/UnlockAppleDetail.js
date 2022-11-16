@@ -15,7 +15,7 @@ import {
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
-import storage from "@react-native-firebase/storage";
+import storage from '@react-native-firebase/storage';
 // import Slider from '@react-native-community/slider';
 
 const img_speaker = require('../../assets/icons/mic.png');
@@ -77,7 +77,7 @@ export default class PlayerScreen extends React.Component {
         if (data.content.video[i].author === uid) {
           const videoRef = storage().ref(data.content.video[i].content);
           videoRef.getDownloadURL().then(url => {
-            // console.log(url);
+            console.log(url);
             this.video = url;
           });
           break;
@@ -285,7 +285,7 @@ export default class PlayerScreen extends React.Component {
               <Text style={styles.textFont}>{this.text}</Text>
             </View>
           )}
-          {/* {this.image && (
+          {this.image && (
             <View style={styles.imageBox}>
               <Image
                 style={{
@@ -408,7 +408,7 @@ export default class PlayerScreen extends React.Component {
                 </View>
               </View>
             </View>
-          )} */}
+          )}
         </ScrollView>
       </SafeAreaView>
     );

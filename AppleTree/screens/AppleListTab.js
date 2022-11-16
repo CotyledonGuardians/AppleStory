@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     height: hp('20%'),
   },
   appleView: {
-    width: wp('48%'),
+    width: wp('47%'),
     flexDirection: 'row',
   },
   titleFont: {
