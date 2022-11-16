@@ -304,15 +304,16 @@ const styles = StyleSheet.create({
     margin: wp('3%'),
   },
   copyText: {
-    fontSize: wp('3.5%'),
+    fontSize: wp('5.5%'),
     color: '#4C4036',
-    fontFamily: 'UhBee Se_hyun Bold',
+    fontFamily: 'SourceCodePro-Medium',
     textAlign: 'center',
   },
   copyIcon: {
     resizeMode: 'contain',
-    width: wp('6%'),
-    height: wp('5%'),
+    marginTop: wp('0.8%'),
+    width: wp('5%'),
+    height: wp('6%'),
   },
   view: {
     flex: 3.5,
@@ -330,7 +331,7 @@ const styles = StyleSheet.create({
     fontSize: wp('3.5%'),
     color: '#4c4036',
     textAlign: 'center',
-    margin: hp('1.2%'),
+    margin: hp('1%'),
   },
   buttonBox: {
     flex: 1.2,
