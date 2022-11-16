@@ -125,7 +125,13 @@ const GroupSession = ({navigation: {navigate}, route}) => {
       },
     };
     //방에 들어가기
-    SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
+    SubscribeIfConnected(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+      },
+      messageListeners,
+    );
   }, [roomId]);
 
   // 세션 연결 해제
@@ -137,16 +143,37 @@ const GroupSession = ({navigation: {navigate}, route}) => {
 
   // 세션에서 사과에 내용을 쓰고있는 상태
   const actAdding = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.adding`, {});
+    SendIfSubscribed(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+        action: 'adding',
+      },
+      {},
+    );
   };
 
   const actCancelled = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.cancelled`, {});
+    SendIfSubscribed(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+        action: 'cancelled',
+      },
+      {},
+    );
   };
 
   //방장이 사과매달기를 할때(hasUpload가 true인 모든 인원 제출)
   const submit = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.submit`, {});
+    SendIfSubscribed(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+        action: 'submit',
+      },
+      {},
+    );
   };
 
   return (
@@ -277,15 +304,16 @@ const styles = StyleSheet.create({
     margin: wp('3%'),
   },
   copyText: {
-    fontSize: wp('3.5%'),
+    fontSize: wp('5.5%'),
     color: '#4C4036',
-    fontFamily: 'UhBee Se_hyun Bold',
+    fontFamily: 'SourceCodePro-Medium',
     textAlign: 'center',
   },
   copyIcon: {
     resizeMode: 'contain',
-    width: wp('6%'),
-    height: wp('5%'),
+    marginTop: wp('0.8%'),
+    width: wp('5%'),
+    height: wp('6%'),
   },
   view: {
     flex: 3.5,
@@ -303,7 +331,7 @@ const styles = StyleSheet.create({
     fontSize: wp('3.5%'),
     color: '#4c4036',
     textAlign: 'center',
-    margin: hp('1.2%'),
+    margin: hp('1%'),
   },
   buttonBox: {
     flex: 1.2,

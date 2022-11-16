@@ -94,8 +94,8 @@ const styles = StyleSheet.create({
   },
   talk: {
     resizeMode: 'contain',
-    width: wp('50%'),
-    height: hp('30%'),
+    width: wp('45%'),
+    height: wp('50%'),
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: '2%',
