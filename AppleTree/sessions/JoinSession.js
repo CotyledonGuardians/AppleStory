@@ -3,8 +3,8 @@ import {SafeAreaView, StyleSheet} from 'react-native';
 import {TextInput, Image, Alert} from 'react-native';
 import {Text} from 'react-native';
 import {View} from 'react-native-animatable';
-import {UseStomp, DisconnectIfConnected} from '../../stomp';
-import {SmallButton} from '../../components/Button';
+import {UseStomp, DisconnectIfConnected} from '../stomp';
+import {SmallButton} from '../components/Button';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -32,7 +32,7 @@ const JoinSession = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.imgBox}>
         <Image
-          source={require('../../assets/pictures/aegom3.png')}
+          source={require('../assets/pictures/aegom3.png')}
           style={styles.image}
         />
       </View>
