@@ -17,13 +17,15 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {SmallButton} from '../components/Button';
 import {makeRoomAPI} from '../api/AppleAPI';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
+import Loading from '../screens/LoadingDefault';
 import Geolocation from 'react-native-geolocation-service';
-import Loading from './LoadingDefault';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {black} from 'react-native-paper/lib/typescript/styles/colors';
+
 const MakeRoomForm = ({navigation}) => {
   //inputs
   const [title, setTitle] = useState(null);
@@ -266,7 +268,6 @@ const MakeRoomForm = ({navigation}) => {
         </Text>
       </View>
       {/* 모달 start */}
-      {/* <View style={styles.centeredView}> */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -277,7 +278,6 @@ const MakeRoomForm = ({navigation}) => {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>'사과나무 추억걸렸네' 는</Text>
-
             <Text style={styles.modalText}>사과를 만드는 상황에서 </Text>
             <Text style={styles.modalText}>사과에 위치를 기록하기 위해</Text>
             <Text style={styles.modalText}>
@@ -401,6 +401,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   buttonBox: {
+    marginTop: hp('1%'),
     flexDirection: 'row',
   },
   textStyle: {
@@ -409,9 +410,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modalText: {
-    fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: wp('4.5%'),
-    color: '#373043',
+    fontFamily: 'UhBee Se_hyun',
+    fontSize: wp('4%'),
+    color: '#000000',
     marginBottom: wp('2%'),
     textAlign: 'center',
     flexDirection: 'column',

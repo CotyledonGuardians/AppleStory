@@ -1,33 +1,28 @@
 import * as React from 'react';
-import {StyleSheet} from 'react-native';
-import {useEffect, useState, useRef} from 'react';
+import {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {getCloseAppleList, getOpenAppleList} from '../api/AppleAPI';
-import Loading from './LoadingDefault';
-import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-import Apple from './AppleListTab';
+import {getCloseAppleList, getOpenAppleList} from '../../api/AppleAPI';
+import Loading from '../LoadingDefault';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import DropdownSelect from './AppleListSort';
 
 const AppleList = ({navigation}) => {
-  const [route, setRoute] = useState('열린 사과');
-
   const [closeList, setCloseList] = useState(0);
   const [openList, setOpenList] = useState(0);
+  const Tab = createMaterialTopTabNavigator();
   const size = 1000;
 
   const getInitOpenData = async => {
     getOpenAppleList(0, 0, size)
       .then(response => {
-        // console.log(response.data);
         setOpenList(response.data.body.content);
       })
       .catch(error => {
         console.log('error', error);
       });
   };
+
   const getInitCloseData = async => {
     getCloseAppleList(0, 0, size)
       .then(response => {
@@ -44,13 +39,11 @@ const AppleList = ({navigation}) => {
     getInitCloseData();
   }, []);
 
-  const Tab = createMaterialTopTabNavigator();
-
-  function MyTabsTwo() {
+  function AppleListTab() {
     return openList !== 0 && closeList !== 0 ? (
       <NavigationContainer independent={true}>
         <Tab.Navigator
-          initialRouteName={route}
+          initialRouteName={'열린 사과'}
           screenOptions={{
             tabBarLabelStyle: {
               paddingTop: hp('0.5%'),
@@ -69,7 +62,7 @@ const AppleList = ({navigation}) => {
           <Tab.Screen
             name="열린 사과"
             children={() => (
-              <Apple
+              <DropdownSelect
                 data={{name: 'open', list: openList}}
                 navigation={navigation}
               />
@@ -78,7 +71,7 @@ const AppleList = ({navigation}) => {
           <Tab.Screen
             name="잠긴 사과"
             children={() => (
-              <Apple
+              <DropdownSelect
                 data={{name: 'close', list: closeList}}
                 navigation={navigation}
               />
@@ -90,7 +83,7 @@ const AppleList = ({navigation}) => {
       <Loading />
     );
   }
-  return <MyTabsTwo />;
+  return <AppleListTab />;
 };
 
 export default AppleList;
