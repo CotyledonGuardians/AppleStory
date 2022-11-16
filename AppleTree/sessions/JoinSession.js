@@ -32,7 +32,7 @@ const JoinSession = ({navigation, route}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.imgBox}>
         <Image
-          source={require('../assets/pictures/aegom3.png')}
+          source={require('../assets/gifs/comeon.gif')}
           style={styles.image}
         />
       </View>
@@ -46,9 +46,9 @@ const JoinSession = ({navigation, route}) => {
             onChangeText={text => setRoomID(text)}
           />
         </View>
-      </View>
-      <View style={styles.buttonWrap}>
-        <SmallButton onPress={() => joinLockApple()} text="입장하기" />
+        <View style={styles.buttonWrap}>
+          <SmallButton onPress={() => joinLockApple()} text="입장하기" />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -62,19 +62,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imgBox: {
-    flex: 5,
+    flex: 2,
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
   formBox: {
-    flex: 2,
-    justifyContent: 'center',
+    flex: 1.7,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   image: {
     resizeMode: 'contain',
-    width: wp('50%'),
-    height: wp('60%'),
-    marginTop: hp('5%'),
+    width: wp('100%'),
+    height: wp('45%'),
+    marginBottom: wp('5%'),
+    marginRight: wp('5%'),
   },
   form: {
     flexDirection: 'row',
@@ -91,6 +93,7 @@ const styles = StyleSheet.create({
     fontSize: wp('4%'),
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
+    marginBottom: wp('1%'),
   },
   input: {
     flex: 0.7,
@@ -106,7 +109,7 @@ const styles = StyleSheet.create({
     margin: hp('2%'),
   },
   buttonWrap: {
-    flex: 2,
+    flex: 0.7,
     justifyContent: 'flex-start',
   },
 });
