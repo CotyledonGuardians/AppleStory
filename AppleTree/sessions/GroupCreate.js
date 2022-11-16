@@ -458,10 +458,9 @@ const GroupCreate = ({navigation, route}) => {
                 <Pressable
                   style={styles.add}
                   onPress={() => {
-                    // addAsset(AssetType.VIDEO).catch(err => {
-                    //   console.log('Error in addAsset: ', err.message);
-                    // });
-                    Alert.alert('추후 추가될 기능이에요.');
+                    addAsset(AssetType.VIDEO).catch(err => {
+                      console.log('Error in addAsset: ', err.message);
+                    });
                   }}>
                   <Image
                     source={require('AppleTree/assets/icons/videoadd.png')}
@@ -532,10 +531,7 @@ const GroupCreate = ({navigation, route}) => {
               <View style={styles.iconBox}>
                 <Pressable
                   style={styles.add}
-                  onPress={
-                    // () => setModalVisible(true)
-                    () => Alert.alert('추후 추가될 기능이에요.')
-                  }>
+                  onPress={() => setModalVisible(true)}>
                   <Image
                     source={require('AppleTree/assets/icons/mic.png')}
                     style={styles.icon}
