@@ -80,35 +80,42 @@ const GroupCreate = ({navigation, route}) => {
   };
   const actAdded = () => {
     console.log('actAdded');
-    SendIfSubscribed(`/lock-apple-room.${roomId}.added`, {
-      nickname: nickname,
-      content: {
-        text: [
-          {
-            author: nickname,
-            content: content,
-          },
-        ],
-        photo: [
-          {
-            author: nickname,
-            content: imagePathOnStorage,
-          },
-        ],
-        audio: [
-          {
-            author: nickname,
-            content: audioPathOnStorage,
-          },
-        ],
-        video: [
-          {
-            author: nickname,
-            content: videoPathOnStorage,
-          },
-        ],
+    SendIfSubscribed(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+        action: 'added',
       },
-    });
+      {
+        nickname: nickname,
+        content: {
+          text: [
+            {
+              author: nickname,
+              content: content,
+            },
+          ],
+          photo: [
+            {
+              author: nickname,
+              content: imagePathOnStorage,
+            },
+          ],
+          audio: [
+            {
+              author: nickname,
+              content: audioPathOnStorage,
+            },
+          ],
+          video: [
+            {
+              author: nickname,
+              content: videoPathOnStorage,
+            },
+          ],
+        },
+      },
+    );
   };
   const getPathForFirebaseStorage = async uri => {
     if (Platform.OS === 'ios') {
@@ -336,7 +343,7 @@ const GroupCreate = ({navigation, route}) => {
   };
 
   const onSubmit = () => {
-    console.log(videoPathOnDevice);
+    console.log('check', videoPathOnDevice);
     setLoading(true);
     Promise.all([
       imageUpload(image),
