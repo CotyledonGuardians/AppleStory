@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
   },
   talk: {
     resizeMode: 'contain',
-    width: wp('25%'),
+    width: wp('30%'),
     height: wp('25%'),
     alignItems: 'center',
     justifyContent: 'center',
