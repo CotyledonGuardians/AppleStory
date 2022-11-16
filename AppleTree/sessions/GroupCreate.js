@@ -26,6 +26,11 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {SendIfSubscribed} from '../stomp';
 import {DisconnectIfConnected} from '../stomp';
 import Loading from '../screens/LoadingDefault';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
 // define enum for asset type
 const AssetType = {
   IMAGE: 'image',
@@ -391,145 +396,152 @@ const GroupCreate = ({navigation, route}) => {
   return !loading ? (
     <ScrollView contentContainerStyle={styles.wrapper}>
       <SafeAreaView style={styles.container}>
-        <Image
-          source={require('../assets/pictures/listpersonal1.png')}
-          style={{
-            width: 180,
-            height: 170,
-            marginTop: 30,
-            marginBottom: 10,
-          }}
-        />
-        <Text style={styles.txt}>닉네임</Text>
-        <TextInput
-          value={nickname}
-          style={styles.inputNick}
-          placeholder="자기만의 닉네임을 입력해주세요"
-          placeholderTextColor={'#AAA19B'}
-          maxLength={20}
-          onChangeText={text => nickNameChangeHandler(text)}
-        />
-        <Text style={styles.txt}>사과에 담고 싶은 내용을 써주세요!</Text>
-        <TextInput
-          value={content}
-          style={styles.inputContent}
-          placeholder="내용을 입력해주세요"
-          placeholderTextColor={'#AAA19B'}
-          multiline={true}
-          numberOfLines={7}
-          blurOnSubmit={true}
-          onChangeText={text => setContent(text)}
-        />
-        <Text style={styles.txt}>사과에 담고 싶은 파일을 넣어 보세요!</Text>
-        <View style={{flexDirection: 'row', marginBottom: 20}}>
-          {videoIsPicked ? (
-            <View>
-              <Pressable style={styles.add}>
-                <ImageBackground
-                  source={{
-                    uri: videoPathOnDevice,
-                  }}
-                  style={styles.preview}
-                  imageStyle={{borderRadius: 10}}
-                />
-              </Pressable>
-              <TouchableOpacity
-                style={styles.removeBtn}
-                onPress={() => {
-                  removeAsset(AssetType.VIDEO).catch(err => {
-                    console.log('Error in removeAsset: ', err.message);
-                  });
-                }}>
-                <Text style={styles.removeText}>삭제</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <Pressable
-              style={styles.add}
-              onPress={() => {
-                // addAsset(AssetType.VIDEO).catch(err => {
-                //   console.log('Error in addAsset: ', err.message);
-                // });
-                Alert.alert('추후 추가될 기능이에요.');
-              }}>
-              <Image
-                source={require('AppleTree/assets/icons/videoadd.png')}
-                style={styles.icon}
-              />
-              <Text style={styles.button}>추가하기</Text>
-            </Pressable>
-          )}
-          {imageIsPicked ? (
-            <View>
-              <Pressable style={styles.add}>
-                <ImageBackground
-                  source={{
-                    uri: imagePathOnDevice,
-                  }}
-                  imageStyle={{borderRadius: 10}}
-                  style={styles.preview}
-                />
-              </Pressable>
-              <TouchableOpacity
-                style={styles.removeBtn}
-                onPress={() => {
-                  removeAsset(AssetType.IMAGE).catch(err => {
-                    console.log('Error in removeAsset: ', err.message);
-                  });
-                }}>
-                <Text style={styles.removeText}>삭제</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <Pressable
-              style={styles.add}
-              onPress={() => {
-                addAsset(AssetType.IMAGE).catch(err => {
-                  console.log('Error in addAsset: ', err.message);
-                });
-              }}>
-              <Image
-                source={require('AppleTree/assets/icons/imgadd.png')}
-                style={styles.icon}
-              />
-              <Text style={styles.button}>추가하기</Text>
-            </Pressable>
-          )}
-          {audioIsPicked ? (
-            <View>
-              <View style={styles.add}>
-                <Image
-                  source={require('AppleTree/assets/icons/mic.png')}
-                  style={styles.icon}
-                />
-                <Text style={styles.button}>{recordedTime}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.removeBtn}
-                onPress={() => {
-                  removeAsset(AssetType.AUDIO).catch(err => {
-                    console.log('Error in removeAsset: ', err.message);
-                  });
-                }}>
-                <Text style={styles.removeText}>삭제</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <Pressable
-              style={styles.add}
-              onPress={
-                // () => setModalVisible(true)
-                () => Alert.alert('추후 추가될 기능이에요.')
-              }>
-              <Image
-                source={require('AppleTree/assets/icons/mic.png')}
-                style={styles.icon}
-              />
-              <Text style={styles.button}>녹음하기</Text>
-            </Pressable>
-          )}
+        <View style={styles.imgBox}>
+          <Image
+            source={require('../assets/pictures/listpersonal1.png')}
+            style={styles.img}
+          />
         </View>
-        <Button onPress={onSubmit} disabled={!nickNameValid} text="완료" />
+        <View style={styles.formBox}>
+          <Text style={styles.txt}>닉네임</Text>
+          <TextInput
+            value={nickname}
+            style={styles.inputNick}
+            placeholder="자기만의 닉네임을 입력해주세요"
+            placeholderTextColor={'#AAA19B'}
+            maxLength={20}
+            onChangeText={text => nickNameChangeHandler(text)}
+          />
+          <Text style={styles.txt}>사과에 담고 싶은 내용을 써주세요!</Text>
+          <TextInput
+            value={content}
+            style={styles.inputContent}
+            placeholder="내용을 입력해주세요"
+            placeholderTextColor={'#AAA19B'}
+            multiline={true}
+            numberOfLines={7}
+            blurOnSubmit={true}
+            onChangeText={text => setContent(text)}
+          />
+          <Text style={styles.txt}>사과에 담고 싶은 파일을 넣어 보세요!</Text>
+          <View style={styles.contentBox}>
+            {videoIsPicked ? (
+              <View style={styles.iconBox}>
+                <Pressable style={styles.add}>
+                  <ImageBackground
+                    source={{
+                      uri: videoPathOnDevice,
+                    }}
+                    style={styles.preview}
+                    imageStyle={{borderRadius: 10}}
+                  />
+                </Pressable>
+                <TouchableOpacity
+                  style={styles.removeBtn}
+                  onPress={() => {
+                    removeAsset(AssetType.VIDEO).catch(err => {
+                      console.log('Error in removeAsset: ', err.message);
+                    });
+                  }}>
+                  <Text style={styles.removeText}>삭제</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.iconBox}>
+                <Pressable
+                  style={styles.add}
+                  onPress={() => {
+                    // addAsset(AssetType.VIDEO).catch(err => {
+                    //   console.log('Error in addAsset: ', err.message);
+                    // });
+                    Alert.alert('추후 추가될 기능이에요.');
+                  }}>
+                  <Image
+                    source={require('AppleTree/assets/icons/videoadd.png')}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.button}>추가하기</Text>
+                </Pressable>
+              </View>
+            )}
+            {imageIsPicked ? (
+              <View style={styles.iconBox}>
+                <Pressable style={styles.add}>
+                  <ImageBackground
+                    source={{
+                      uri: imagePathOnDevice,
+                    }}
+                    imageStyle={{borderRadius: 10}}
+                    style={styles.preview}
+                  />
+                </Pressable>
+                <TouchableOpacity
+                  style={styles.removeBtn}
+                  onPress={() => {
+                    removeAsset(AssetType.IMAGE).catch(err => {
+                      console.log('Error in removeAsset: ', err.message);
+                    });
+                  }}>
+                  <Text style={styles.removeText}>삭제</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.iconBox}>
+                <Pressable
+                  style={styles.add}
+                  onPress={() => {
+                    addAsset(AssetType.IMAGE).catch(err => {
+                      console.log('Error in addAsset: ', err.message);
+                    });
+                  }}>
+                  <Image
+                    source={require('AppleTree/assets/icons/imgadd.png')}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.button}>추가하기</Text>
+                </Pressable>
+              </View>
+            )}
+            {audioIsPicked ? (
+              <View style={styles.iconBox}>
+                <View style={styles.add}>
+                  <Image
+                    source={require('AppleTree/assets/icons/mic.png')}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.button}>{recordedTime}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.removeBtn}
+                  onPress={() => {
+                    removeAsset(AssetType.AUDIO).catch(err => {
+                      console.log('Error in removeAsset: ', err.message);
+                    });
+                  }}>
+                  <Text style={styles.removeText}>삭제</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.iconBox}>
+                <Pressable
+                  style={styles.add}
+                  onPress={
+                    // () => setModalVisible(true)
+                    () => Alert.alert('추후 추가될 기능이에요.')
+                  }>
+                  <Image
+                    source={require('AppleTree/assets/icons/mic.png')}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.button}>녹음하기</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
+        </View>
+        <View style={styles.buttonBox}>
+          <Button onPress={onSubmit} disabled={!nickNameValid} text="완료" />
+        </View>
         {/* 녹음기 모달 start */}
         <View style={styles.centeredView}>
           <Modal animationType="fade" transparent={true} visible={modalVisible}>
@@ -559,113 +571,127 @@ const GroupCreate = ({navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FBF8F6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
-  },
   wrapper: {
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
     flexGrow: 1,
     justifyContent: 'center',
   },
+  container: {
+    flex: 10,
+    backgroundColor: '#FBF8F6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+  },
+  imgBox: {
+    flex: 2,
+    justifyContent: 'center',
+  },
+  img: {
+    resizeMode: 'contain',
+    width: wp('45%'),
+    height: wp('45%'),
+  },
+  formBox: {
+    flex: 7,
+  },
   txt: {
     color: '#4C4036',
     fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: 16,
-    width: 300,
+    fontSize: wp('4%'),
+    textAlign: 'left',
   },
   inputNick: {
     justifyContent: 'center',
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
-    fontSize: 14,
+    fontSize: wp('3.5%'),
     fontFamily: 'UhBee Se_hyun',
     textAlign: 'center',
-    padding: 10,
-    marginTop: 5,
-    marginBottom: 15,
-    width: 300,
-    height: 55,
+    width: wp('72%'),
+    height: hp('5.5%'),
+    marginTop: hp('0.5%'),
+    marginBottom: hp('2%'),
+    padding: hp('1%'),
     borderRadius: 10,
   },
   inputContent: {
     // justifyContent: 'center',
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
-    fontSize: 14,
+    fontSize: wp('3%'),
     fontFamily: 'UhBee Se_hyun',
     textAlign: 'center',
     textAlignVertical: 'top',
-    padding: 10,
-    marginTop: 5,
-    marginBottom: 15,
-    width: 300,
-    height: 200,
+    marginTop: hp('0.5%'),
+    marginBottom: hp('2%'),
+    padding: hp('1.5%'),
+    width: wp('72%'),
+    height: hp('30%'),
     borderRadius: 10,
+  },
+  contentBox: {
+    flex: 2,
+    flexDirection: 'row',
+    marginBottom: hp('2%'),
   },
   add: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
-    fontSize: 14,
+    fontSize: wp('4%'),
     fontFamily: 'UhBee Se_hyun',
     textAlign: 'center',
-    padding: 10,
-    margin: 8,
-    width: 90,
-    height: 95,
+    padding: wp('3%'),
+    margin: wp('2%'),
+    width: wp('20%'),
+    height: wp('20%'),
     borderRadius: 10,
+  },
+  iconBox: {
+    alignItems: 'center',
   },
   icon: {
     resizeMode: 'contain',
-    width: 26,
-    height: 26,
+    width: wp('6%'),
+    height: wp('6%'),
   },
   preview: {
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ECE5E0',
     color: '#4C4036',
-    fontSize: 14,
+    fontSize: wp('4%'),
     fontFamily: 'UhBee Se_hyun',
     textAlign: 'center',
-    padding: 10,
-    margin: 8,
-    width: 90,
-    height: 95,
+    padding: wp('3%'),
+    margin: wp('2%'),
+    width: wp('20%'),
+    height: wp('20%'),
     opacity: 0.9,
   },
-  image: {
-    resizeMode: 'contain',
-    marginBottom: 20,
-    width: '100%',
-    height: 200,
+  buttonBox: {
+    flex: 1,
+    marginBottom: wp('3%'),
   },
   button: {
     color: '#4C4036',
+    fontSize: wp('3%'),
     fontFamily: 'UhBee Se_hyun',
-  },
-  iconOnImage: {
-    padding: 5,
-    width: 26,
-    height: 26,
   },
   removeBtn: {
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
-    width: 100,
-    height: 20,
+    width: wp('10%'),
+    height: wp('5%'),
   },
   removeText: {
     textAlign: 'center',
     color: '#4C4036',
-    fontSize: 14,
+    fontSize: wp('3%'),
     fontFamily: 'UhBee Se_hyun',
   },
   //모달 스타일 start
@@ -683,7 +709,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     fontFamily: 'UhBee Se_hyun Bold',
-    margin: 20,
+    margin: wp('3%'),
     backgroundColor: '#ECE5E0',
     borderRadius: 20,
     padding: 15,

@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
   },
   card: {
     height: hp('25%'),
+    // width: wp('20%'),
     flex: 1,
     alignSelf: 'center',
     justifyContent: 'center',

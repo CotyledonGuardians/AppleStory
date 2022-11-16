@@ -17,6 +17,10 @@ import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 import storage from '@react-native-firebase/storage';
 // import Slider from '@react-native-community/slider';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 const img_speaker = require('../../assets/icons/mic.png');
 const img_pause = require('../../assets/icons/mic.png');
@@ -274,7 +278,10 @@ export default class PlayerScreen extends React.Component {
           <View style={styles.emptyData}>
             <Image
               source={require('../../assets/pictures/aegom3.png')}
-              style={{width: 150, height: 200}}
+              style={{
+                resizeMode: 'contain',
+                height: hp('25%'),
+              }}
             />
             <Text style={styles.textFont}>기록된 데이터가 없어요 ㅠㅠ</Text>
           </View>
@@ -419,7 +426,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FBF8F6',
-    padding: '6%',
+    padding: wp('6%'),
   },
   toolbar: {
     marginTop: 30,
@@ -436,10 +443,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   header: {
-    marginBottom: '5%',
+    marginBottom: hp('2%'),
   },
   textFont: {
     fontFamily: 'UhBee Se_hyun',
+    fontSize: hp('2%'),
   },
   textFontJump: {
     position: 'absolute',
@@ -454,7 +462,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    top: '20%',
+    top: hp('20%'),
   },
   textFontTime: {
     fontFamily: 'UhBee Se_hyun',
@@ -465,12 +473,12 @@ const styles = StyleSheet.create({
   textFontBold: {
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
-    fontSize: 18,
+    fontSize: wp('4%'),
   },
   textBox: {
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
-    padding: '6%',
+    padding: wp('5%'),
   },
   imageBox: {
     marginTop: '5%',

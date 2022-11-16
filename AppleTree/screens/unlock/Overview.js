@@ -160,13 +160,17 @@ const Overview = ({navigation, route}) => {
                   style={styles.countIcon}
                   source={require('../../assets/icons/usercount.png')}
                 />
-                <Text>{appleDetail.creator.member.length}</Text>
+                <Text style={{fontSize: wp('3%')}}>
+                  {appleDetail.creator.member.length}
+                </Text>
               </View>
             </View>
             {address && address != ' ' && (
               <View style={styles.nameBox}>
                 <Text style={[styles.textFont, styles.smallText]}>
-                  {address}
+                  {address.length > 21
+                    ? address.substr(0, 20).trim() + '...'
+                    : address}
                 </Text>
               </View>
             )}
@@ -230,7 +234,7 @@ const Overview = ({navigation, route}) => {
         }}>
         <Image
           source={require('../../assets/pictures/seed.png')}
-          style={{width: 80, height: 80}}
+          style={styles.seedImg}
           resizeMode="contain"
         />
         <Text style={styles.seedDetail}>
@@ -245,16 +249,10 @@ const Overview = ({navigation, route}) => {
 
   function ContentSeed() {
     return (
-      <View style={{flexDirection: 'row', flexWrap: 'wrap', paddingTop: 10}}>
+      <View style={styles.seedRow}>
         {appleDetail.creator.member.map((item, index) => {
           return (
-            <View
-              style={{
-                width: '33.3%',
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-              }}
-              key={index}>
+            <View style={styles.seedOne} key={index}>
               <Card key="{index}" nickname={item.nickname} uid={item.uid} />
             </View>
           );
@@ -348,7 +346,8 @@ const styles = StyleSheet.create({
     right: 0,
   },
   card: {
-    height: 110,
+    height: hp('20%'),
+    // margin: 30,
     flex: 1,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -375,24 +374,34 @@ const styles = StyleSheet.create({
   },
   header: {
     // width: '100%',
-    height: 200,
-    // margin: 10,
+    height: hp('22%'),
+    margin: wp('5%'),
     // top: 30,
     flexDirection: 'row',
   },
   headerLeft: {
     flex: 1,
+    marginRight: wp('10%'),
   },
   headerRight: {
-    flex: 1.3,
+    flex: 1.5,
   },
   detailBox: {
-    top: 20,
-    height: 400,
+    top: hp('2%'),
+    height: hp('50%'),
+    // margin: wp('5%'),
     // alignItems: 'center',
   },
   oneBox: {
     flex: 1,
+    borderBottomColor: '#AAA19B',
+    borderStyle: 'solid',
+    borderBottomWidth: wp('0.8%'),
+    alignSelf: 'flex-start',
+    marginBottom: wp('1%'),
+    paddingLeft: wp('1%'),
+    paddingRight: wp('1%'),
+
     // justifyContent: 'center',
   },
   textFont: {
@@ -401,52 +410,59 @@ const styles = StyleSheet.create({
   textFontBold: {
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
-    fontSize: 17,
+    fontSize: wp('3.5%'),
   },
   defaultText: {
-    fontSize: 17,
+    fontSize: wp('4%'),
     color: '#4C4036',
+  },
+  titleText: {
+    textDecorationLine: 'underline',
   },
   timeText: {
     fontSize: 30,
     // justifyContent: 'center',
   },
   smallText: {
-    fontSize: 10,
+    fontSize: wp('3%'),
     color: '#AAA19B',
   },
   contentBox: {
     flex: 10,
   },
   iconBox: {
-    marginTop: 5,
-    marginBottom: 10,
+    marginTop: wp('1%'),
+    marginBottom: wp('1%'),
     flexDirection: 'row',
   },
   nameBox: {
     flex: 1,
     flexDirection: 'row',
+    marginBottom: wp('1.5%'),
   },
   countBox: {
-    height: '60%',
+    height: hp('3%'),
     backgroundColor: 'rgba(0, 0, 0, 0.17)',
     alignItems: 'center',
     flexDirection: 'row',
-    borderRadius: 10,
-    marginTop: 6,
-    paddingRight: 10,
-    paddingLeft: 10,
-    marginLeft: 7,
+    borderRadius: 15,
+    marginTop: wp('1%'),
+    paddingRight: wp('3%'),
+    paddingLeft: wp('3%'),
+    marginLeft: wp('2%'),
   },
   countIcon: {
-    width: 12,
-    height: 12,
+    resizeMode: 'contain',
+    width: wp('3%'),
+    height: hp('3%'),
+    marginRight: wp('1%'),
   },
   contentIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 3,
-    marginLeft: 3,
+    resizeMode: 'contain',
+    width: wp('5%'),
+    height: hp('4%'),
+    marginRight: wp('1%'),
+    marginLeft: wp('1%'),
   },
   fullScreen: {
     position: 'absolute',
@@ -458,21 +474,40 @@ const styles = StyleSheet.create({
   seedDetail: {
     fontFamily: 'UhBee Se_hyun',
     color: '#4C4036',
-    fontSize: 12,
+    fontSize: wp('3%'),
+    // margin: wp('5%'),
   },
   headerImg: {
     marginLeft: wp('5%'),
-    marginTop: 10,
-    width: 140,
-    height: 180,
+    marginTop: hp('3%'),
+    resizeMode: 'contain',
+    width: wp('28%'),
+    height: hp('22%'),
   },
   photoImg: {
-    margin: 3,
-    height: '100%',
-    aspectRatio: 1.6,
-    flex: 1,
-    width: '100%',
     resizeMode: 'contain',
+    margin: wp('2%'),
+    height: hp('20%'),
+    // width: wp('10%'),
+    aspectRatio: 1.5,
+    flex: 1,
+  },
+  seedImg: {
+    resizeMode: 'contain',
+    width: wp('16%'),
+    height: hp('12%'),
+  },
+  seedOne: {
+    // marginLeft: wp('5%'),
+    width: wp('30%'),
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  seedRow: {
+    marginLeft: wp('5%'),
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingTop: hp('2%'),
   },
 });
 

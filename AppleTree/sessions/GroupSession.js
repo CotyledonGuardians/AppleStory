@@ -11,13 +11,17 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import Clipboard from '@react-native-clipboard/clipboard';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SmallButton, Button, HangButton} from '../components/Button';
 import {
   SubscribeIfConnected,
   DisconnectIfConnected,
   SendIfSubscribed,
 } from '../stomp/';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
 const GroupSession = ({navigation: {navigate}, route}) => {
   // 세션에 들어온 총 인원
   const [total, setTotal] = useState(0);
@@ -35,6 +39,7 @@ const GroupSession = ({navigation: {navigate}, route}) => {
   const [myHasUpload, setMyHasUpload] = useState(false);
   // 클립보드 복사
   const copyToClipboard = () => {
+    Alert.alert('코드가 복사되었습니다!');
     Clipboard.setString(roomId);
   };
   // 사과매달기
@@ -146,23 +151,29 @@ const GroupSession = ({navigation: {navigate}, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={require('../assets/pictures/aegom6.png')}
-        style={styles.image}
-      />
-      <Text style={styles.complete}>
-        {total}명 중 {compelete}명 완료
-      </Text>
-      <View style={styles.form}>
-        <Pressable onPress={() => copyToClipboard()}>
-          <View style={styles.copy}>
-            <Image
-              source={require('../assets/icons/copy.png')}
-              style={styles.copyIcon}
-            />
-            <Text style={styles.copyText}>{roomId}</Text>
-          </View>
-        </Pressable>
+      <View style={styles.imgBox}>
+        <Image
+          source={require('../assets/pictures/aegom6.png')}
+          style={styles.image}
+        />
+      </View>
+      <View style={styles.completeBox}>
+        <Text style={styles.complete}>
+          {total}명 중 {compelete}명 완료
+        </Text>
+      </View>
+      <View style={styles.formBox}>
+        <View style={styles.copyBox}>
+          <Pressable onPress={() => copyToClipboard()}>
+            <View style={styles.copy}>
+              <Image
+                source={require('../assets/icons/copy.png')}
+                style={styles.copyIcon}
+              />
+              <Text style={styles.copyText}>{roomId}</Text>
+            </View>
+          </Pressable>
+        </View>
         <View style={styles.view}>
           <ScrollView
             style={styles.ScrollView}
@@ -177,14 +188,37 @@ const GroupSession = ({navigation: {navigate}, route}) => {
             ))}
           </ScrollView>
         </View>
-        <View style={styles.buttons}>
-          {
-            //방장이 아니고
-            !isHost ? (
-              <Button
+      </View>
+      <View style={styles.buttonBox}>
+        {
+          //방장이 아니고
+          !isHost ? (
+            <Button
+              onPress={() => {
+                if (myHasUpload) {
+                  Alert.alert('이미 작성을 완료했습니다.');
+                } else {
+                  actAdding();
+                  navigate('GroupCreate', {
+                    roomId: roomId,
+                    isHost: isHost,
+                    appleId: reservedAppleId,
+                  });
+                }
+              }}
+              text="사과 내용쓰기"
+            />
+          ) : (
+            <>
+              <HangButton
+                onPress={() => hangApple()}
+                text="사과 봉인하기"
+                disabled={false}
+              />
+              <SmallButton
                 onPress={() => {
                   if (myHasUpload) {
-                    alert('이미 작성을 완료했습니다.');
+                    Alert.alert('이미 작성을 완료했습니다.');
                   } else {
                     actAdding();
                     navigate('GroupCreate', {
@@ -195,34 +229,11 @@ const GroupSession = ({navigation: {navigate}, route}) => {
                   }
                 }}
                 text="사과 내용쓰기"
+                disabled={false}
               />
-            ) : (
-              <>
-                <HangButton
-                  onPress={() => hangApple()}
-                  text="사과 봉인하기"
-                  disabled={false}
-                />
-                <SmallButton
-                  onPress={() => {
-                    if (myHasUpload) {
-                      alert('이미 작성을 완료했습니다.');
-                    } else {
-                      actAdding();
-                      navigate('GroupCreate', {
-                        roomId: roomId,
-                        isHost: isHost,
-                        appleId: reservedAppleId,
-                      });
-                    }
-                  }}
-                  text="사과 내용쓰기"
-                  disabled={false}
-                />
-              </>
-            )
-          }
-        </View>
+            </>
+          )
+        }
       </View>
     </SafeAreaView>
   );
@@ -230,18 +241,56 @@ const GroupSession = ({navigation: {navigate}, route}) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 10,
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
   },
+  imgBox: {
+    flex: 2.5,
+    justifyContent: 'flex-end',
+  },
+  image: {
+    resizeMode: 'contain',
+    width: wp('30%'),
+    height: wp('32%'),
+  },
+  completeBox: {
+    flex: 0.5,
+    justifyContent: 'center',
+  },
+  complete: {
+    fontSize: wp('4%'),
+    color: '#4C4036',
+    fontFamily: 'UhBee Se_hyun Bold',
+  },
+  formBox: {
+    flex: 5,
+  },
+  copyBox: {
+    flex: 1,
+  },
+  copy: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    margin: wp('3%'),
+  },
+  copyText: {
+    fontSize: wp('3.5%'),
+    color: '#4C4036',
+    fontFamily: 'UhBee Se_hyun Bold',
+    textAlign: 'center',
+  },
+  copyIcon: {
+    resizeMode: 'contain',
+    width: wp('6%'),
+    height: wp('5%'),
+  },
   view: {
-    marginTop: 25,
-    padding: 25,
-    width: 370,
-    height: 250,
-    fontSize: 12,
+    flex: 3.5,
+    fontSize: wp('2.5%'),
+    width: wp('80%'),
     fontFamily: 'UhBee Se_hyun',
   },
   ScrollView: {
@@ -249,44 +298,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     color: '#4C4036',
   },
-  complete: {
-    fontSize: 16,
-    color: '#4C4036',
-    fontFamily: 'UhBee Se_hyun Bold',
-    marginTop: 10,
-  },
-  copy: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  copyText: {
-    fontSize: 13,
-    color: '#4C4036',
-    fontFamily: 'UhBee Se_hyun Bold',
-    marginTop: 10,
-    textAlign: 'center',
-  },
-  copyIcon: {
-    marginRight: 5,
-    marginTop: 10,
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  image: {
-    width: 111,
-    height: 140,
-  },
   txt: {
-    marginLeft: 15,
-    marginRight: 15,
-    marginBottom: 5,
-    marginTop: 10,
     fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: 15,
+    fontSize: wp('3.5%'),
     color: '#4c4036',
+    textAlign: 'center',
+    margin: hp('1.2%'),
+  },
+  buttonBox: {
+    flex: 1.2,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: wp('5%'),
   },
 });
 
