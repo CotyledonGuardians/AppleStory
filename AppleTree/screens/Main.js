@@ -450,7 +450,6 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun Bold',
     fontSize: wp('3.5%'),
   },
-
   //모달 스타일 start
   centeredView: {
     flex: 1,
