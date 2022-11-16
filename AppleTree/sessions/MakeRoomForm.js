@@ -277,6 +277,10 @@ const MakeRoomForm = ({navigation}) => {
         }}>
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+            <Image
+              source={require('../assets/icons/exclamationMark.png')}
+              style={styles.imageMark}
+            />
             <Text style={styles.modalText}>'사과나무 추억걸렸네' 는</Text>
             <Text style={styles.modalText}>사과를 만드는 상황에서 </Text>
             <Text style={styles.modalText}>사과에 위치를 기록하기 위해</Text>
@@ -416,6 +420,13 @@ const styles = StyleSheet.create({
     marginBottom: wp('2%'),
     textAlign: 'center',
     flexDirection: 'column',
+  },
+  imageMark: {
+    resizeMode: 'contain',
+    width: wp('12%'),
+    height: wp('12%'),
+    marginTop: hp('1%'),
+    marginBottom: hp('2%'),
   },
   //모달 스타일 end
 });
