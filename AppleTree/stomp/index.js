@@ -122,7 +122,11 @@ export const SubscribeIfConnected = async (
     return {unsubscribe: () => {}};
 
   return stomp.instance.subscribe(
-    subDestPrefix + "/" + destination.roomType + "." + destination.roomId.toUpperCase(),
+    subDestPrefix +
+      '/' +
+      destination.roomType +
+      '.' +
+      (destination.roomId + '').toUpperCase(),
     message => {
       const {command, data} = JSON.parse(message.body);
 
@@ -151,7 +155,13 @@ export const SendIfSubscribed = (
   if (Empty(destination) || !Subscribed()) return;
 
   stomp.instance.send(
-    sendDestPrefix + "/" + destination.roomType + "." + destination.roomId.toUpperCase() + "." + destination.action,
+    sendDestPrefix +
+      '/' +
+      destination.roomType +
+      '.' +
+      (destination.roomId + '').toUpperCase() +
+      '.' +
+      destination.action,
     JSON.stringify(body),
     headers,
   );
