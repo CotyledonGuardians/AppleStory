@@ -353,6 +353,7 @@ const Main = ({navigation}) => {
 
 const styles = StyleSheet.create({
   backgroundImg: {
+    resizeMode: 'stretch',
     width: '100%',
     height: '100%',
   },
@@ -361,6 +362,7 @@ const styles = StyleSheet.create({
     height: wp('15%'),
   },
   apple1: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -368,6 +370,7 @@ const styles = StyleSheet.create({
     left: wp('37%'),
   },
   apple2: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -375,6 +378,7 @@ const styles = StyleSheet.create({
     left: wp('17%'),
   },
   apple3: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -382,6 +386,7 @@ const styles = StyleSheet.create({
     left: wp('62%'),
   },
   apple4: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -389,6 +394,7 @@ const styles = StyleSheet.create({
     left: wp('42%'),
   },
   apple5: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -396,6 +402,7 @@ const styles = StyleSheet.create({
     left: wp('67%'),
   },
   apple6: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -406,14 +413,14 @@ const styles = StyleSheet.create({
     width: wp('70%'),
     height: wp('67%'),
     position: 'absolute',
-    top: hp('50%'),
+    bottom: hp('8%'),
     left: wp('50%'),
   },
   basketTouch: {
     width: wp('28%'),
     height: wp('29%'),
     position: 'absolute',
-    top: hp('65%'),
+    bottom: hp('15%'),
     left: wp('10%'),
   },
   basket: {
@@ -421,8 +428,10 @@ const styles = StyleSheet.create({
     height: wp('29%'),
   },
   comment: {
-    top: hp('68%'),
+    bottom: hp('5.5%'),
+    left: wp('35%'),
     alignItems: 'center',
+    position: 'absolute',
     justifyContent: 'flex-end',
   },
   arrow: {
@@ -441,7 +450,6 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun Bold',
     fontSize: wp('3.5%'),
   },
-
   //모달 스타일 start
   centeredView: {
     flex: 1,
