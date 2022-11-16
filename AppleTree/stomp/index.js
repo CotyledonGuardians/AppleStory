@@ -111,7 +111,10 @@ export const DisconnectIfConnected = (
  * Stomp subscription object having unsubscribe method in it
  */
 export const SubscribeIfConnected = async (
-  destination = '',
+  destination = {
+    roomType: '',
+    roomId: '',
+  },
   messageListeners = {},
   headers = {},
 ) => {
@@ -119,7 +122,7 @@ export const SubscribeIfConnected = async (
     return {unsubscribe: () => {}};
 
   return stomp.instance.subscribe(
-    subDestPrefix + destination,
+    subDestPrefix + "/" + destination.roomType + "." + destination.roomId.toUpperCase(),
     message => {
       const {command, data} = JSON.parse(message.body);
 
@@ -136,11 +139,19 @@ export const SubscribeIfConnected = async (
  * send message to given destitation with given body and headers if connected and subscribed
  * nothing happen when passing empty destination or not subscribed
  */
-export const SendIfSubscribed = (destination = '', body = {}, headers = {}) => {
+export const SendIfSubscribed = (
+  destination = {
+    roomType: '',
+    roomId: '',
+    action: '',
+  },
+  body = {},
+  headers = {},
+) => {
   if (Empty(destination) || !Subscribed()) return;
 
   stomp.instance.send(
-    sendDestPrefix + destination,
+    sendDestPrefix + "/" + destination.roomType + "." + destination.roomId.toUpperCase() + "." + destination.action,
     JSON.stringify(body),
     headers,
   );

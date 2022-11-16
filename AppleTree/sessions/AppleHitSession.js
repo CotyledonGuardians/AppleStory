@@ -71,7 +71,13 @@ const AppleHitSession = ({navigation, route}) => {
     };
 
     //방에 들어가기
-    SubscribeIfConnected(`/unlock-apple-room.${roomId}`, messageListeners);
+    SubscribeIfConnected(
+      {
+        roomType: 'unlock-apple-room',
+        roomId: roomId,
+      },
+      messageListeners,
+    );
   }, [roomId]);
 
   const disconnect = () => {
@@ -83,7 +89,14 @@ const AppleHitSession = ({navigation, route}) => {
   };
 
   const attack = () => {
-    SendIfSubscribed(`/unlock-apple-room.${roomId}.attack`, {});
+    SendIfSubscribed(
+      {
+        roomType: 'unlock-apple-room',
+        roomId: roomId,
+        action: 'attack',
+      },
+      {},
+    );
   };
 
   //다른사람이 applehit했을때

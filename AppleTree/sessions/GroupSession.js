@@ -125,7 +125,13 @@ const GroupSession = ({navigation: {navigate}, route}) => {
       },
     };
     //방에 들어가기
-    SubscribeIfConnected(`/lock-apple-room.${roomId}`, messageListeners);
+    SubscribeIfConnected(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+      },
+      messageListeners,
+    );
   }, [roomId]);
 
   // 세션 연결 해제
@@ -137,16 +143,37 @@ const GroupSession = ({navigation: {navigate}, route}) => {
 
   // 세션에서 사과에 내용을 쓰고있는 상태
   const actAdding = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.adding`, {});
+    SendIfSubscribed(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+        action: 'adding',
+      },
+      {},
+    );
   };
 
   const actCancelled = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.cancelled`, {});
+    SendIfSubscribed(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+        action: 'cancelled',
+      },
+      {},
+    );
   };
 
   //방장이 사과매달기를 할때(hasUpload가 true인 모든 인원 제출)
   const submit = () => {
-    SendIfSubscribed(`/lock-apple-room.${roomId}.submit`, {});
+    SendIfSubscribed(
+      {
+        roomType: 'lock-apple-room',
+        roomId: roomId,
+        action: 'submit',
+      },
+      {},
+    );
   };
 
   return (
