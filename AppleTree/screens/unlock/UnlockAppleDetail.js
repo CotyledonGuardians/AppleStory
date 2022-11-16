@@ -42,7 +42,7 @@ export default class PlayerScreen extends React.Component {
       image: '',
       video: '',
       audio: '',
-
+      imgUrl: '',
       currentTime: 0,
       duration: 0,
       isFullScreen: true,
@@ -62,14 +62,18 @@ export default class PlayerScreen extends React.Component {
         }
       }
     }
+  }
+
+  async componentDidMount() {
+    let uid = this.props.route.params.uid;
+    let data = this.props.route.params.data;
 
     if (data.content.photo != null) {
       for (let i = 0; i < data.content.photo.length; i++) {
         if (data.content.photo[i].author === uid) {
           const imageRef = storage().ref(data.content.photo[i].content);
-          imageRef.getDownloadURL().then(url => {
-            // console.log(url);
-            this.image = url;
+          await imageRef.getDownloadURL().then(url => {
+            this.setState({image: url});
           });
           break;
         }
@@ -81,8 +85,7 @@ export default class PlayerScreen extends React.Component {
         if (data.content.video[i].author === uid) {
           const videoRef = storage().ref(data.content.video[i].content);
           videoRef.getDownloadURL().then(url => {
-            // console.log(url);
-            this.video = url;
+            this.setState({video: url});
           });
           break;
         }
@@ -94,16 +97,13 @@ export default class PlayerScreen extends React.Component {
         if (data.content.audio[i].author === uid) {
           const audioRef = storage().ref(data.content.audio[i].content);
           audioRef.getDownloadURL().then(url => {
-            // console.log(url);
-            this.audio = url;
+            this.setState({audio: url});
           });
           break;
         }
       }
     }
-  }
 
-  componentDidMount() {
     this.timeout = setInterval(() => {
       if (
         this.sound &&
@@ -145,7 +145,7 @@ export default class PlayerScreen extends React.Component {
       this.sound.play(this.playComplete);
       this.setState({playState: 'playing'});
     } else {
-      const filepath = this.audio;
+      const filepath = this.state.audio;
       this.sound = new Sound(filepath, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
@@ -268,35 +268,37 @@ export default class PlayerScreen extends React.Component {
   render() {
     const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
     const durationString = this.getAudioTimeString(this.state.duration2);
-    // this.setState({audio: audio});
     return (
       <SafeAreaView style={styles.container}>
         <Text style={[styles.textFontBold, styles.header]}>
           {this.state.nickname}님의 기록
         </Text>
-        {!this.text && !this.image && !this.video && !this.audio && (
-          <View style={styles.emptyData}>
-            <Image
-              source={require('../../assets/pictures/aegom3.png')}
-              style={{
-                resizeMode: 'contain',
-                height: hp('25%'),
-              }}
-            />
-            <Text style={styles.textFont}>기록된 데이터가 없어요 ㅠㅠ</Text>
-          </View>
-        )}
+        {!this.text &&
+          !this.state.image &&
+          !this.state.video &&
+          !this.state.audio && (
+            <View style={styles.emptyData}>
+              <Image
+                source={require('../../assets/pictures/aegom3.png')}
+                style={{
+                  resizeMode: 'contain',
+                  height: hp('25%'),
+                }}
+              />
+              <Text style={styles.textFont}>기록된 데이터가 없어요 ㅠㅠ</Text>
+            </View>
+          )}
         <ScrollView showsVerticalScrollIndicator={false}>
           {this.text && (
             <View style={styles.textBox}>
               <Text style={styles.textFont}>{this.text}</Text>
             </View>
           )}
-          {/* {this.image && (
+          {this.state.image !== '' && (
             <View style={styles.imageBox}>
               <Image
                 style={{
-                  margin: 3,
+                  // marginTop: hp('1%'),
                   height: '100%',
                   aspectRatio: 1.6,
                   flex: 1,
@@ -304,13 +306,14 @@ export default class PlayerScreen extends React.Component {
                   resizeMode: 'contain',
                 }}
                 source={{
-                  uri: this.image,
+                  uri: this.state.image,
                 }}
               />
             </View>
           )}
-          {this.video && (
-            <View style={{width: '100%', height: 200, marginTop: '5%'}}>
+          {this.state.video !== '' && (
+            <View
+              style={{width: '100%', height: hp('30%'), marginTop: hp('3%')}}>
               <Video
                 style={styles.mediaPlayer}
                 onEnd={this.onEnd}
@@ -321,7 +324,7 @@ export default class PlayerScreen extends React.Component {
                 ref={videoPlayer => (this.videoPlayer = videoPlayer)}
                 resizeMode={this.state.screenType}
                 onFullScreen={this.state.isFullScreen}
-                source={{uri: this.video}}
+                source={{uri: this.state.video}}
                 repeat={false}
                 controls={false}
                 volume={10}
@@ -330,52 +333,64 @@ export default class PlayerScreen extends React.Component {
                 duration={this.state.duration}
                 isLoading={this.state.isLoading}
                 mainColor="#333"
-                onFullScreen={this.onFullScreen}
+                // onFullScreen={this.onFullScreen}
                 onPaused={this.onPaused}
                 onReplay={this.onReplay}
                 onSeek={this.onSeek}
                 onSeeking={this.onSeeking}
                 playerState={this.state.playerState}
                 progress={this.state.currentTime}
-                toolbar={this.renderToolbar()}
+                // toolbar={this.renderToolbar()}
               />
             </View>
           )}
-          {this.audio && (
+          {this.state.audio !== '' && (
             <View style={styles.audioBox}>
               <View style={{flex: 1, justifyContent: 'center'}}>
                 <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'center',
-                    marginVertical: 10,
+                    marginVertical: wp('1%'),
                   }}>
                   <TouchableOpacity
                     onPress={this.jumpPrev15Seconds}
                     style={{justifyContent: 'center'}}>
                     <Image
                       source={require('../../assets/icons/rotate-left.png')}
-                      style={{width: 25, height: 25}}
+                      style={{
+                        width: wp('5%'),
+                        height: hp('5%'),
+                        resizeMode: 'contain',
+                      }}
                     />
                     <Text style={styles.textFontJump}>15</Text>
                   </TouchableOpacity>
                   {this.state.playState == 'playing' && (
                     <TouchableOpacity
                       onPress={this.pause}
-                      style={{marginHorizontal: 20}}>
+                      style={{marginHorizontal: wp('5%')}}>
                       <Image
                         source={require('../../assets/icons/pause.png')}
-                        style={{width: 25, height: 25}}
+                        style={{
+                          width: wp('5%'),
+                          height: hp('5%'),
+                          resizeMode: 'contain',
+                        }}
                       />
                     </TouchableOpacity>
                   )}
                   {this.state.playState == 'paused' && (
                     <TouchableOpacity
                       onPress={this.play}
-                      style={{marginHorizontal: 20}}>
+                      style={{marginHorizontal: wp('5%')}}>
                       <Image
                         source={require('../../assets/icons/playbrown.png')}
-                        style={{width: 25, height: 25}}
+                        style={{
+                          width: wp('5%'),
+                          height: hp('5%'),
+                          resizeMode: 'contain',
+                        }}
                       />
                     </TouchableOpacity>
                   )}
@@ -384,7 +399,11 @@ export default class PlayerScreen extends React.Component {
                     style={{justifyContent: 'center'}}>
                     <Image
                       source={require('../../assets/icons/rotate-right.png')}
-                      style={{width: 25, height: 25}}
+                      style={{
+                        width: wp('5%'),
+                        height: hp('5%'),
+                        resizeMode: 'contain',
+                      }}
                     />
                     <Text style={styles.textFontJump}>15</Text>
                   </TouchableOpacity>
@@ -415,7 +434,7 @@ export default class PlayerScreen extends React.Component {
                 </View>
               </View>
             </View>
-          )} */}
+          )}
         </ScrollView>
       </SafeAreaView>
     );
@@ -455,7 +474,7 @@ const styles = StyleSheet.create({
     marginTop: 1,
     fontFamily: 'UhBee Se_hyun',
     color: '#4C4036',
-    fontSize: 10,
+    fontSize: wp('2%'),
   },
   emptyData: {
     fontFamily: 'UhBee Se_hyun',
@@ -467,7 +486,7 @@ const styles = StyleSheet.create({
   textFontTime: {
     fontFamily: 'UhBee Se_hyun',
     alignItems: 'center',
-    fontSize: 16,
+    fontSize: wp('4%'),
     color: '#4C4036',
   },
   textFontBold: {
@@ -481,14 +500,14 @@ const styles = StyleSheet.create({
     padding: wp('5%'),
   },
   imageBox: {
-    marginTop: '5%',
+    marginTop: hp('3%'),
   },
   audioBox: {
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
-    height: 100,
-    marginTop: '5%',
-    marginBottom: '5%',
+    height: hp('10%'),
+    marginTop: hp('3%'),
+    marginBottom: hp('3%'),
     justifyContent: 'space-between',
     flexDirection: 'row',
   },

@@ -39,7 +39,6 @@ const Overview = ({navigation, route}) => {
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(async response => {
-        console.log(response.data.body);
         setAppleDetail(response.data.body);
         if (response.data.body.location != null) {
           getAddressLatLng(response.data.body.location);
@@ -263,12 +262,11 @@ const Overview = ({navigation, route}) => {
 
   function Photo() {
     return (
-      <View style={{padding: 20}}>
+      <View style={{padding: wp('4%')}}>
         <Text style={styles.textFontBold}>기록된 사진</Text>
-        <View style={{height: 230, width: '100%'}}>
+        <View style={{height: hp('40%'), width: wp('100%')}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {photoURLs.map((item, index) => {
-              console.log(item);
               return (
                 <Image
                   key={index}
@@ -286,14 +284,12 @@ const Overview = ({navigation, route}) => {
   }
 
   function Thumbnail() {
-    console.log('thundfefwe', thumbnail);
     return (
-      <View style={{padding: 20}}>
+      <View style={{padding: wp('4%')}}>
         <Text style={styles.textFontBold}>기록된 영상</Text>
-        <View style={{height: 230, width: '100%'}}>
+        <View style={{height: hp('40%'), width: '100%'}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {thumbnail.map((item, index) => {
-              console.log('item!!!: ', item);
               return (
                 <TouchableOpacity
                   key={index}
@@ -410,6 +406,7 @@ const styles = StyleSheet.create({
   textFontBold: {
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
+    marginLeft: wp('2%'),
     fontSize: wp('3.5%'),
   },
   defaultText: {
@@ -485,12 +482,15 @@ const styles = StyleSheet.create({
     height: hp('22%'),
   },
   photoImg: {
+    marginTop: wp('2%'),
+    marginRight: wp('2%'),
     resizeMode: 'contain',
-    margin: wp('2%'),
-    height: hp('20%'),
-    // width: wp('10%'),
+    // height: hp('100%'),
     aspectRatio: 1.5,
     flex: 1,
+    width: wp('90%'),
+    alignContent: 'center',
+    justifyContent: 'center',
   },
   seedImg: {
     resizeMode: 'contain',
