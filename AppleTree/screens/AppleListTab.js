@@ -7,11 +7,19 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {UseStomp, DisconnectIfConnected} from '../stomp';
+import SelectDropdown from 'react-native-select-dropdown';
+import {getCloseAppleList, getOpenAppleList} from '../api/AppleAPI';
+import {useEffect, useState} from 'react';
 
 const Apple = ({navigation, data}) => {
+  const [appleSortList, setAppleSortList] = useState();
+  // setAppleList(data.list);
   const appleList = data.list;
-  const name = data.name;
+  const tabName = data.name;
   // console.log('현재 탭:', name);
+
+  // const [sort, setSort] = useState(0);
+  const size = 1000;
 
   var randomgroupImages = [
     require('../assets/pictures/listgroup1.png'),
@@ -21,6 +29,28 @@ const Apple = ({navigation, data}) => {
     require('../assets/pictures/readyhitgroup1.png'),
     require('../assets/pictures/readyhitgroup2.png'),
   ];
+
+  const getSortList = async sort => {
+    if (tabName === 'open') {
+      console.log('dld');
+      getOpenAppleList(sort, 0, size)
+        .then(response => {
+          // console.log(response.data);
+          setAppleSortList(response.data.body.content);
+        })
+        .catch(error => {
+          console.log('error', error);
+        });
+    } else {
+      getCloseAppleList(sort, 0, size)
+        .then(response => {
+          setAppleSortList(response.data.body.content);
+        })
+        .catch(error => {
+          console.log('error', error);
+        });
+    }
+  };
 
   const Card = ({type, title, unlockAt, isOpen, index, id, isCatch}: any) => {
     let lockDate = new Date(unlockAt);
@@ -76,7 +106,7 @@ const Apple = ({navigation, data}) => {
             });
           }
         }}>
-        <Image source={url} style={styles.appleImg} resizeMode="contain" />
+        <Image source={url} style={styles.appleImg} />
         <Text style={styles.titleFont}>
           {title.length > 11 ? title.substr(0, 10).trim() + '...' : title}
         </Text>
@@ -84,9 +114,50 @@ const Apple = ({navigation, data}) => {
     );
   };
 
+  function DropdownSelect() {
+    let countries = [];
+    if (tabName === 'open') {
+      countries = ['오래된 순', '최신순'];
+    } else {
+      countries = [
+        '오래된 순',
+        '최신순',
+        '적게 남은 시간 순',
+        '많이 남은 시간 순',
+      ];
+    }
+
+    return (
+      <SelectDropdown
+        data={countries}
+        defaultValueByIndex={0}
+        // defaultValue={routeSort2}
+        onSelect={(selectedItem, index) => {
+          console.log(selectedItem, index);
+          // setSort(countries[index]);
+          getSortList(countries[index]);
+        }}
+        buttonTextAfterSelection={(selectedItem, index) => {
+          return selectedItem;
+        }}
+        rowTextForSelection={(item, index) => {
+          return item;
+        }}
+        buttonStyle={styles.dropdown2BtnStyle}
+        buttonTextStyle={styles.dropdown2BtnTxtStyle}
+        dropdownStyle={styles.dropdown2DropdownStyle}
+        rowStyle={styles.dropdown2RowStyle}
+        rowTextStyle={styles.dropdown2RowTxtStyle}
+      />
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View>
+        <View style={styles.dropDownSelect}>
+          <DropdownSelect />
+        </View>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -132,6 +203,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   appleImg: {
+    resizeMode: 'contain',
     width: wp('33%'),
     height: hp('20%'),
   },
@@ -143,6 +215,39 @@ const styles = StyleSheet.create({
     fontSize: wp('3%'),
     fontFamily: 'UhBee Se_hyun',
     color: '#4C4036',
+  },
+  dropDownSelect: {
+    height: hp('8%'),
+    alignItems: 'center',
+  },
+  dropdown2BtnStyle: {
+    width: wp('40%'),
+    height: hp('6%'),
+    backgroundColor: '#ECE5E0',
+    borderRadius: 8,
+    top: hp('2%'),
+    position: 'absolute',
+  },
+  dropdown2BtnTxtStyle: {
+    color: '#4C4036',
+    textAlign: 'center',
+    fontSize: wp('3%'),
+    fontFamily: 'UhBee Se_hyun',
+  },
+  dropdown2DropdownStyle: {
+    backgroundColor: '#ECE5E0',
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+  },
+  dropdown2RowStyle: {
+    backgroundColor: '#ECE5E0',
+    borderBottomColor: '#716357',
+  },
+  dropdown2RowTxtStyle: {
+    color: '#4C4036',
+    textAlign: 'center',
+    fontSize: wp('3%'),
+    fontFamily: 'UhBee Se_hyun',
   },
 });
 
