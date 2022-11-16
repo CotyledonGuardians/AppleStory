@@ -39,7 +39,6 @@ const Overview = ({navigation, route}) => {
   useEffect(() => {
     getAppleDetail(route.params.id)
       .then(async response => {
-        console.log(response.data.body);
         setAppleDetail(response.data.body);
         if (response.data.body.location != null) {
           getAddressLatLng(response.data.body.location);
@@ -268,7 +267,6 @@ const Overview = ({navigation, route}) => {
         <View style={{height: hp('40%'), width: wp('100%')}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {photoURLs.map((item, index) => {
-              console.log(item);
               return (
                 <Image
                   key={index}
@@ -292,7 +290,6 @@ const Overview = ({navigation, route}) => {
         <View style={{height: hp('40%'), width: '100%'}}>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {thumbnail.map((item, index) => {
-              console.log('item!!!: ', item);
               return (
                 <TouchableOpacity
                   key={index}

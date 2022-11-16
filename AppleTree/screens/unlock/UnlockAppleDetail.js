@@ -127,9 +127,6 @@ export default class PlayerScreen extends React.Component {
     }
   }
 
-  componentDidUpdate() {
-    console.log('업데이트됨..');
-  }
   onSliderEditStart = () => {
     this.sliderEditing = true;
   };
@@ -271,7 +268,6 @@ export default class PlayerScreen extends React.Component {
   render() {
     const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
     const durationString = this.getAudioTimeString(this.state.duration2);
-    console.log('업데이트하면 되어야지 왜 안됨..');
     return (
       <SafeAreaView style={styles.container}>
         <Text style={[styles.textFontBold, styles.header]}>
