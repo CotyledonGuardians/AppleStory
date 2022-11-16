@@ -11,6 +11,7 @@ pipeline {
     RABBIT_PRODUCTION = credentials('rabbit_production')
     REDIS_CONF_PRODUCTION = credentials('redis_conf_production')
     REDIS_ACL_PRODUCTION = credentials('redis_acl_production')
+    EMAIL_CONF_PRODUCTION = credentials('email_config')
 
     BACKEND_CONTAINER = 'api'
 
@@ -40,6 +41,10 @@ pipeline {
                 sh 'cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml'
                 sh 'cp $FIREBASE_PRODUCTION backend/src/main/resources/firebase-service-account-production-secret.json'
                 sh 'chmod 755 backend/src/main/resources/firebase-service-account-production-secret.json'
+                sh 'cp $FIREBASE_PRODUCTION backend-mail/src/main/resources/firebase-service-account-production-secret.json'
+                sh 'chmod 755 backend-mail/src/main/resources/firebase-service-account-production-secret.json'
+                sh 'cp $EMAIL_CONF_PRODUCTION backend-mail/src/main/resources/email.properties'
+                sh 'chmod 755 backend-mail/src/main/resources/email.properties'
                 sh 'cp $REDIS_CONF_PRODUCTION backend/redis.conf'
                 sh 'chmod 755 backend/redis.conf'
                 sh 'cp $REDIS_ACL_PRODUCTION backend/users.acl'

@@ -1,0 +1,28 @@
+com:
+  cotyledon:
+    mail:
+      firebase-project-id: apple-story
+      firebase-service-account-secret: classpath:firebase-service-account-production-secret.json
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+  output:
+    ansi:
+      enabled: always
+
+logging:
+  file:
+    path: log/mail.log
+  level:
+    com.cotyledon.mail: DEBUG
+    org:
+      hibernate:
+        SQL: DEBUG
+        type.descriptor.sql.BasicBinder: TRACE
+      springframework.web: DEBUG
+
+server:
+  port: 65500
