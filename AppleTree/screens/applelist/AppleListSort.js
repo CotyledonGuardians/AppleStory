@@ -1,6 +1,6 @@
 import SelectDropdown from 'react-native-select-dropdown';
 import React from 'react';
-import {SafeAreaView, View, StyleSheet} from 'react-native';
+import {SafeAreaView, View, StyleSheet, Image, Text} from 'react-native';
 import {getCloseAppleList, getOpenAppleList} from '../../api/AppleAPI';
 import {useState} from 'react';
 import {
@@ -46,26 +46,39 @@ const DropdownSelect = ({navigation, data}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <View style={styles.dropDownSelect}>
-          <SelectDropdown
-            data={countries}
-            defaultValueByIndex={0}
-            onSelect={(selectedItem, index) => {
-              getSortList(index);
-            }}
-            buttonTextAfterSelection={(selectedItem, index) => {
-              return selectedItem;
-            }}
-            rowTextForSelection={(item, index) => {
-              return item;
-            }}
-            buttonStyle={styles.dropdown2BtnStyle}
-            buttonTextStyle={styles.dropdown2BtnTxtStyle}
-            dropdownStyle={styles.dropdown2DropdownStyle}
-            rowStyle={styles.dropdown2RowStyle}
-            rowTextStyle={styles.dropdown2RowTxtStyle}
-          />
-        </View>
+        {appleList.length !== 0 ? (
+          <View style={styles.dropDownSelect}>
+            <SelectDropdown
+              data={countries}
+              defaultValueByIndex={0}
+              onSelect={(selectedItem, index) => {
+                getSortList(index);
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                return item;
+              }}
+              buttonStyle={styles.dropdown2BtnStyle}
+              buttonTextStyle={styles.dropdown2BtnTxtStyle}
+              dropdownStyle={styles.dropdown2DropdownStyle}
+              rowStyle={styles.dropdown2RowStyle}
+              rowTextStyle={styles.dropdown2RowTxtStyle}
+            />
+          </View>
+        ) : (
+          <View style={styles.noData}>
+            <Image
+              source={require('../../assets/pictures/aegomkey.png')}
+              style={styles.noDataImg}
+            />
+            <View style={styles.noDataTxtView}>
+              <Text style={styles.noDataTxt}>아무것도 없어요 ㅠ_ㅠ</Text>
+              <Text style={styles.noDataTxt}>사과를 만들어 보세요!</Text>
+            </View>
+          </View>
+        )}
         <Apple
           navigation={navigation}
           data={appleSortList === undefined ? appleList : appleSortList}
@@ -120,6 +133,25 @@ const styles = StyleSheet.create({
   scroll: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  noData: {
+    alignItems: 'center',
+  },
+  noDataImg: {
+    resizeMode: 'contain',
+    width: wp('50%'),
+    height: wp('50%'),
+    marginTop: wp('40%'),
+  },
+  noDataTxtView: {
+    marginTop: wp('3%'),
+  },
+  noDataTxt: {
+    color: '#4C4036',
+    textAlign: 'center',
+    fontSize: wp('4%'),
+    fontFamily: 'UhBee Se_hyun Bold',
+    // marginTop: wp('3%'),
   },
 });
 export default DropdownSelect;
