@@ -11,11 +11,13 @@ import {
   Button,
   Slider,
   Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
 import storage from '@react-native-firebase/storage';
+import RNFetchBlob from 'rn-fetch-blob';
 // import Slider from '@react-native-community/slider';
 import {
   heightPercentageToDP as hp,
@@ -265,6 +267,95 @@ export default class PlayerScreen extends React.Component {
 
   onSeeking = currentTime => this.setState({currentTime});
 
+  checkPermission = async type => {
+    console.log('type', type);
+    if (Platform.OS === 'ios') {
+      this.downloadFile();
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: '미디어 저장소 접근 요청',
+            message:
+              '파일을 다운받으려면 미디어 저장소에 접근을 허용해야 합니다.',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          // Start downloading
+          this.downloadFile(type);
+          console.log('Storage Permission Granted.');
+        } else {
+          // If permission denied then show alert
+          Alert.alert(
+            '파일 저장 불가',
+            '미디어 저장소에 접근을 허용해야 합니다.',
+          );
+        }
+      } catch (err) {
+        // To handle permission related exception
+        console.log('++++' + err);
+      }
+    }
+  };
+
+  downloadFile = type => {
+    console.log('WEFWEFEWFEWF');
+    let date = new Date();
+    let FILE_URL = '';
+    let extension = '';
+    if (type === 'image') {
+      FILE_URL = this.state.image;
+      extension = '.png';
+    } else if (type === 'video') {
+      FILE_URL = this.state.video;
+      extension = '.mp4';
+    } else {
+      FILE_URL = this.state.audio;
+      extension = '.mp4';
+    }
+
+    if (FILE_URL !== '') {
+      // config: To get response by passing the downloading related options
+      // fs: Root directory path to download
+      const {config, fs} = RNFetchBlob;
+      let RootDir = fs.dirs.DownloadDir;
+      let options = {
+        fileCache: true,
+        addAndroidDownloads: {
+          path:
+            RootDir +
+            '/apple_story/' +
+            type +
+            '/' +
+            type +
+            '_' +
+            Math.floor(date.getTime() + date.getSeconds() / 2) +
+            extension,
+          notification: true,
+          // useDownloadManager works with Android only
+          useDownloadManager: true,
+        },
+      };
+      config(options)
+        .fetch('GET', FILE_URL)
+        .then(res => {
+          console.log('res -> ', JSON.stringify(res));
+          alert('저장 완료!');
+        })
+        .catch(error => {
+          console.log('File Download Error ', error);
+        });
+    } else {
+      console.log('File Url Error..');
+    }
+  };
+
+  getFileExtention = fileUrl => {
+    return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
+  };
+
   render() {
     const {navigate} = this.props.navigation;
     const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
@@ -443,6 +534,61 @@ export default class PlayerScreen extends React.Component {
               </View>
             </View>
           )}
+          {(this.state.image !== '' ||
+            this.state.video !== '' ||
+            this.state.audio !== '') && (
+            <View style={styles.download}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}>
+                <Text style={styles.txtTitle}>다운로드</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  marginTop: hp('1%'),
+                  margin: hp('20%'),
+                }}>
+                {this.state.image !== '' && (
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => this.checkPermission('image')}>
+                    <Text style={styles.txt}>사진</Text>
+                    <Image
+                      style={styles.buttonIcon}
+                      source={require('../../assets/icons/photo.png')}
+                    />
+                  </TouchableOpacity>
+                )}
+                {this.state.video !== '' && (
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => this.checkPermission('video')}>
+                    <Text style={styles.txt}>영상</Text>
+                    <Image
+                      style={styles.buttonIcon}
+                      source={require('../../assets/icons/video.png')}
+                    />
+                  </TouchableOpacity>
+                )}
+                {this.state.video !== '' && (
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => this.checkPermission('audio')}>
+                    <Text style={styles.txt}>오디오</Text>
+                    <Image
+                      style={styles.buttonIcon}
+                      source={require('../../assets/icons/mic.png')}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     );
@@ -454,6 +600,55 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FBF8F6',
     padding: wp('6%'),
+  },
+  txtTitle: {
+    fontSize: wp('4%'),
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
+  },
+  txt: {
+    fontSize: wp('4%'),
+    fontFamily: 'UhBee Se_hyun',
+    color: '#4C4036',
+  },
+  button: {
+    paddingTop: 3,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginRight: wp('2%'),
+    marginLeft: wp('2%'),
+    alignContent: 'center',
+    width: wp('21%'),
+    height: hp('5%'),
+    backgroundColor: '#FBF8F6',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+    borderRadius: 25,
+  },
+  buttonIcon: {
+    resizeMode: 'contain',
+    width: wp('5%'),
+    height: hp('4%'),
+    marginLeft: wp('1%'),
+  },
+  download: {
+    backgroundColor: '#ECE5E0',
+    borderRadius: 10,
+    height: hp('13%'),
+    marginTop: hp('3%'),
+    marginBottom: hp('3%'),
+    alignContent: 'center',
+    padding: hp('1%'),
+    // justifyContent: 'center',
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // flexDirection: 'row',
   },
   toolbar: {
     marginTop: 30,
@@ -515,7 +710,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     height: hp('10%'),
     marginTop: hp('3%'),
-    marginBottom: hp('3%'),
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
