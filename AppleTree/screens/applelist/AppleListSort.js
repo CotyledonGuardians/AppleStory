@@ -70,12 +70,11 @@ const DropdownSelect = ({navigation, data}) => {
         ) : (
           <View style={styles.noData}>
             <Image
-              source={require('../../assets/pictures/aegomkey.png')}
+              source={require('../../assets/pictures/aegomnothing.png')}
               style={styles.noDataImg}
             />
             <View style={styles.noDataTxtView}>
-              <Text style={styles.noDataTxt}>아무것도 없어요 ㅠ_ㅠ</Text>
-              <Text style={styles.noDataTxt}>사과를 만들어 보세요!</Text>
+              <Text style={styles.noDataTxt}>아무것도 없어요</Text>
             </View>
           </View>
         )}
@@ -139,9 +138,9 @@ const styles = StyleSheet.create({
   },
   noDataImg: {
     resizeMode: 'contain',
-    width: wp('50%'),
-    height: wp('50%'),
-    marginTop: wp('40%'),
+    width: wp('40%'),
+    height: wp('40%'),
+    marginTop: wp('45%'),
   },
   noDataTxtView: {
     marginTop: wp('3%'),
