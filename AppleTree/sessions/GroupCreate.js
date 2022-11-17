@@ -342,7 +342,25 @@ const GroupCreate = ({navigation, route}) => {
     }
   };
 
+  const checkInput = () => {
+    if (!nickNameValid) {
+      Alert.alert('닉네임을 입력해주세요.');
+      return false;
+    }
+
+    if (content === null || !content.trim()) {
+      Alert.alert('사과에 담을 내용을 입력해주세요.');
+      return false;
+    }
+
+    return true;
+  };
+
   const onSubmit = () => {
+    if (!checkInput()) {
+      return;
+    }
+
     console.log('check', videoPathOnDevice);
     setLoading(true);
     Promise.all([
@@ -543,7 +561,7 @@ const GroupCreate = ({navigation, route}) => {
           </View>
         </View>
         <View style={styles.buttonBox}>
-          <Button onPress={onSubmit} disabled={!nickNameValid} text="완료" />
+          <Button onPress={onSubmit} text="완료" />
         </View>
         {/* 녹음기 모달 start */}
         <View style={styles.centeredView}>
