@@ -336,10 +336,10 @@ const RecordVoice = ({
               </TouchableOpacity>
             ) : recordStatus === 1 ? (
               <TouchableOpacity
-                style={styles.recordButton}
+                style={styles.stopButton}
                 onPress={onStopRecord}>
                 <Image
-                  style={styles.recordImg}
+                  style={styles.stopImg}
                   source={require('../assets/icons/stop.png')}
                 />
               </TouchableOpacity>
@@ -353,11 +353,9 @@ const RecordVoice = ({
                 />
               </TouchableOpacity>
             ) : recordStatus === 3 ? (
-              <TouchableOpacity
-                style={styles.recordButton}
-                onPress={onPausePlay}>
+              <TouchableOpacity style={styles.stopButton} onPress={onPausePlay}>
                 <Image
-                  style={styles.recordImg}
+                  style={styles.stopImg}
                   source={require('../assets/icons/pause.png')}
                 />
               </TouchableOpacity>
@@ -456,7 +454,7 @@ const styles = StyleSheet.create({
   recordText: {
     color: '#AAA19B',
     fontFamily: 'UhBee Se_hyun',
-    fontSize: wp('5%'),
+    fontSize: wp('4%'),
   },
   recordButton: {
     backgroundColor: '#FBF8F6',
@@ -470,9 +468,20 @@ const styles = StyleSheet.create({
     width: wp('10%'),
     height: wp('10%'),
   },
+  stopButton: {
+    backgroundColor: '#FBF8F6',
+    padding: wp('7%'),
+    borderRadius: 100,
+    margin: wp('4%'),
+  },
+  stopImg: {
+    resizeMode: 'contain',
+    width: wp('5%'),
+    height: wp('5%'),
+  },
   retryButton: {
     backgroundColor: '#FBF8F6',
-    padding: wp('2%'),
+    padding: wp('3%'),
     borderRadius: 50,
     alignItems: 'center',
   },
@@ -484,8 +493,8 @@ const styles = StyleSheet.create({
   },
   retryImg: {
     resizeMode: 'contain',
-    width: wp('8%'),
-    height: wp('8%'),
+    width: wp('5%'),
+    height: wp('5%'),
   },
   retryText: {
     color: '#AAA19B',
