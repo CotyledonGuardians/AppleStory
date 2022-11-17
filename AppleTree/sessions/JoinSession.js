@@ -14,6 +14,11 @@ const JoinSession = ({navigation, route}) => {
   const [roomId, setRoomID] = useState('');
 
   function joinLockApple() {
+    if (!roomId || !roomId.trim()) {
+      Alert.alert('방 번호를 입력해주세요.');
+      return;
+    }
+
     const connect = () => {
       UseStomp(
         () => {

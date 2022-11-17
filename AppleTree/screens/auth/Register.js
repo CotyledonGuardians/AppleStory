@@ -32,21 +32,30 @@ const Register = ({navigation}) => {
       console.log('storeToken error' + error);
     }
   };
+
   const checkRegisterInput = () => {
-    if (registerEmail !== null && registerPassword !== null) {
-      if (!registerEmail.trim()) {
-        Alert.alert('빈 값', '이메일을 입력해주세요.');
-        return false;
-      }
-      if (!registerPassword.trim()) {
-        Alert.alert('빈 값', '비밀번호를 입력해주세요.');
-        return false;
-      }
-    } else {
+    if (registerEmail === null || !registerEmail.trim()) {
+      Alert.alert('이메일을 입력해주세요.');
       return false;
     }
+
+    if (registerPassword === null || !registerPassword.trim()) {
+      Alert.alert('비밀번호를 입력해주세요.');
+      return false;
+    }
+
+    const regex = /\s/g;
+    if (
+      registerEmail.length !== registerEmail.replace(regex, '').length ||
+      registerPassword.length !== registerPassword.replace(regex, '').length
+    ) {
+      Alert.alert('공백을 제거해주세요.');
+      return false;
+    }
+
     return true;
   };
+
   //회원가입 함수
   const register = async () => {
     if (!checkRegisterInput()) {

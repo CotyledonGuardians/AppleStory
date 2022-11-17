@@ -15,7 +15,6 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Button} from '../components/Button';
 import RecordVoice from './RecordVoice';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -67,7 +66,7 @@ const GroupCreate = ({navigation, route}) => {
   const {isHost} = route.params;
   // GroupCreate에서 넘겨준 appleId
   const {appleId} = route.params;
-  console.log(appleId);
+  // console.log(appleId);
 
   //닉네임 입력됬는지
   const nickNameChangeHandler = text => {
@@ -122,7 +121,7 @@ const GroupCreate = ({navigation, route}) => {
       return uri;
     }
 
-    if (!uri.includes('content://com.google')) {
+    if (!uri.includes('content://')) {
       return uri;
     }
 
@@ -185,7 +184,7 @@ const GroupCreate = ({navigation, route}) => {
     } else if (type === AssetType.AUDIO) {
       await RNFS.unlink(audioPathOnDevice)
         .then(() => {
-          console.log(`Delete ${audioPathOnDevice}`);
+          // console.log(`Delete ${audioPathOnDevice}`);
           setAudioPathOnDevice(null);
           setAudioIsPicked(false);
         })
@@ -250,7 +249,11 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (asset && currentUid) {
-      const reference = storage().ref(`/${appleId}/images/${currentUid}`);
+      const _lastDot = (asset.uri).lastIndexOf('.');
+      const _fileExt = (asset.uri).substring(_lastDot, (asset.uri).length).toLowerCase().trim();
+      // console.log("image EXT::::",_fileExt);
+
+      const reference = storage().ref(`/${appleId}/images/${currentUid}${_fileExt}`);
 
       if (Platform.OS === 'android') {
         const result = await reference
@@ -273,12 +276,19 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (asset && currentUid) {
-      const reference = storage().ref(`/${appleId}/videos/${currentUid}`);
       const staticUrl = await getPathForFirebaseStorage(asset.uri).catch(
         err => {
           throw err;
         },
       );
+
+      // console.log("Static_URL::::", staticUrl);
+
+      const _lastDot = staticUrl.lastIndexOf('.');
+      const _fileExt = staticUrl.substring(_lastDot, staticUrl.length).toLowerCase().trim();
+      // console.log("image EXT::::",_fileExt);
+
+      const reference = storage().ref(`/${appleId}/videos/${currentUid}${_fileExt}`);
       return reference
         .putFile(staticUrl, {
           contentType: asset.type,
@@ -293,7 +303,7 @@ const GroupCreate = ({navigation, route}) => {
     const currentUid = auth().currentUser['uid'];
 
     if (audioPathOnDevice && currentUid) {
-      const reference = storage().ref(`/${appleId}/audios/${currentUid}`);
+      const reference = storage().ref(`/${appleId}/audios/${currentUid}.mp4`);
       return reference
         .putFile(audioPathOnDevice, {
           contentType: 'audio/mp4',
@@ -316,7 +326,7 @@ const GroupCreate = ({navigation, route}) => {
       const contentType = new String(result['metadata'].contentType);
       const indexOfSlash = contentType.indexOf('/');
       const assetType = contentType.slice(0, indexOfSlash).trim();
-      console.log(`.${assetType}.`);
+      // console.log(`.${assetType}.`);
       if (assetType === AssetType.AUDIO) {
         audioPathOnStorage = result['metadata'].fullPath;
         audioFlag = true;
@@ -342,12 +352,29 @@ const GroupCreate = ({navigation, route}) => {
     }
   };
 
+  const checkInput = () => {
+    if (!nickNameValid) {
+      Alert.alert('닉네임을 입력해주세요.');
+      return false;
+    }
+
+    if (content === null || !content.trim()) {
+      Alert.alert('사과에 담을 내용을 입력해주세요.');
+      return false;
+    }
+
+    return true;
+  };
+
   const onSubmit = () => {
-    console.log('check', videoPathOnDevice);
+    if (!checkInput()) {
+      return;
+    }
+
     setLoading(true);
     Promise.all([
       imageUpload(image),
-      videoUpload(video, videoPathOnDevice),
+      videoUpload(video),
       audioUpload(audioPathOnDevice),
     ])
       .then(res => {
@@ -403,12 +430,16 @@ const GroupCreate = ({navigation, route}) => {
   return !loading ? (
     <ScrollView contentContainerStyle={styles.wrapper}>
       <SafeAreaView style={styles.container}>
+        <View style={styles.roomidbox}>
+          <Text style={styles.roomid}>{roomId}</Text>
+        </View>
         <View style={styles.imgBox}>
           <Image
             source={require('../assets/pictures/listpersonal1.png')}
             style={styles.img}
           />
         </View>
+
         <View style={styles.formBox}>
           <Text style={styles.txt}>닉네임</Text>
           <TextInput
@@ -543,7 +574,7 @@ const GroupCreate = ({navigation, route}) => {
           </View>
         </View>
         <View style={styles.buttonBox}>
-          <Button onPress={onSubmit} disabled={!nickNameValid} text="완료" />
+          <Button onPress={onSubmit} text="완료" />
         </View>
         {/* 녹음기 모달 start */}
         <View style={styles.centeredView}>
@@ -725,6 +756,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  roomid: {
+    fontSize: wp('5%'),
+    fontFamily: 'SourceCodePro-Medium',
+  },
+  roomidbox: {
+    alignSelf: 'flex-start',
   },
 });
 
