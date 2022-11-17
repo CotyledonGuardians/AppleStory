@@ -14,6 +14,7 @@ pipeline {
     EMAIL_CONF_PRODUCTION = credentials('email_config')
 
     BACKEND_CONTAINER = 'api'
+    MAIL_CONTAINER = 'mail'
 
     // MM 플러그인, Blue Ocean 플러그인 관련
     // MMACCOUNT = '@dss02094' // @아이디 사용 (언급시 알림)
@@ -72,7 +73,7 @@ pipeline {
             stage('remove_containers') {
               steps {
                 catchError {
-                  sh "docker rm --force ${BACKEND_CONTAINER}"
+                  sh "docker rm --force ${BACKEND_CONTAINER} ${MAIL_CONTAINER}"
                 }
               }
             }
