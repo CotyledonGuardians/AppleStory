@@ -10,6 +10,7 @@ import {
   Platform,
   PermissionsAndroid,
   Modal,
+  Alert,
 } from 'react-native';
 import moment from 'moment';
 import 'moment/locale/ko';
@@ -134,10 +135,34 @@ const MakeRoomForm = ({navigation}) => {
     }
   }, [modalOk]);
 
+  const checkInput = () => {
+    if (!titleValid) {
+      Alert.alert('제목을 입력해주세요.');
+      return false;
+    }
+
+    if (!teamNameValid) {
+      Alert.alert('팀 이름을 입력해주세요.');
+      return false;
+    }
+
+    if (!dateValid) {
+      Alert.alert('해제 날짜를 입력해주세요.');
+      return false;
+    }
+
+    return true;
+  };
+
   //방 만들기(groupSession으로 이동)
   const makeRoom = () => {
     // console.log('makeRoom:::');
     // api connect start
+
+    if (!checkInput()) {
+      return;
+    }
+
     const tempAppleDTO = {
       title: title,
       creator: {
@@ -258,7 +283,7 @@ const MakeRoomForm = ({navigation}) => {
           <SmallButton
             onPress={() => makeRoom()}
             text="방 만들기"
-            disabled={!titleValid || !teamNameValid || !dateValid}
+            // disabled={!titleValid || !teamNameValid || !dateValid}
           />
         </View>
         <Text
