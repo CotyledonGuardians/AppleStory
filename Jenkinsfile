@@ -87,6 +87,10 @@ pipeline {
           sh "chmod +x gradlew"
           sh "./gradlew clean bootjar"
         }
+        dir('backend-mail') {
+          sh "chmod +x gradlew"
+          sh "./gradlew clean bootjar"
+        }
       }
     }
 
