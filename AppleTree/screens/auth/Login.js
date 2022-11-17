@@ -18,8 +18,34 @@ const Login = ({navigation}) => {
   const [email, setEmail] = useState(null);
   const [pwd, setPwd] = useState(null);
 
+  const checkInput = () => {
+    if (email === null || !email.trim()) {
+      Alert.alert('이메일을 입력해주세요.');
+      return false;
+    }
+
+    if (pwd === null || !pwd.trim()) {
+      Alert.alert('비밀번호를 입력해주세요.');
+      return false;
+    }
+
+    const regex = /\s/g;
+    if (
+      email.length !== email.replace(regex, '').length ||
+      pwd.length !== pwd.replace(regex, '').length
+    ) {
+      Alert.alert('공백을 제거해주세요.');
+      return false;
+    }
+
+    return true;
+  };
+
   //로그인 함수
   const onLogin = async () => {
+    if (!checkInput()) {
+      return;
+    }
     // Network check
     const state = await NetInfo.fetch().catch(err => {
       console.log('err in getting network info:::', err);
@@ -29,10 +55,7 @@ const Login = ({navigation}) => {
       Alert.alert('네트워크 연결 상태를 확인해주세요.');
       return;
     }
-    if (!checkLoginInput()) {
-      Alert.alert('유효하지 않은 입력', '모든 값을 입력해야합니다.');
-      return;
-    }
+
     try {
       await auth()
         .signInWithEmailAndPassword(email, pwd)
@@ -70,21 +93,7 @@ const Login = ({navigation}) => {
       console.log('login error : ' + error.message);
     }
   };
-  const checkLoginInput = () => {
-    if (email !== null && pwd !== null) {
-      if (!email.trim()) {
-        Alert.alert('빈 값', '이메일을 입력해주세요.');
-        return false;
-      }
-      if (!pwd.trim()) {
-        Alert.alert('빈 값', '비밀번호를 입력해주세요.');
-        return false;
-      }
-    } else {
-      return false;
-    }
-    return true;
-  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.imgBox}>
