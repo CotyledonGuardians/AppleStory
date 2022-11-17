@@ -323,7 +323,10 @@ const Main = ({navigation}) => {
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <Text style={styles.modalText}>사과를 아직 열 수 없어요!</Text>
-              <Image source={require('../assets/pictures/aegomkey.png')} />
+              <Image
+                source={require('../assets/pictures/aegomkey.png')}
+                style={styles.modalImg}
+              />
               <Text style={styles.timeText}>{time}</Text>
               <View style={styles.buttonBox}>
                 <SmallButton
@@ -335,10 +338,6 @@ const Main = ({navigation}) => {
                   onPress={() => {
                     setModalVisible(false);
                     navigation.navigate('LockAppleDetail', {id: apple.id});
-                    // navigation.navigate('List', {
-                    //   screen: 'LockAppleDetail',
-                    //   params: {id: apple.id},
-                    // });
                   }}
                   text="자세히 보기"
                   disabled={false}
@@ -354,6 +353,7 @@ const Main = ({navigation}) => {
 
 const styles = StyleSheet.create({
   backgroundImg: {
+    resizeMode: 'stretch',
     width: '100%',
     height: '100%',
   },
@@ -362,6 +362,7 @@ const styles = StyleSheet.create({
     height: wp('15%'),
   },
   apple1: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -369,6 +370,7 @@ const styles = StyleSheet.create({
     left: wp('37%'),
   },
   apple2: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -376,6 +378,7 @@ const styles = StyleSheet.create({
     left: wp('17%'),
   },
   apple3: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -383,6 +386,7 @@ const styles = StyleSheet.create({
     left: wp('62%'),
   },
   apple4: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -390,6 +394,7 @@ const styles = StyleSheet.create({
     left: wp('42%'),
   },
   apple5: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -397,6 +402,7 @@ const styles = StyleSheet.create({
     left: wp('67%'),
   },
   apple6: {
+    resizeMode: 'contain',
     width: wp('17%'),
     height: wp('15%'),
     position: 'absolute',
@@ -407,14 +413,14 @@ const styles = StyleSheet.create({
     width: wp('70%'),
     height: wp('67%'),
     position: 'absolute',
-    top: hp('50%'),
+    bottom: hp('8%'),
     left: wp('50%'),
   },
   basketTouch: {
     width: wp('28%'),
     height: wp('29%'),
     position: 'absolute',
-    top: hp('65%'),
+    bottom: hp('15%'),
     left: wp('10%'),
   },
   basket: {
@@ -422,8 +428,10 @@ const styles = StyleSheet.create({
     height: wp('29%'),
   },
   comment: {
-    top: hp('68%'),
+    bottom: hp('5.5%'),
+    left: wp('35%'),
     alignItems: 'center',
+    position: 'absolute',
     justifyContent: 'flex-end',
   },
   arrow: {
@@ -433,7 +441,7 @@ const styles = StyleSheet.create({
   },
   talk: {
     resizeMode: 'contain',
-    width: wp('25%'),
+    width: wp('30%'),
     height: wp('25%'),
     alignItems: 'center',
     justifyContent: 'center',
@@ -442,23 +450,22 @@ const styles = StyleSheet.create({
     fontFamily: 'UhBee Se_hyun Bold',
     fontSize: wp('3.5%'),
   },
-
   //모달 스타일 start
   centeredView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    marginTop: wp('10%'),
   },
   buttonView: {
     flexDirection: 'row',
   },
   modalView: {
     fontFamily: 'UhBee Se_hyun Bold',
-    margin: 20,
+    margin: wp('5%'),
     backgroundColor: '#ECE5E0',
     borderRadius: 20,
-    padding: 35,
+    padding: wp('5%'),
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -477,17 +484,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  modalImg: {
+    resizeMode: 'contain',
+    width: wp('35%'),
+    height: wp('40%'),
+  },
   modalText: {
     fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: 15,
+    fontSize: wp('4.5%'),
     color: '#373043',
-    marginBottom: 15,
+    marginBottom: wp('5%'),
     textAlign: 'center',
     flexDirection: 'column',
   },
   timeText: {
     fontFamily: 'UhBee Se_hyun Bold',
-    fontSize: 30,
+    fontSize: wp('8%'),
     color: '#4c4036',
     textAlign: 'center',
   },
