@@ -268,13 +268,20 @@ const Overview = ({navigation, route}) => {
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {photoURLs.map((item, index) => {
               return (
-                <Image
+                <TouchableOpacity
                   key={index}
-                  style={styles.photoImg}
-                  source={{
-                    uri: item,
-                  }}
-                />
+                  onPress={() => {
+                    navigation.navigate('ImageFullScreen', {
+                      url: item,
+                    });
+                  }}>
+                  <Image
+                    style={styles.photoImg}
+                    source={{
+                      uri: item,
+                    }}
+                  />
+                </TouchableOpacity>
               );
             })}
           </ScrollView>
