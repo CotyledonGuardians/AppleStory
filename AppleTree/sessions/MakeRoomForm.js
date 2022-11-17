@@ -24,7 +24,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {check, PERMISSIONS, RESULTS} from 'react-native-permissions';
-import {black} from 'react-native-paper/lib/typescript/styles/colors';
 
 const MakeRoomForm = ({navigation}) => {
   //inputs
