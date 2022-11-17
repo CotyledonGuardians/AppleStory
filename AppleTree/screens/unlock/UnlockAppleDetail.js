@@ -11,11 +11,18 @@ import {
   Button,
   Slider,
   Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import Video from 'react-native-video';
 import MediaControls, {PLAYER_STATES} from 'react-native-media-controls';
+import storage from '@react-native-firebase/storage';
+import RNFetchBlob from 'rn-fetch-blob';
 // import Slider from '@react-native-community/slider';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 const img_speaker = require('../../assets/icons/mic.png');
 const img_pause = require('../../assets/icons/mic.png');
@@ -37,7 +44,7 @@ export default class PlayerScreen extends React.Component {
       image: '',
       video: '',
       audio: '',
-
+      imgUrl: '',
       currentTime: 0,
       duration: 0,
       isFullScreen: true,
@@ -57,11 +64,19 @@ export default class PlayerScreen extends React.Component {
         }
       }
     }
+  }
+
+  async componentDidMount() {
+    let uid = this.props.route.params.uid;
+    let data = this.props.route.params.data;
 
     if (data.content.photo != null) {
       for (let i = 0; i < data.content.photo.length; i++) {
         if (data.content.photo[i].author === uid) {
-          this.image = data.content.photo[i].content;
+          const imageRef = storage().ref(data.content.photo[i].content);
+          await imageRef.getDownloadURL().then(url => {
+            this.setState({image: url});
+          });
           break;
         }
       }
@@ -70,7 +85,10 @@ export default class PlayerScreen extends React.Component {
     if (data.content.video != null) {
       for (let i = 0; i < data.content.video.length; i++) {
         if (data.content.video[i].author === uid) {
-          this.video = data.content.video[i].content;
+          const videoRef = storage().ref(data.content.video[i].content);
+          videoRef.getDownloadURL().then(url => {
+            this.setState({video: url});
+          });
           break;
         }
       }
@@ -79,14 +97,15 @@ export default class PlayerScreen extends React.Component {
     if (data.content.audio != null) {
       for (let i = 0; i < data.content.audio.length; i++) {
         if (data.content.audio[i].author === uid) {
-          this.audio = data.content.audio[i].content;
+          const audioRef = storage().ref(data.content.audio[i].content);
+          audioRef.getDownloadURL().then(url => {
+            this.setState({audio: url});
+          });
           break;
         }
       }
     }
-  }
 
-  componentDidMount() {
     this.timeout = setInterval(() => {
       if (
         this.sound &&
@@ -128,7 +147,7 @@ export default class PlayerScreen extends React.Component {
       this.sound.play(this.playComplete);
       this.setState({playState: 'playing'});
     } else {
-      const filepath = this.audio;
+      const filepath = this.state.audio;
       this.sound = new Sound(filepath, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
@@ -248,49 +267,159 @@ export default class PlayerScreen extends React.Component {
 
   onSeeking = currentTime => this.setState({currentTime});
 
+  checkPermission = async type => {
+    if (Platform.OS === 'ios') {
+      this.downloadFile();
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: '미디어 저장소 접근 요청',
+            message:
+              '파일을 다운받으려면 미디어 저장소에 접근을 허용해야 합니다.',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          // Start downloading
+          this.downloadFile(type);
+          // console.log('Storage Permission Granted.');
+        } else {
+          // If permission denied then show alert
+          Alert.alert(
+            '파일 저장 불가',
+            '미디어 저장소에 접근을 허용해야 합니다.',
+          );
+        }
+      } catch (err) {
+        // To handle permission related exception
+        console.log('++++' + err);
+      }
+    }
+  };
+
+  downloadFile = type => {
+    let date = new Date();
+    let FILE_URL = '';
+
+    if (type === 'image') {
+      FILE_URL = this.state.image;
+    } else if (type === 'video') {
+      FILE_URL = this.state.video;
+    } else {
+      FILE_URL = this.state.audio;
+    }
+    let extension = this.getExtFromURL(FILE_URL);
+
+    if (FILE_URL !== '') {
+      // config: To get response by passing the downloading related options
+      // fs: Root directory path to download
+      const {config, fs} = RNFetchBlob;
+      let RootDir = fs.dirs.DownloadDir;
+      let options = {
+        fileCache: true,
+        addAndroidDownloads: {
+          path:
+            RootDir +
+            '/apple_story/' +
+            type +
+            '/' +
+            type +
+            '_' +
+            Math.floor(date.getTime() + date.getSeconds() / 2) +
+            extension,
+          notification: true,
+          // useDownloadManager works with Android only
+          useDownloadManager: true,
+        },
+      };
+      config(options)
+        .fetch('GET', FILE_URL)
+        .then(res => {
+          console.log('res -> ', JSON.stringify(res));
+          alert('저장 완료!');
+        })
+        .catch(error => {
+          console.log('File Download Error ', error);
+        });
+    } else {
+      console.log('File Url Error..');
+    }
+  };
+
+  getFileExtention = fileUrl => {
+    return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
+  };
+
+  getExtFromURL = url => {
+    const _startQuery = url.lastIndexOf('?');
+    const urlWithoutQuery = url.substring(0, _startQuery);
+    const _lastDot = urlWithoutQuery.lastIndexOf('.');
+    const _fileExt = urlWithoutQuery
+      .substring(_lastDot, urlWithoutQuery.length)
+      .toLowerCase()
+      .trim();
+    return _fileExt;
+  };
+
   render() {
+    const {navigate} = this.props.navigation;
     const currentTimeString = this.getAudioTimeString(this.state.playSeconds);
     const durationString = this.getAudioTimeString(this.state.duration2);
-    // this.setState({audio: audio});
     return (
       <SafeAreaView style={styles.container}>
         <Text style={[styles.textFontBold, styles.header]}>
           {this.state.nickname}님의 기록
         </Text>
-        {!this.text && !this.image && !this.video && !this.audio && (
-          <View style={styles.emptyData}>
-            <Image
-              source={require('../../assets/pictures/aegom3.png')}
-              style={{width: 150, height: 200}}
-            />
-            <Text style={styles.textFont}>기록된 데이터가 없어요 ㅠㅠ</Text>
-          </View>
-        )}
+        {!this.text &&
+          !this.state.image &&
+          !this.state.video &&
+          !this.state.audio && (
+            <View style={styles.emptyData}>
+              <Image
+                source={require('../../assets/pictures/aegom3.png')}
+                style={{
+                  resizeMode: 'contain',
+                  height: hp('25%'),
+                }}
+              />
+              <Text style={styles.textFont}>기록된 데이터가 없어요 ㅠㅠ</Text>
+            </View>
+          )}
         <ScrollView showsVerticalScrollIndicator={false}>
           {this.text && (
             <View style={styles.textBox}>
               <Text style={styles.textFont}>{this.text}</Text>
             </View>
           )}
-          {/* {this.image && (
+          {this.state.image !== '' && (
             <View style={styles.imageBox}>
-              <Image
-                style={{
-                  margin: 3,
-                  height: '100%',
-                  aspectRatio: 1.6,
-                  flex: 1,
-                  width: '100%',
-                  resizeMode: 'contain',
-                }}
-                source={{
-                  uri: this.image,
-                }}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  navigate('ImageFullScreen', {
+                    url: this.state.image,
+                  });
+                }}>
+                <Image
+                  style={{
+                    // marginTop: hp('1%'),
+                    height: '100%',
+                    aspectRatio: 1.6,
+                    flex: 1,
+                    width: '100%',
+                    resizeMode: 'contain',
+                  }}
+                  source={{
+                    uri: this.state.image,
+                  }}
+                />
+              </TouchableOpacity>
             </View>
           )}
-          {this.video && (
-            <View style={{width: '100%', height: 200, marginTop: '5%'}}>
+          {this.state.video !== '' && (
+            <View
+              style={{width: '100%', height: hp('30%'), marginTop: hp('3%')}}>
               <Video
                 style={styles.mediaPlayer}
                 onEnd={this.onEnd}
@@ -301,7 +430,7 @@ export default class PlayerScreen extends React.Component {
                 ref={videoPlayer => (this.videoPlayer = videoPlayer)}
                 resizeMode={this.state.screenType}
                 onFullScreen={this.state.isFullScreen}
-                source={{uri: this.video}}
+                source={{uri: this.state.video}}
                 repeat={false}
                 controls={false}
                 volume={10}
@@ -310,52 +439,64 @@ export default class PlayerScreen extends React.Component {
                 duration={this.state.duration}
                 isLoading={this.state.isLoading}
                 mainColor="#333"
-                onFullScreen={this.onFullScreen}
+                // onFullScreen={this.onFullScreen}
                 onPaused={this.onPaused}
                 onReplay={this.onReplay}
                 onSeek={this.onSeek}
                 onSeeking={this.onSeeking}
                 playerState={this.state.playerState}
                 progress={this.state.currentTime}
-                toolbar={this.renderToolbar()}
+                // toolbar={this.renderToolbar()}
               />
             </View>
           )}
-          {this.audio && (
+          {this.state.audio !== '' && (
             <View style={styles.audioBox}>
               <View style={{flex: 1, justifyContent: 'center'}}>
                 <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'center',
-                    marginVertical: 10,
+                    marginVertical: wp('1%'),
                   }}>
                   <TouchableOpacity
                     onPress={this.jumpPrev15Seconds}
                     style={{justifyContent: 'center'}}>
                     <Image
                       source={require('../../assets/icons/rotate-left.png')}
-                      style={{width: 25, height: 25}}
+                      style={{
+                        width: wp('5%'),
+                        height: hp('5%'),
+                        resizeMode: 'contain',
+                      }}
                     />
                     <Text style={styles.textFontJump}>15</Text>
                   </TouchableOpacity>
                   {this.state.playState == 'playing' && (
                     <TouchableOpacity
                       onPress={this.pause}
-                      style={{marginHorizontal: 20}}>
+                      style={{marginHorizontal: wp('5%')}}>
                       <Image
                         source={require('../../assets/icons/pause.png')}
-                        style={{width: 25, height: 25}}
+                        style={{
+                          width: wp('5%'),
+                          height: hp('5%'),
+                          resizeMode: 'contain',
+                        }}
                       />
                     </TouchableOpacity>
                   )}
                   {this.state.playState == 'paused' && (
                     <TouchableOpacity
                       onPress={this.play}
-                      style={{marginHorizontal: 20}}>
+                      style={{marginHorizontal: wp('5%')}}>
                       <Image
                         source={require('../../assets/icons/playbrown.png')}
-                        style={{width: 25, height: 25}}
+                        style={{
+                          width: wp('5%'),
+                          height: hp('5%'),
+                          resizeMode: 'contain',
+                        }}
                       />
                     </TouchableOpacity>
                   )}
@@ -364,7 +505,11 @@ export default class PlayerScreen extends React.Component {
                     style={{justifyContent: 'center'}}>
                     <Image
                       source={require('../../assets/icons/rotate-right.png')}
-                      style={{width: 25, height: 25}}
+                      style={{
+                        width: wp('5%'),
+                        height: hp('5%'),
+                        resizeMode: 'contain',
+                      }}
                     />
                     <Text style={styles.textFontJump}>15</Text>
                   </TouchableOpacity>
@@ -395,7 +540,62 @@ export default class PlayerScreen extends React.Component {
                 </View>
               </View>
             </View>
-          )} */}
+          )}
+          {(this.state.image !== '' ||
+            this.state.video !== '' ||
+            this.state.audio !== '') && (
+            <View style={styles.download}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                }}>
+                <Text style={styles.txtTitle}>다운로드</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  marginTop: hp('1%'),
+                  margin: hp('20%'),
+                }}>
+                {this.state.image !== '' && (
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => this.checkPermission('image')}>
+                    <Text style={styles.txt}>사진</Text>
+                    <Image
+                      style={styles.buttonIcon}
+                      source={require('../../assets/icons/photo.png')}
+                    />
+                  </TouchableOpacity>
+                )}
+                {this.state.video !== '' && (
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => this.checkPermission('video')}>
+                    <Text style={styles.txt}>영상</Text>
+                    <Image
+                      style={styles.buttonIcon}
+                      source={require('../../assets/icons/video.png')}
+                    />
+                  </TouchableOpacity>
+                )}
+                {this.state.audio !== '' && (
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => this.checkPermission('audio')}>
+                    <Text style={styles.txt}>오디오</Text>
+                    <Image
+                      style={styles.buttonIcon}
+                      source={require('../../assets/icons/mic.png')}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
     );
@@ -406,7 +606,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FBF8F6',
-    padding: '6%',
+    padding: wp('6%'),
+  },
+  txtTitle: {
+    fontSize: wp('4%'),
+    fontFamily: 'UhBee Se_hyun Bold',
+    color: '#4C4036',
+  },
+  txt: {
+    fontSize: wp('4%'),
+    fontFamily: 'UhBee Se_hyun',
+    color: '#4C4036',
+  },
+  button: {
+    paddingTop: 3,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginRight: wp('2%'),
+    marginLeft: wp('2%'),
+    alignContent: 'center',
+    width: wp('21%'),
+    height: hp('5%'),
+    backgroundColor: '#FBF8F6',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+    borderRadius: 25,
+  },
+  buttonIcon: {
+    resizeMode: 'contain',
+    width: wp('5%'),
+    height: hp('4%'),
+    marginLeft: wp('1%'),
+  },
+  download: {
+    backgroundColor: '#ECE5E0',
+    borderRadius: 10,
+    height: hp('13%'),
+    marginTop: hp('3%'),
+    marginBottom: hp('3%'),
+    alignContent: 'center',
+    padding: hp('1%'),
+    // justifyContent: 'center',
+    // flexDirection: 'row',
+    // justifyContent: 'space-between',
+    // flexDirection: 'row',
   },
   toolbar: {
     marginTop: 30,
@@ -423,10 +672,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   header: {
-    marginBottom: '5%',
+    marginBottom: hp('2%'),
   },
   textFont: {
     fontFamily: 'UhBee Se_hyun',
+    fontSize: hp('2%'),
   },
   textFontJump: {
     position: 'absolute',
@@ -434,40 +684,39 @@ const styles = StyleSheet.create({
     marginTop: 1,
     fontFamily: 'UhBee Se_hyun',
     color: '#4C4036',
-    fontSize: 10,
+    fontSize: wp('2%'),
   },
   emptyData: {
     fontFamily: 'UhBee Se_hyun',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    top: '20%',
+    top: hp('20%'),
   },
   textFontTime: {
     fontFamily: 'UhBee Se_hyun',
     alignItems: 'center',
-    fontSize: 16,
+    fontSize: wp('4%'),
     color: '#4C4036',
   },
   textFontBold: {
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
-    fontSize: 18,
+    fontSize: wp('4%'),
   },
   textBox: {
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
-    padding: '6%',
+    padding: wp('5%'),
   },
   imageBox: {
-    marginTop: '5%',
+    marginTop: hp('3%'),
   },
   audioBox: {
     backgroundColor: '#ECE5E0',
     borderRadius: 10,
-    height: 100,
-    marginTop: '5%',
-    marginBottom: '5%',
+    height: hp('10%'),
+    marginTop: hp('3%'),
     justifyContent: 'space-between',
     flexDirection: 'row',
   },

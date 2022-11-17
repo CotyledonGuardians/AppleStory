@@ -55,3 +55,17 @@ services:
       - db
       - rabbitmq
       - redis
+
+  mail:
+    container_name: mail
+    build:
+      context: ./backend-mail
+      dockerfile: mail-dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - '65500:65500'
+    depends_on:
+      - db
