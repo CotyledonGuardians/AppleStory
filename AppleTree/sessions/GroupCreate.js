@@ -421,12 +421,16 @@ const GroupCreate = ({navigation, route}) => {
   return !loading ? (
     <ScrollView contentContainerStyle={styles.wrapper}>
       <SafeAreaView style={styles.container}>
+        <View style={styles.roomidbox}>
+          <Text style={styles.roomid}>{roomId}</Text>
+        </View>
         <View style={styles.imgBox}>
           <Image
             source={require('../assets/pictures/listpersonal1.png')}
             style={styles.img}
           />
         </View>
+
         <View style={styles.formBox}>
           <Text style={styles.txt}>닉네임</Text>
           <TextInput
@@ -743,6 +747,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  roomid: {
+    fontSize: wp('5%'),
+    fontFamily: 'SourceCodePro-Medium',
+  },
+  roomidbox: {
+    alignSelf: 'flex-start',
   },
 });
 
