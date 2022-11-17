@@ -268,7 +268,6 @@ export default class PlayerScreen extends React.Component {
   onSeeking = currentTime => this.setState({currentTime});
 
   checkPermission = async type => {
-    console.log('type', type);
     if (Platform.OS === 'ios') {
       this.downloadFile();
     } else {
@@ -285,7 +284,7 @@ export default class PlayerScreen extends React.Component {
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           // Start downloading
           this.downloadFile(type);
-          console.log('Storage Permission Granted.');
+          // console.log('Storage Permission Granted.');
         } else {
           // If permission denied then show alert
           Alert.alert(
@@ -301,20 +300,17 @@ export default class PlayerScreen extends React.Component {
   };
 
   downloadFile = type => {
-    console.log('WEFWEFEWFEWF');
     let date = new Date();
     let FILE_URL = '';
-    let extension = '';
+
     if (type === 'image') {
       FILE_URL = this.state.image;
-      extension = '.png';
     } else if (type === 'video') {
       FILE_URL = this.state.video;
-      extension = '.mp4';
     } else {
       FILE_URL = this.state.audio;
-      extension = '.mp4';
     }
+    let extension = this.getExtFromURL(FILE_URL);
 
     if (FILE_URL !== '') {
       // config: To get response by passing the downloading related options
@@ -354,6 +350,17 @@ export default class PlayerScreen extends React.Component {
 
   getFileExtention = fileUrl => {
     return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
+  };
+
+  getExtFromURL = url => {
+    const _startQuery = url.lastIndexOf('?');
+    const urlWithoutQuery = url.substring(0, _startQuery);
+    const _lastDot = urlWithoutQuery.lastIndexOf('.');
+    const _fileExt = urlWithoutQuery
+      .substring(_lastDot, urlWithoutQuery.length)
+      .toLowerCase()
+      .trim();
+    return _fileExt;
   };
 
   render() {
@@ -575,7 +582,7 @@ export default class PlayerScreen extends React.Component {
                     />
                   </TouchableOpacity>
                 )}
-                {this.state.video !== '' && (
+                {this.state.audio !== '' && (
                   <TouchableOpacity
                     style={styles.button}
                     onPress={() => this.checkPermission('audio')}>
