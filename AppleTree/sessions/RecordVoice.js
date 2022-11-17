@@ -198,7 +198,7 @@ const RecordVoice = ({
       if (_playTime === _duration) {
         stopPlay();
         setPlayTime('00:00');
-        playRecord();
+        onPlayRecord();
       }
 
       setPlayTime(_playTime);
