@@ -6,6 +6,7 @@ import {
   Image,
   Text,
   Pressable,
+  Alert,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import * as Progress from 'react-native-progress';
@@ -65,7 +66,7 @@ const AppleHitSession = ({navigation, route}) => {
         SetClickProgress(parseFloat((currentHealth / totalHp).toFixed(1)));
       },
       onDie: () => {
-        alert('사과 따기 성공!');
+        Alert.alert('사과 따기 성공!');
         disconnect();
       },
     };

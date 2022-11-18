@@ -244,21 +244,12 @@ export default class PlayerScreen extends React.Component {
 
   onEnd = () => this.setState({playerState: PLAYER_STATES.ENDED});
 
-  onError = () => alert('Something Wrong!! ', error);
-
-  exitFullScreen = () => {
-    alert('Exit full screen');
-  };
-
-  enterFullScreen = () => {
-    alert('entered full screen');
-  };
-
   onFullScreen = () => {
     if (this.state.screenType == 'contain')
       this.setState({screenType: 'cover'});
     else this.setState({screenType: 'contain'});
   };
+
   renderToolbar = () => (
     <View>
       <Text>Video Streaming Example </Text>
@@ -337,8 +328,8 @@ export default class PlayerScreen extends React.Component {
       config(options)
         .fetch('GET', FILE_URL)
         .then(res => {
+          Alert.alert('파일 저장 완료!');
           console.log('res -> ', JSON.stringify(res));
-          alert('저장 완료!');
         })
         .catch(error => {
           console.log('File Download Error ', error);
@@ -439,7 +430,7 @@ export default class PlayerScreen extends React.Component {
                 duration={this.state.duration}
                 isLoading={this.state.isLoading}
                 mainColor="#333"
-                // onFullScreen={this.onFullScreen}
+                onFullScreen={this.onFullScreen}
                 onPaused={this.onPaused}
                 onReplay={this.onReplay}
                 onSeek={this.onSeek}
