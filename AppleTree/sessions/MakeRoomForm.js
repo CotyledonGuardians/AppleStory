@@ -271,7 +271,7 @@ const MakeRoomForm = ({navigation}) => {
               // minimumDate={tomorrow}
               minimumDate={yesterday}
               // mm배포용
-              maximumDate={endDate}
+              // maximumDate={endDate}
               onConfirm={handleConfirm}
               onCancel={hideDatePicker}
               style={styles.calendar}
