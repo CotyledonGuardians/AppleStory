@@ -11,8 +11,10 @@ pipeline {
     RABBIT_PRODUCTION = credentials('rabbit_production')
     REDIS_CONF_PRODUCTION = credentials('redis_conf_production')
     REDIS_ACL_PRODUCTION = credentials('redis_acl_production')
+    EMAIL_CONF_PRODUCTION = credentials('email_config')
 
     BACKEND_CONTAINER = 'api'
+    MAIL_CONTAINER = 'mail'
 
     // MM 플러그인, Blue Ocean 플러그인 관련
     // MMACCOUNT = '@dss02094' // @아이디 사용 (언급시 알림)
@@ -40,6 +42,10 @@ pipeline {
                 sh 'cat $BACKEND_PRODUCTION >> backend/src/main/resources/application.yml'
                 sh 'cp $FIREBASE_PRODUCTION backend/src/main/resources/firebase-service-account-production-secret.json'
                 sh 'chmod 755 backend/src/main/resources/firebase-service-account-production-secret.json'
+                sh 'cp $FIREBASE_PRODUCTION backend-mail/src/main/resources/firebase-service-account-production-secret.json'
+                sh 'chmod 755 backend-mail/src/main/resources/firebase-service-account-production-secret.json'
+                sh 'cp $EMAIL_CONF_PRODUCTION backend-mail/src/main/resources/email.properties'
+                sh 'chmod 755 backend-mail/src/main/resources/email.properties'
                 sh 'cp $REDIS_CONF_PRODUCTION backend/redis.conf'
                 sh 'chmod 755 backend/redis.conf'
                 sh 'cp $REDIS_ACL_PRODUCTION backend/users.acl'
@@ -67,7 +73,7 @@ pipeline {
             stage('remove_containers') {
               steps {
                 catchError {
-                  sh "docker rm --force ${BACKEND_CONTAINER}"
+                  sh "docker rm --force ${BACKEND_CONTAINER} ${MAIL_CONTAINER}"
                 }
               }
             }
@@ -80,7 +86,11 @@ pipeline {
       steps {
         dir('backend') {
           sh "chmod +x gradlew"
-          sh "./gradlew bootjar"
+          sh "./gradlew clean bootjar"
+        }
+        dir('backend-mail') {
+          sh "chmod +x gradlew"
+          sh "./gradlew clean bootjar"
         }
       }
     }

@@ -1,38 +1,47 @@
 import * as React from 'react';
 import {useEffect, useState} from 'react';
 import {Image, StyleSheet} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  getFocusedRouteNameFromRoute,
+} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import SplashScreen from 'react-native-splash-screen';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import Main from './screens/Main';
-import AppleList from './screens/AppleList';
-import MyPage from './screens/auth/MyPage';
-import Map from './screens/Map';
-import Login from './screens/auth/Login';
-import Register from './screens/auth/Register';
-import {IntroFirst, IntroSecond} from './screens/Intro';
-import MakeRoomForm from './screens/MakeRoomForm';
-import GroupCreate from './sessions/GroupCreate';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
-import GroupSession from './sessions/GroupSession';
-// import AppleDetail from './screens/AppleDetail';
-import Overview from './screens/unlock/Overview';
-import AppleLockGIF from './screens/lock/AppleLockGIF';
-import RecordVoice from './screens/RecordVoice';
-// import SeedDetail from './screens/SeedDetail';
-import UnlockAppleDetail from './screens/unlock/UnlockAppleDetail';
-import HitApple from './sessions/AppleHitSession';
-import LockAppleDetail from './screens/lock/LockAppleDetail';
-import auth from '@react-native-firebase/auth';
-import JoinSession from './screens/test/JoinSession';
-import AppleUnlockGIF from './screens/unlock/AppleUnlockGIF';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
 
+//bottom tab navigator
+import Main from './screens/Main';
+import AppleList from './screens/applelist/AppleList';
+import MyPage from './screens/auth/MyPage';
+import Map from './screens/Map';
+import MakeRoomForm from './sessions/MakeRoomForm';
+// user
+import auth from '@react-native-firebase/auth';
+import Login from './screens/auth/Login';
+import Register from './screens/auth/Register';
+// intro
+import {IntroFirst, IntroSecond} from './screens/Intro';
+// session
+import GroupCreate from './sessions/GroupCreate';
+import HitApple from './sessions/AppleHitSession';
+import GroupSession from './sessions/GroupSession';
+import RecordVoice from './sessions/RecordVoice';
+import JoinSession from './sessions/JoinSession';
+// detail
+import Overview from './screens/unlock/Overview';
+import UnlockAppleDetail from './screens/unlock/UnlockAppleDetail';
+import LockAppleDetail from './screens/lock/LockAppleDetail';
+import VideoStreaming from './screens/unlock/VideoStreaming';
+import ImageFullScreen from './screens/unlock/ImageFullScreen';
+// GIF
+import AppleLockGIF from './screens/lock/AppleLockGIF';
+import AppleUnlockGIF from './screens/unlock/AppleUnlockGIF';
+// navigator
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const CreateStack = createNativeStackNavigator();
@@ -134,6 +143,16 @@ export default function App() {
                 name="AppleUnlockGIF"
                 component={AppleUnlockGIF}
               />
+              <HomeStack.Screen
+                options={{headerShown: false}}
+                name="VideoStreaming"
+                component={VideoStreaming}
+              />
+              <HomeStack.Screen
+                options={{headerShown: false}}
+                name="ImageFullScreen"
+                component={ImageFullScreen}
+              />
             </HomeStack.Navigator>
           )}
         </Tab.Screen>
@@ -169,6 +188,16 @@ export default function App() {
                 options={{headerShown: false}}
                 name="AppleUnlockGIF"
                 component={AppleUnlockGIF}
+              />
+              <MapStack.Screen
+                options={{headerShown: false}}
+                name="VideoStreaming"
+                component={VideoStreaming}
+              />
+              <MapStack.Screen
+                options={{headerShown: false}}
+                name="ImageFullScreen"
+                component={ImageFullScreen}
               />
             </MapStack.Navigator>
           )}
@@ -237,6 +266,16 @@ export default function App() {
                 options={{headerShown: false}}
                 name="AppleUnlockGIF"
                 component={AppleUnlockGIF}
+              />
+              <ListStack.Screen
+                options={{headerShown: false}}
+                name="VideoStreaming"
+                component={VideoStreaming}
+              />
+              <ListStack.Screen
+                options={{headerShown: false}}
+                name="ImageFullScreen"
+                component={ImageFullScreen}
               />
             </ListStack.Navigator>
           )}

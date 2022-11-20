@@ -1,5 +1,9 @@
 import React, {useEffect} from 'react';
 import {SafeAreaView, StyleSheet, Image} from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const AppleUnlockGIF = ({navigation, route}) => {
   useEffect(() => {
@@ -28,8 +32,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   appleImage: {
-    width: 400,
-    height: 400,
+    resizeMode: 'contain',
+    width: wp('170%'),
+    height: hp('170%'),
+    marginBottom: wp('25%'),
   },
 });
 
