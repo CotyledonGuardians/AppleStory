@@ -1,5 +1,9 @@
 import React from 'react';
 import {Pressable, Text, StyleSheet} from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 // 1. button 생성
 const Button = ({onPress, text, disabled}) => {
@@ -16,7 +20,7 @@ const SmallButton = ({onPress, text, disabled}) => {
       onPress={onPress}
       style={styles.smallButtonShape}
       disabled={disabled}>
-      <Text style={styles.buttonText}>{text}</Text>
+      <Text style={styles.smallButtonText}>{text}</Text>
     </Pressable>
   );
 };
@@ -42,8 +46,8 @@ const SmallWhiteButton = ({onPress, text}) => {
 // 2. style 적용
 const styles = StyleSheet.create({
   buttonShape: {
-    width: 300,
-    height: 50,
+    width: wp('72%'),
+    height: hp('7%'),
     borderRadius: 100,
     backgroundColor: '#373043',
     paddingHorizontal: 10,
@@ -51,22 +55,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   smallButtonShape: {
-    width: 135,
-    height: 60,
+    width: wp('36%'),
+    height: hp('7%'),
     borderRadius: 25,
     paddingHorizontal: 10,
-    margin: 5,
+    margin: wp('1%'),
     elevation: 2,
     backgroundColor: '#373043',
     flex: 0.4,
     justifyContent: 'center',
   },
   hangButtonShape: {
-    width: 135,
-    height: 60,
+    width: wp('36%'),
+    height: hp('7%'),
     borderRadius: 25,
     paddingHorizontal: 10,
-    margin: 5,
+    margin: wp('1%'),
     elevation: 2,
     backgroundColor: '#A6B0D5',
     color: 'black',
@@ -74,12 +78,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   smallWhiteButtonShape: {
-    width: 135,
-    height: 60,
+    width: wp('36%'),
+    height: hp('7%'),
     borderColor: 'black',
     borderRadius: 25,
     paddingHorizontal: 10,
-    margin: 5,
+    margin: wp('1%'),
     elevation: 2,
     backgroundColor: '#FBF8F6',
     flex: 0.4,
@@ -88,19 +92,25 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: 'center',
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: wp('4%'),
+    fontFamily: 'UhBee Se_hyun Bold',
+  },
+  smallButtonText: {
+    textAlign: 'center',
+    color: '#FFFFFF',
+    fontSize: wp('3.5%'),
     fontFamily: 'UhBee Se_hyun Bold',
   },
   hangButtonText: {
     textAlign: 'center',
     color: '#373043',
-    fontSize: 15,
+    fontSize: wp('3.5%'),
     fontFamily: 'UhBee Se_hyun Bold',
   },
   whilteButtonText: {
     textAlign: 'center',
     color: '#373043',
-    fontSize: 15,
+    fontSize: wp('3.5%'),
     fontFamily: 'UhBee Se_hyun Bold',
   },
 });

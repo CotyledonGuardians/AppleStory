@@ -5,6 +5,10 @@ import auth from '@react-native-firebase/auth';
 import {getMyAppleCount} from '../../api/AppleAPI';
 import LoadingDefault from '../LoadingDefault';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 const MyPage = () => {
   const [appleCnt, setAppleCnt] = useState(-1);
@@ -31,30 +35,32 @@ const MyPage = () => {
   };
 
   return appleCnt !== -1 ? (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.name}>{email}</Text>
-      <View>
-        <ImageBackground
-          source={require('AppleTree/assets/pictures/talkingballoon.png')}
-          style={styles.talk}>
-          <Text style={styles.txt}>당신이 심은 사과는</Text>
-          <Text style={styles.cnt}>총 {appleCnt}개</Text>
-          <Text style={styles.txt}>입니다 !</Text>
-        </ImageBackground>
-      </View>
-      <Text
-        style={styles.logout}
-        onPress={() => {
-          auth()
-            .signOut()
-            .then(() => removeToken(), console.log('User signed out!'));
-        }}>
-        로그아웃
-      </Text>
-      <Image
-        source={require('AppleTree/assets/pictures/aegommypage.png')}
-        style={styles.image}
-      />
+    <SafeAreaView style={styles.screen}>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.name}>{email}</Text>
+        <View>
+          <ImageBackground
+            source={require('AppleTree/assets/pictures/talkingballoon.png')}
+            style={styles.talk}>
+            <Text style={styles.txt}>당신이 심은 사과는</Text>
+            <Text style={styles.cnt}>총 {appleCnt}개</Text>
+            <Text style={styles.txt}>입니다 !</Text>
+          </ImageBackground>
+        </View>
+        <Text
+          style={styles.logout}
+          onPress={() => {
+            auth()
+              .signOut()
+              .then(() => removeToken(), console.log('User signed out!'));
+          }}>
+          로그아웃
+        </Text>
+        <Image
+          source={require('AppleTree/assets/pictures/aegommypage.png')}
+          style={styles.image}
+        />
+      </SafeAreaView>
     </SafeAreaView>
   ) : (
     <LoadingDefault />
@@ -62,53 +68,60 @@ const MyPage = () => {
 };
 
 const styles = StyleSheet.create({
+  screen: {
+    height: '100%',
+    width: '100%',
+  },
   container: {
-    flex: 1,
+    flex: 20,
     backgroundColor: '#FBF8F6',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
+    padding: '10%',
   },
   name: {
     textAlign: 'center',
-    fontSize: 16,
+    justifyContent: 'center',
+    fontSize: wp('3%'),
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#4C4036',
     backgroundColor: '#ECE5E0',
     borderRadius: 100,
-    padding: 10,
-    marginBottom: 20,
-    width: 300,
-    height: 50,
+    padding: '3%',
+    marginBottom: '5%',
+    width: wp('65%'),
+    height: hp('6%'),
   },
   talk: {
     resizeMode: 'contain',
-    width: 200,
-    height: 200,
+    width: wp('45%'),
+    height: wp('50%'),
     justifyContent: 'center',
-    marginTop: 10,
-    marginBottom: 10,
     alignItems: 'center',
+    marginTop: '2%',
+    marginBottom: '3%',
   },
   image: {
     resizeMode: 'contain',
-    width: '100%',
-    height: '40%',
+    width: wp('100%'),
+    height: hp('35%'),
   },
   txt: {
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#3A5C83',
-    fontSize: 16,
+    fontSize: wp('4%'),
+    marginTop: '2%',
   },
   cnt: {
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#3A5C83',
-    fontSize: 32,
+    fontSize: wp('7%'),
+    marginTop: '2%',
   },
   logout: {
     fontFamily: 'UhBee Se_hyun Bold',
     color: '#3A5C83',
-    fontSize: 15,
+    fontSize: wp('4%'),
   },
 });
 
