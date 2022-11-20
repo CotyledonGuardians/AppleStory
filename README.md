@@ -38,17 +38,17 @@
 
 | Tech         | Stack                                        |
 | ------------ | -------------------------------------------- |
-| **Backend**  | Java, Spring Boot, JPA, JWT                  |
+| **Backend**  | Java, Spring Boot, JPA, RabbitMQ             |
 | **Frontend** | React-Native                                 |
-| **DataBase** | MySQL, Redis, Firebase                       |
-| **Tools**    | AWS EC2, NginX, Docker, GitLab, JIRA, Notion |
+| **DataBase** | MySQL, Redis                                 |
+| **Tools**    | AWS EC2, Firebase Auth, Firebase Storage, NginX, Docker, GitLab, JIRA, Notion |
 
 
 <br>
 
 # 📌 시스템 아키텍처    
 
-(사진 추가 예정)
+![architecture](./exec/img/architecture.png)
 
 <br>
 
