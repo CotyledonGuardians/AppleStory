@@ -18,9 +18,9 @@
 
 <br>
 
-# 📽️ UCC  (예정)
+# 📽️ UCC
 
-
+[전산학개론](https://youtu.be/KiL8vpJiV0E)
 
 <br>
 
