@@ -37,10 +37,10 @@
 
 | Tech         | Stack                                        |
 | ------------ | -------------------------------------------- |
-| **Backend**  | Java, Spring Boot, JPA, JWT                  |
+| **Backend**  | Java, Spring Boot, JPA, RabbitMQ             |
 | **Frontend** | React-Native                                 |
-| **DataBase** | MySQL, Redis, Firebase                       |
-| **Tools**    | AWS EC2, NginX, Docker, GitLab, JIRA, Notion |
+| **DataBase** | MySQL, Redis                                 |
+| **Tools**    | AWS EC2, Firebase Auth, Firebase Storage, NginX, Docker, GitLab, JIRA, Notion |
 
 <br>
 
