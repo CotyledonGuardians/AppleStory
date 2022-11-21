@@ -18,7 +18,8 @@
 
 # 📽️ UCC
 
-[UCC 바로가기](https://www.youtube.com/watch?v=KiL8vpJiV0E)
+[UCC 바로가기](https://www.youtube.com/watch?v=KiL8vpJiV0E)   
+<img src="/uploads/02c4a95fd0a75cbd05452b206099f3c3/전산학개론.png" width="300"/>
 
 <br>
 
@@ -26,7 +27,7 @@
 
 |     Name     |                      김낙현                      |                     송선아                      |                     송제영                      |                     이예은                      |                   조다연                   |                     차송희                      |
 | :----------: | :----------------------------------------------: | :---------------------------------------------: | :---------------------------------------------: | :---------------------------------------------: | :----------------------------------------: | :---------------------------------------------: |
-| **Profile**  | <img width="145" src="exec/img/Group 207.png"/>  | <img width="150" src="exec/img/Group 209.png"/> | <img width="135" src="exec/img/Group 206.png"/> | <img width="150" src="exec/img/Group 208.png"/> | <img width="150" src="exec/img/yeon.png"/> | <img width="145" src="exec/img/Group 211.png"/> |
+| **Profile**  | <img width="145" src="exec/img/Group 207.png"/>  | <img width="150" src="exec/img/Group 209.png"/> | <img width="145" src="exec/img/Group 206.png"/> | <img width="145" src="exec/img/Group 208.png"/> | <img width="150" src="exec/img/yeon.png"/> | <img width="155" src="exec/img/Group 211.png"/> |
 | **Position** |               Infra<br />FullStack               |                    FullStack                    |            Team Leader<br />Backend             |                    FullStack                    |            Frontend<br /> UI/UX            |          Frontend<br />UI/UX<br />UCC           |
 |   **Git**    | [@Psalmist-KIM](https://github.com/Psalmist-KIM) |     [@Seona98](https://github.com/seona98)      |   [@hooreique](https://github.com/hooreique)    |       [@lye2i](https://github.com/lye2i)        |   [@dus6982](https://github.com/dus6982)   |  [@chasonghui](https://github.com/chasonghui)   |
 
