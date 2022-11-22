@@ -19,7 +19,7 @@
 # 📽️ UCC
 
 [UCC 바로가기](https://www.youtube.com/watch?v=KiL8vpJiV0E)   
-<img src="/uploads/02c4a95fd0a75cbd05452b206099f3c3/전산학개론.png" width="300"/>
+<img src="/exec/img/ucc-cover.png" width="300"/>
 
 <br>
 
