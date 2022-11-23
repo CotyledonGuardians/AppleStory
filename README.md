@@ -2,6 +2,11 @@
 
 ![그래픽이미지 (1)](exec/img/그래픽이미지.png)
 
+<p align="center">🎁 <a href="https://play.google.com/store/apps/details?id=com.cotyledon.appletree"> 어플 다운받기 </a> 🎁 </p>
+
+<br>
+
+
 # 📰 프로젝트 개요
 
 **친구들과 재미있게 타임캡슐을 만들어 보세요!**
